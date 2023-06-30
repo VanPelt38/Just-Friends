@@ -86,7 +86,7 @@ class ProfileSetUpViewController: UIViewController {
                 
                 if let userName = nameTextField.text, let imageURL = imageString, let age = ageTextField.text, let userGender = gender, let id = userID {
                    
-                    db.collection("profiles").addDocument(data: [
+                    db.collection("users").document(id).collection("profile").document("profile").setData([
                         "age": age,
                         "gender": userGender,
                         "name": userName,

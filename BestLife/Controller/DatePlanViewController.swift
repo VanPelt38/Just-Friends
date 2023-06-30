@@ -69,7 +69,7 @@ class DatePlanViewController: UIViewController {
                 
                 if docsArray.count == 0 {
                 
-                    print("docarray count is zero for some reason, so a new thing is being saved.")
+                    
                     
                     if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
                         

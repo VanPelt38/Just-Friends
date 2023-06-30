@@ -20,6 +20,9 @@ class LoginViewController: UIViewController {
 
         emailTextField.delegate = self
         passwordTextField.delegate = self
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
+        self.view.addGestureRecognizer(tapGesture)
 
     }
   
@@ -85,5 +88,21 @@ class LoginViewController: UIViewController {
 
 extension LoginViewController: UITextFieldDelegate {
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     
+        emailTextField.endEditing(true)
+        passwordTextField.endEditing(true)
+        return true
+        
+    }
+    
+    @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
+        
+        emailTextField.resignFirstResponder()
+        passwordTextField.endEditing(true)
+        
+        emailTextField.resignFirstResponder()
+        passwordTextField.endEditing(true)
+    }
+
 }

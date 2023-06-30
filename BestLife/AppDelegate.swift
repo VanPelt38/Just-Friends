@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         Messaging.messaging().delegate = self
        
-        _ = Firestore.firestore()
+        let _ = Firestore.firestore()
         
         UNUserNotificationCenter.current().delegate = self
         
@@ -39,9 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         )
 
         application.registerForRemoteNotifications()
-        
-    
-        
+                
         return true
     }
     

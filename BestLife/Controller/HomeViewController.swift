@@ -59,7 +59,7 @@ class HomeViewController: UIViewController {
             print("no user is currently signed in")
         }
         
-        let currentCollection = db.collection("profiles")
+        let currentCollection = db.collection("users").document(firebaseID!).collection("profile")
         let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
         
         query.getDocuments { querySnapshot, error in

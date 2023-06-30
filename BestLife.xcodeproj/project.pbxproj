@@ -7,7 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		230209C12A2D47AD00600B48 /* MatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230209C02A2D47AD00600B48 /* MatchModel.swift */; };
+		230284382A0852FD009EBDFC /* DatePlanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230284362A0852FD009EBDFC /* DatePlanCell.swift */; };
+		230284392A0852FD009EBDFC /* DatePlanCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 230284372A0852FD009EBDFC /* DatePlanCell.xib */; };
+		23168E132A180C90009C0AD1 /* ExpiringMatchesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23168E122A180C90009C0AD1 /* ExpiringMatchesModel.swift */; };
 		23361C3229DCC4F7006D2410 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 23361C3129DCC4F7006D2410 /* FirebaseFunctions */; };
+		2341E60C2A423BE400619EE0 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2341E60B2A423BE400619EE0 /* MessageModel.swift */; };
 		2350108729B474E0007A3BBA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 2350108629B474E0007A3BBA /* FirebaseMessaging */; };
 		2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */; };
 		237A4B972A01ACA40065EF6B /* ProfileSetUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */; };
@@ -33,6 +38,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		230209C02A2D47AD00600B48 /* MatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchModel.swift; sourceTree = "<group>"; };
+		230284362A0852FD009EBDFC /* DatePlanCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePlanCell.swift; sourceTree = "<group>"; };
+		230284372A0852FD009EBDFC /* DatePlanCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DatePlanCell.xib; sourceTree = "<group>"; };
+		23168E122A180C90009C0AD1 /* ExpiringMatchesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpiringMatchesModel.swift; sourceTree = "<group>"; };
+		2341E60B2A423BE400619EE0 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
 		2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
 		237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetUpViewController.swift; sourceTree = "<group>"; };
 		2385C13029E9B71300EAF12E /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -112,6 +122,9 @@
 			children = (
 				23B4F72F294B845E00C9DFB5 /* DatePlanModel.swift */,
 				23EE38852A06B2720013E63E /* ProfileModel.swift */,
+				23168E122A180C90009C0AD1 /* ExpiringMatchesModel.swift */,
+				230209C02A2D47AD00600B48 /* MatchModel.swift */,
+				2341E60B2A423BE400619EE0 /* MessageModel.swift */,
 				2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */,
 			);
 			path = Model;
@@ -121,6 +134,8 @@
 			isa = PBXGroup;
 			children = (
 				23D2AAED293EA5100083BA22 /* Main.storyboard */,
+				230284362A0852FD009EBDFC /* DatePlanCell.swift */,
+				230284372A0852FD009EBDFC /* DatePlanCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -218,6 +233,7 @@
 				23D2AAF7293EA5120083BA22 /* LaunchScreen.storyboard in Resources */,
 				2385C13129E9B71300EAF12E /* GoogleService-Info.plist in Resources */,
 				23D2AAF4293EA5120083BA22 /* Assets.xcassets in Resources */,
+				230284392A0852FD009EBDFC /* DatePlanCell.xib in Resources */,
 				23D2AAEF293EA5100083BA22 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -237,6 +253,10 @@
 				23D2AAEC293EA5100083BA22 /* HomeViewController.swift in Sources */,
 				23B4F730294B845E00C9DFB5 /* DatePlanModel.swift in Sources */,
 				23D2AB04294B7E970083BA22 /* DatePlanViewController.swift in Sources */,
+				230284382A0852FD009EBDFC /* DatePlanCell.swift in Sources */,
+				230209C12A2D47AD00600B48 /* MatchModel.swift in Sources */,
+				2341E60C2A423BE400619EE0 /* MessageModel.swift in Sources */,
+				23168E132A180C90009C0AD1 /* ExpiringMatchesModel.swift in Sources */,
 				23D2AAE8293EA5100083BA22 /* AppDelegate.swift in Sources */,
 				2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */,
 				23D2AAEA293EA5100083BA22 /* SceneDelegate.swift in Sources */,

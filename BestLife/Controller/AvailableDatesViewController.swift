@@ -15,7 +15,8 @@ class AvailableDatesViewController: UIViewController {
     
 
     
-    @IBOutlet weak var matchesButton: UIBarButtonItem!
+    @IBOutlet weak var matchesButton: UIButton!
+    
     
     @IBOutlet weak var availableDatesTable: UITableView!
     
@@ -24,33 +25,251 @@ class AvailableDatesViewController: UIViewController {
     let db = Firestore.firestore()
     
     var statusArray: [DatePlanModel] = []
+    var userProfileArray: [ProfileModel] = []
+    var profilesArray: [ProfileModel] = []
+    var dataLoadedArray: [Bool] = []
+    var expiringMatchesArray: [ExpiringMatchesModel] = []
+  
     
     var ownName = "Jake"
     var dateActivity = "none"
     var dateTime = "none"
     var firebaseID = ""
+    var notificationCount = 0
+    var ownMatchStatus = MatchModel()
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+        print("view will appear has been triggered")
+        
+        for subview in matchesButton.subviews {
+            
+            subview.removeFromSuperview()
+        }
+        
+        Task.init {
+           
+            do {
+               notificationCount = try await loadNotifications()
+
+                
+                let badgeSize: CGFloat = 17
+                let badgeTag = 9830384
+                
+                let badgeLabel = UILabel(frame: CGRect(x: 0, y: 0, width: badgeSize, height: badgeSize))
+                badgeLabel.translatesAutoresizingMaskIntoConstraints = false
+                badgeLabel.tag = badgeTag
+                badgeLabel.layer.cornerRadius = badgeLabel.bounds.size.height / 2
+                badgeLabel.textAlignment = .center
+                badgeLabel.layer.masksToBounds = true
+                badgeLabel.backgroundColor = .red
+                badgeLabel.textColor = .white
+                badgeLabel.font = UIFont.boldSystemFont(ofSize: 10)
+                
+                print("this is notification count before we add to badge: \(notificationCount)")
+                
+                if notificationCount <= 10 {
+                    badgeLabel.text = String(notificationCount)
+                } else {
+                    badgeLabel.text = "10+"
+                }
+                
+                badgeLabel.layer.zPosition = 1
+                
+                if notificationCount != 0 {
+                    
+                    matchesButton.addSubview(badgeLabel)
+                    matchesButton.bringSubviewToFront(badgeLabel)
+                    
+                    badgeLabel.topAnchor.constraint(equalTo: matchesButton.topAnchor, constant: 4).isActive = true
+                    badgeLabel.leftAnchor.constraint(equalTo: matchesButton.leftAnchor, constant: 10).isActive = true
+                    badgeLabel.widthAnchor.constraint(equalToConstant: badgeSize).isActive = true
+                    badgeLabel.heightAnchor.constraint(equalToConstant: badgeSize).isActive = true
+                }
+            } catch {
+                print(error)
+            }
+            
+        }
+
+        
+    }
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+       
+        
+       
+        loadUserProfile()
+        
+        
+        dataLoading()
 
         availableDatesTable.delegate = self
         availableDatesTable.dataSource = self
         availableDatesTable.rowHeight = 160.0
         
-        loadStatuses()
+        availableDatesTable.register(UINib(nibName: "DatePlanCell", bundle: nil), forCellReuseIdentifier: "datePlanCell")
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+        
+        db.collection("users").document(firebaseID).collection("matchNotifications").addSnapshotListener { [self] snapshot, error in
+            
+            guard let snapshot = snapshot else {
+                print("error fetching snapshot: \(error)")
+                return
+            }
+            
+            for change in snapshot.documentChanges {
+                
+                if change.type == .added {
+                    
+                    Task.init {
+                       
+                        do {
+                            notificationCount = try await self.loadNotifications()
+
+                            
+                            let badgeSize: CGFloat = 17
+                            let badgeTag = 9830384
+                            
+                            let badgeLabel = UILabel(frame: CGRect(x: 0, y: 0, width: badgeSize, height: badgeSize))
+                            badgeLabel.translatesAutoresizingMaskIntoConstraints = false
+                            badgeLabel.tag = badgeTag
+                            badgeLabel.layer.cornerRadius = badgeLabel.bounds.size.height / 2
+                            badgeLabel.textAlignment = .center
+                            badgeLabel.layer.masksToBounds = true
+                            badgeLabel.backgroundColor = .red
+                            badgeLabel.textColor = .white
+                            badgeLabel.font = UIFont.boldSystemFont(ofSize: 10)
+
+                            
+                            if notificationCount <= 10 {
+                                badgeLabel.text = String(notificationCount)
+                            } else {
+                                badgeLabel.text = "10+"
+                            }
+                            
+                            badgeLabel.layer.zPosition = 1
+                            
+                            if notificationCount != 0 {
+                                
+                                matchesButton.subviews.forEach { $0.removeFromSuperview() }
+                                matchesButton.addSubview(badgeLabel)
+                                matchesButton.bringSubviewToFront(badgeLabel)
+                                
+                                badgeLabel.topAnchor.constraint(equalTo: matchesButton.topAnchor, constant: 4).isActive = true
+                                badgeLabel.leftAnchor.constraint(equalTo: matchesButton.leftAnchor, constant: 10).isActive = true
+                                badgeLabel.widthAnchor.constraint(equalToConstant: badgeSize).isActive = true
+                                badgeLabel.heightAnchor.constraint(equalToConstant: badgeSize).isActive = true
+                            }
+                        } catch {
+                            print(error)
+                        }
+                        
+                    }
+                    
+                }
+            }
+            
+        }
+        
+        
+        
+        
+        
+        
+        
     }
     
-    @IBAction func matchesPressed(_ sender: UIBarButtonItem) {
+
+    @IBAction func matchesPressed(_ sender: UIButton) {
         
+        performSegue(withIdentifier: "availableMatchesSeg", sender: self)
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.identifier == "availableMatchesSeg" {
+            
+            let destinationVC = segue.destination as! MatchesViewController
+            
+            ownMatchStatus.name = self.userProfileArray[0].name
+            ownMatchStatus.imageURL = self.userProfileArray[0].picture
+            ownMatchStatus.dateActivity = dateActivity
+            ownMatchStatus.dateTime = dateTime
+            ownMatchStatus.ID = firebaseID
+            ownMatchStatus.age = self.userProfileArray[0].age
+            ownMatchStatus.gender = self.userProfileArray[0].gender
+            ownMatchStatus.accepted = false
+            ownMatchStatus.fcmToken = UserDefaults.standard.object(forKey: "fcmToken") as! String
+
+            
+            destinationVC.ownMatch = ownMatchStatus
+            
+        }
+    }
+    
+    
+    func loadNotifications() async -> Int {
+        
+        var numberOfMatchRequests = 0
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+            
+            let currentCollection = db.collection("users").document(firebaseID).collection("matchNotifications")
+
+            do {
+                let querySnapshot = try await currentCollection.getDocuments()
+                
+                for doc in querySnapshot.documents {
+                     
+                    numberOfMatchRequests += 1
+                    }
+            } catch {
+                print(error)
+            }
+        
+        return numberOfMatchRequests
+    }
+    
+    func dataLoading() {
+        
+        Task.init {
+            do {
+                try await loadExpiringMatches()
+                expiringMatchesArray = try await filterExpiringMatches(matches: expiringMatchesArray)
+                let statuses = try await loadStatuses()
+                try await loadProfiles(statuses: statuses)
+                self.dataLoadedArray.append(true)
+                print("dataLoading true appended")
+                self.availableDatesTable.reloadData()
+            } catch {
+                print(error)
+            }
+            
+        }
         
     }
     
     
-    func loadStatuses() {
+    func loadStatuses() async -> [DatePlanModel] {
         
-//        let uniqueID = UserDefaults.standard.object(forKey: "uniqueID")
+        var returnArray: [DatePlanModel] = []
         
         
         if let currentUser = Auth.auth().currentUser {
@@ -62,9 +281,72 @@ class AvailableDatesViewController: UIViewController {
         let currentCollection = db.collection("statuses")
         let query = currentCollection.whereField("userID", isNotEqualTo: firebaseID)
         
+        do {
+            
+            let querySnapshot = try await query.getDocuments()
+            self.statusArray = []
+                    
+            for doc in querySnapshot.documents {
+                        
+                        let data = doc.data()
+                        if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String {
+                            let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken)
+                            self.statusArray.append(newStatus)
+                            returnArray.append(newStatus)
+                            print("returnarray count directly afterloading: \(returnArray.count)")
+                            
+                            
+                            var expiredIDs: [String] = []
+                 
+                            for id in expiringMatchesArray {
+                                
+                                expiredIDs.append(id.userID)
+                            }
+                            
+                            print("this is statusarray count before removing expired IDs: \(statusArray.count)")
+                            
+                            for (index, status) in statusArray.enumerated() {
+                             
+                                if expiredIDs.contains(status.daterID) {
+                                    print("this is deleted statusID: \(status.daterID)")
+                                    statusArray.remove(at: index)
+                                    returnArray.remove(at: index)
+                                    print("this is statusArray once expiredID is removed: \(statusArray.count)")
+                                }
+                                    
+                            }
+                            
+                            
+                            DispatchQueue.main.async {
+                                
+                                self.availableDatesTable.reloadData()
+                            }
+                        }
+                        }
+                    
+        } catch {
+            print(error)
+        }
+            
+        
+        print("this is return array count: \(returnArray.count)")
+        return returnArray
+    }
+    
+    func loadUserProfile() {
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+        
+        let currentCollection = db.collection("users").document(firebaseID).collection("profile")
+        let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
+        
         query.getDocuments { querySnapshot, error in
             
-            self.statusArray = []
+            self.userProfileArray = []
             
             if let e = error {
                 print("There was an issue retrieving data from Firestore: \(e)")
@@ -75,11 +357,12 @@ class AvailableDatesViewController: UIViewController {
                     for doc in snapshotDocuments {
                         
                         let data = doc.data()
-                        if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String {
-                            let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken)
-                            self.statusArray.append(newStatus)
-                            print(self.statusArray.count)
-                        
+                        if let age = data["age"] as? String, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
+                            let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
+                            self.userProfileArray.append(profile)
+                            self.dataLoadedArray.append(true)
+                            print("user true added")
+                            
                             DispatchQueue.main.async {
                                 
                                 self.availableDatesTable.reloadData()
@@ -92,6 +375,161 @@ class AvailableDatesViewController: UIViewController {
         }
     }
     
+    func loadProfiles(statuses: [DatePlanModel]) async {
+        
+        print("this is statuses count: \(statuses.count)")
+        print("load profiles is being triggered")
+        profilesArray = []
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+        
+        for status in statuses {
+            
+            print(firebaseID)
+            print(status.daterID)
+            
+            let currentCollection = db.collection("users").document(status.daterID).collection("profile")
+            let query = currentCollection.whereField("userID", isEqualTo: status.daterID)
+           
+            do {
+                
+                let querySnapshot = try await query.getDocuments()
+               
+                    
+                for doc in querySnapshot.documents {
+                        
+                        print("we've got some documents")
+                        
+                        let data = doc.data()
+                        if let age = data["age"] as? String, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
+                            let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
+                            self.profilesArray.append(profile)
+                            print("this is the profilesArray count as soon as the data is downloaded: \(self.profilesArray.count)")
+                         
+                            var expiredIDs: [String] = []
+                 
+                            for id in expiringMatchesArray {
+                                
+                                expiredIDs.append(id.userID)
+                            }
+                            
+                            for (index, profile) in profilesArray.enumerated() {
+                             
+                                if expiredIDs.contains(profile.userID) {
+                                    
+                                    profilesArray.remove(at: index)
+                                }
+                                    
+                            }
+                            
+                            
+                            DispatchQueue.main.async {
+                                
+                                self.availableDatesTable.reloadData()
+                            }
+                            
+                        }
+                    }
+            } catch {
+                print(error)
+            }
+        }
+ 
+    }
+    
+    func loadExpiringMatches() async {
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+            
+            let currentCollection = db.collection("users").document(firebaseID).collection("expiringRequests")
+
+            do {
+                let querySnapshot = try await currentCollection.getDocuments()
+                
+                for doc in querySnapshot.documents {
+                        let data = doc.data()
+                        if let userID = data["userID"] as? String, let timeStamp = data["timeStamp"] as? Timestamp {
+                            
+                            let date = timeStamp.dateValue()
+                            let expiringRequest = ExpiringMatchesModel(userID: userID, timeStamp: date)
+                            self.expiringMatchesArray.append(expiringRequest)
+                        }
+                    }
+            } catch {
+                print(error)
+            }
+    }
+    
+    func filterExpiringMatches(matches: [ExpiringMatchesModel]) async -> [ExpiringMatchesModel] {
+        
+        let newArray = matches
+        var returnArray: [ExpiringMatchesModel] = []
+        
+        for expiringMatch in newArray {
+            
+            let currentTime = Date()
+            var matchTimeStamp = expiringMatch.timeStamp!.addingTimeInterval(10800)
+
+            
+            if matchTimeStamp > currentTime {
+                
+                returnArray.append(expiringMatch)
+            }
+        }
+        
+        return returnArray
+    }
+   
+    
+    func addNotification(daterID: String, firebaseID: String) async {
+        
+        var suitorIDs: [String] = []
+
+            let currentCollection = db.collection("users").document(daterID).collection("matchNotifications")
+
+            do {
+                let querySnapshot = try await currentCollection.getDocuments()
+                
+                for doc in querySnapshot.documents {
+                        let data = doc.data()
+                        if let suitorID = data["suitorID"] as? String {
+  
+                            suitorIDs.append(suitorID)
+   
+                        }
+                    }
+                
+                
+                if !suitorIDs.contains(firebaseID) {
+                    
+                  
+                    currentCollection.addDocument(data:
+                    ["suitorID" : firebaseID]
+                    ) { err in
+                        if let err = err {
+                            print("error writing doc: \(err)")
+                        } else {
+                            print("doc written successfully.")
+                        }
+                    }
+
+                }
+                
+                
+            } catch {
+                print(error)
+            }
+        
+            }
+    
 }
 
 //MARK: - TableView Data Source Methods
@@ -100,25 +538,83 @@ extension AvailableDatesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return (statusArray.count + 1)
+        if dataLoadedArray.count != 2 {
+            
+            return 1
+        } else {
+            
+            return (statusArray.count + 1)
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-       
+        var returnCell: UITableViewCell?
         
-            let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "dateCell", for: indexPath)
-
-        if indexPath.row == 0 {
+        if dataLoadedArray.count != 2 {
             
-            cell.textLabel?.text = "I want to \(dateActivity) \(dateTime)"
+            let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "dateCell", for: indexPath)
+            cell.textLabel!.text = "Loading..."
+            print("Loading... loaded")
+            returnCell = cell
         } else {
             
-            cell.textLabel?.text = "I want to \(statusArray[(indexPath.row - 1)].dateActivity) \(statusArray[(indexPath.row - 1)].dateTime)"
+            
+            let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
+            cell.acceptedButton.isHidden = true
+            cell.rejectedButton.isHidden = true
+            
+            if indexPath.row == 0 {
+                
+                cell.datePlanLabel.text = "\(self.userProfileArray[0].name) wants to \(dateActivity) \(dateTime)"
+                cell.ageLabel.text = self.userProfileArray[0].age
+                cell.genderLabel.text = self.userProfileArray[0].gender
+                
+                DispatchQueue.main.async {
+                    
+                    if let url = URL(string: self.userProfileArray[0].picture) {
+                        
+                        do {
+                            
+                            let data = try Data(contentsOf: url)
+                            let image = UIImage(data: data)
+                            cell.profilePicture.image = image
+                        } catch {
+                            
+                            print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
+                        }
+                    }
+                }
+                
+            } else {
+                print("this is currently the profilesarray account: \(self.profilesArray.count)")
+           
+                cell.datePlanLabel.text = "\(self.profilesArray[indexPath.row - 1].name) wants to \(self.statusArray[indexPath.row - 1].dateActivity) \(self.statusArray[indexPath.row - 1].dateTime)"
+                cell.ageLabel.text = self.profilesArray[indexPath.row - 1].age
+                cell.genderLabel.text = self.profilesArray[indexPath.row - 1].gender
+                
+                DispatchQueue.main.async {
+                    
+                    if let url = URL(string: self.profilesArray[indexPath.row - 1].picture) {
+                        
+                        do {
+                            
+                            let data = try Data(contentsOf: url)
+                            let image = UIImage(data: data)
+                            cell.profilePicture.image = image
+                        } catch {
+                            
+                            print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            }
+            
+            returnCell = cell
         }
       
       
-        return cell
+        return returnCell!
     }
     
 }
@@ -134,7 +630,7 @@ extension AvailableDatesViewController: UITableViewDelegate {
             return 40.0
         } else {
             
-            return 160.0
+            return 80.0
         }
     }
     
@@ -143,6 +639,43 @@ extension AvailableDatesViewController: UITableViewDelegate {
         let confirmMatchAlert = UIAlertController(title: "Great Stuff!", message: "Are you sure you want to match with this person?", preferredStyle: .alert)
         let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
             
+            db.collection("users").document(firebaseID).collection("expiringRequests").document(statusArray[indexPath.row - 1].daterID).setData([
+                "timeStamp": Date(),
+                "userID": statusArray[indexPath.row - 1].daterID
+            ]) { err in
+                
+                if let err = err {
+                    print("error writing doc: \(err)")
+                } else {
+                    print("doc written successfully.")
+                }
+            }
+            
+            db.collection("users").document(statusArray[indexPath.row - 1].daterID).collection("matchStatuses").document(firebaseID).setData([
+                "name" : self.userProfileArray[0].name,
+                "imageURL" : self.userProfileArray[0].picture,
+                    "activity" : dateActivity,
+                    "time" : dateTime,
+                    "ID" : firebaseID,
+                    "age" : self.userProfileArray[0].age,
+                    "gender" : self.userProfileArray[0].gender,
+                "accepted" : false,
+                "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken")
+            ]) { err in
+                if let err = err {
+                    print("error writing doc: \(err)")
+                } else {
+                    print("doc written successfully.")
+                }
+            }
+            
+            var daterID = statusArray[indexPath.row - 1].daterID
+            
+            Task.init {
+                
+                try await addNotification(daterID: daterID, firebaseID: firebaseID)
+            }
+
             let docRef1 = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
             
             print(db.collection("statuses").document(statusArray[indexPath.row - 1].dateActivity))
@@ -176,8 +709,7 @@ extension AvailableDatesViewController: UITableViewDelegate {
                     "tapperID": field,
                     "tappedID": passedID
                 ]
-                
-                
+   
                
                 myFunctions.httpsCallable("notifyUser").call(data) { result, error in
                     
@@ -191,6 +723,10 @@ extension AvailableDatesViewController: UITableViewDelegate {
                 
             
             }
+            
+            self.statusArray.remove(at: indexPath.row - 1)
+            self.profilesArray.remove(at: indexPath.row - 1)
+            self.availableDatesTable.reloadData()
   
 
         }

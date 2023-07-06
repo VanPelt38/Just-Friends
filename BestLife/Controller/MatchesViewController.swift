@@ -223,6 +223,15 @@ extension MatchesViewController: UITableViewDataSource {
 
 extension MatchesViewController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+
+       
+            
+            return 176.0
+        
+    }
+
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if matchesArray[indexPath.row].accepted == true {

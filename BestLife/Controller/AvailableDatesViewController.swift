@@ -9,6 +9,7 @@ import UIKit
 import Firebase
 import FirebaseFunctions
 import FirebaseAuth
+import CoreLocation
 
 
 class AvailableDatesViewController: UIViewController {
@@ -37,6 +38,7 @@ class AvailableDatesViewController: UIViewController {
     var firebaseID = ""
     var notificationCount = 0
     var ownMatchStatus = MatchModel()
+    var location = CLLocation()
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -103,7 +105,7 @@ class AvailableDatesViewController: UIViewController {
         super.viewDidLoad()
         
        
-        
+        print(location)
        
         loadUserProfile()
         
@@ -289,11 +291,14 @@ class AvailableDatesViewController: UIViewController {
             for doc in querySnapshot.documents {
                         
                         let data = doc.data()
-                        if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String {
-                            let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken)
+                        if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double {
+                            let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken, latitude: latitude, longitude: longitude)
                             self.statusArray.append(newStatus)
                             returnArray.append(newStatus)
                             print("returnarray count directly afterloading: \(returnArray.count)")
+                            
+                            self.statusArray = filterMatchLocations()
+                            returnArray = self.statusArray
                             
                             
                             var expiredIDs: [String] = []
@@ -530,6 +535,28 @@ class AvailableDatesViewController: UIViewController {
         
             }
     
+    func filterMatchLocations() -> [DatePlanModel] {
+        
+    var filteredArray: [DatePlanModel] = []
+        var userLocation = CLLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+        
+        for matchStatus in self.statusArray {
+            
+            var matchLocation = CLLocation(latitude: matchStatus.latitude, longitude: matchStatus.longitude)
+           
+            if matchLocation.distance(from: userLocation) <= UserDefaults.standard.value(forKey: "distancePreference") as! CLLocationDistance {
+                
+                filteredArray.append(matchStatus)
+            }
+            
+        }
+        
+        
+        
+        return filteredArray
+    }
+    
+    
 }
 
 //MARK: - TableView Data Source Methods
@@ -558,36 +585,30 @@ extension AvailableDatesViewController: UITableViewDataSource {
             print("Loading... loaded")
             returnCell = cell
         } else {
-            
-            
-            let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
-            cell.acceptedButton.isHidden = true
-            cell.rejectedButton.isHidden = true
+ 
             
             if indexPath.row == 0 {
                 
-                cell.datePlanLabel.text = "\(self.userProfileArray[0].name) wants to \(dateActivity) \(dateTime)"
-                cell.ageLabel.text = self.userProfileArray[0].age
-                cell.genderLabel.text = self.userProfileArray[0].gender
+                let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "dateCell", for: indexPath)
                 
-                DispatchQueue.main.async {
-                    
-                    if let url = URL(string: self.userProfileArray[0].picture) {
-                        
-                        do {
-                            
-                            let data = try Data(contentsOf: url)
-                            let image = UIImage(data: data)
-                            cell.profilePicture.image = image
-                        } catch {
-                            
-                            print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
-                        }
-                    }
-                }
+                cell.textLabel!.text = "I want to \(dateActivity) \(dateTime)"
+                cell.textLabel!.textAlignment = .center
+                cell.layer.backgroundColor = CGColor(red: 67.8, green: 84.7, blue: 90.2, alpha: 1.0)
+                let lightBlue = UIColor(red: 240/255, green: 248/255, blue: 255/255, alpha: 1.0)
+                cell.backgroundColor = lightBlue
+                cell.isUserInteractionEnabled = false
+                
+                
+                returnCell = cell
                 
             } else {
+                
                 print("this is currently the profilesarray account: \(self.profilesArray.count)")
+                
+                let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
+                
+                cell.acceptedButton.isHidden = true
+                cell.rejectedButton.isHidden = true
            
                 cell.datePlanLabel.text = "\(self.profilesArray[indexPath.row - 1].name) wants to \(self.statusArray[indexPath.row - 1].dateActivity) \(self.statusArray[indexPath.row - 1].dateTime)"
                 cell.ageLabel.text = self.profilesArray[indexPath.row - 1].age
@@ -608,9 +629,11 @@ extension AvailableDatesViewController: UITableViewDataSource {
                         }
                     }
                 }
+                
+                returnCell = cell
             }
             
-            returnCell = cell
+            
         }
       
       
@@ -624,13 +647,13 @@ extension AvailableDatesViewController: UITableViewDataSource {
 extension AvailableDatesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
+
         if indexPath.row == 0 {
             
-            return 40.0
+            return 44.0
         } else {
             
-            return 80.0
+            return 176.0
         }
     }
     

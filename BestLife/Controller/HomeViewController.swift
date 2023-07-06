@@ -20,6 +20,29 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setDistancePreference()
+        
+        
+        
+        if let tabBarController = self.tabBarController {
+
+
+            if let tabItems = tabBarController.tabBar.items {
+
+                var varTabItems = tabItems
+
+                let firstTabBarItem = varTabItems[0]
+                firstTabBarItem.image = UIImage(systemName: "house.fill")
+              
+                var secondTabBarItem = varTabItems[1]
+                secondTabBarItem.image = UIImage(systemName: "mail")
+
+                var thirdTabBarItem = varTabItems[2]
+                thirdTabBarItem.image = UIImage(systemName: "gearshape")
+
+            }
+        }
        
         let userID = IDgenerator()
         
@@ -28,6 +51,21 @@ class HomeViewController: UIViewController {
         
         saveID(userID: userID)
     }
+    
+    @IBAction func profilePressed(_ sender: UIButton) {
+        
+        performSegue(withIdentifier: "homeProfileSeg", sender: self)
+    }
+    
+    func setDistancePreference() {
+        
+        if UserDefaults.standard.value(forKey: "distancePreference") == nil {
+            UserDefaults.standard.set(10000, forKey: "distancePreference")
+        }
+        
+    }
+    
+    
     
     func IDgenerator() -> String {
         

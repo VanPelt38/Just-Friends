@@ -9,6 +9,7 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
+import CoreLocation
 
 class DatePlanViewController: UIViewController {
     
@@ -20,13 +21,15 @@ class DatePlanViewController: UIViewController {
     private let possibleDates = ["Today", "Tonight", "Tomorrow"]
     private var timeChosen = "none"
     var firebaseID = ""
+    let locationManager = CLLocationManager()
+   
     
     private let db = Firestore.firestore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    
+       startLocationServices()
         
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
@@ -41,6 +44,8 @@ class DatePlanViewController: UIViewController {
     
     
     @IBAction func seePartnersPressed(_ sender: UIButton) {
+        
+        print(locationManager.location?.coordinate.latitude)
         
         var docsArray: [QueryDocumentSnapshot] = []
     let userID = UserDefaults.standard.object(forKey: "uniqueID")
@@ -77,7 +82,9 @@ class DatePlanViewController: UIViewController {
                             "activity": safeActivity,
                             "time": timeChosen,
                             "userID": firebaseID,
-                            "fcmToken": UserDefaults.standard.object(forKey: "fcmToken")
+                            "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
+                            "latitude": locationManager.location?.coordinate.latitude,
+                            "longitude": locationManager.location?.coordinate.longitude
                         ]) { (error) in
                             
                             if let e = error {
@@ -105,7 +112,9 @@ class DatePlanViewController: UIViewController {
                             "activity": safeActivity,
                             "time": timeChosen,
                             "userID": firebaseID,
-                            "fcmToken": UserDefaults.standard.object(forKey: "fcmToken")
+                            "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
+                            "latitude": locationManager.location?.coordinate.latitude,
+                            "longitude": locationManager.location?.coordinate.longitude
                         ]) { err in
                             
                             if let err = err {
@@ -135,9 +144,13 @@ class DatePlanViewController: UIViewController {
         
         if segue.identifier == "dateAvailableSeg" {
             
-            let destinationVC = segue.destination as! AvailableDatesViewController
-            destinationVC.dateActivity = datePlanModel.dateActivity
-            destinationVC.dateTime = datePlanModel.dateTime
+            if let safeLocation = locationManager.location {
+                
+                let destinationVC = segue.destination as! AvailableDatesViewController
+                destinationVC.dateActivity = datePlanModel.dateActivity
+                destinationVC.dateTime = datePlanModel.dateTime
+                destinationVC.location = safeLocation
+            }
             
         }
     }
@@ -190,6 +203,26 @@ extension DatePlanViewController: UIPickerViewDelegate {
         
         timeChosen = possibleDates[row]
         
+    }
+    
+}
+
+
+extension DatePlanViewController: CLLocationManagerDelegate {
+    
+    func startLocationServices() {
+
+        locationManager.delegate = self
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+
+        } else {
+
+            locationManager.startUpdatingLocation()
+
+            guard let currentLocation = locationManager.location else { return }
+ 
+        }
     }
     
 }

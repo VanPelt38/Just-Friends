@@ -11,6 +11,9 @@
 		230284382A0852FD009EBDFC /* DatePlanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230284362A0852FD009EBDFC /* DatePlanCell.swift */; };
 		230284392A0852FD009EBDFC /* DatePlanCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 230284372A0852FD009EBDFC /* DatePlanCell.xib */; };
 		23168E132A180C90009C0AD1 /* ExpiringMatchesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23168E122A180C90009C0AD1 /* ExpiringMatchesModel.swift */; };
+		2318081A2A530ACF0051012B /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231808192A530ACF0051012B /* SettingsViewController.swift */; };
+		2318081C2A5311D30051012B /* DistanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081B2A5311D30051012B /* DistanceViewController.swift */; };
+		2318081E2A53152C0051012B /* MyProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081D2A53152C0051012B /* MyProfileViewController.swift */; };
 		23361C3229DCC4F7006D2410 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 23361C3129DCC4F7006D2410 /* FirebaseFunctions */; };
 		2341E60C2A423BE400619EE0 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2341E60B2A423BE400619EE0 /* MessageModel.swift */; };
 		2350108729B474E0007A3BBA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 2350108629B474E0007A3BBA /* FirebaseMessaging */; };
@@ -42,6 +45,9 @@
 		230284362A0852FD009EBDFC /* DatePlanCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePlanCell.swift; sourceTree = "<group>"; };
 		230284372A0852FD009EBDFC /* DatePlanCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DatePlanCell.xib; sourceTree = "<group>"; };
 		23168E122A180C90009C0AD1 /* ExpiringMatchesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpiringMatchesModel.swift; sourceTree = "<group>"; };
+		231808192A530ACF0051012B /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		2318081B2A5311D30051012B /* DistanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceViewController.swift; sourceTree = "<group>"; };
+		2318081D2A53152C0051012B /* MyProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProfileViewController.swift; sourceTree = "<group>"; };
 		2341E60B2A423BE400619EE0 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
 		2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
 		237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetUpViewController.swift; sourceTree = "<group>"; };
@@ -150,6 +156,9 @@
 				23D2AB05294B7EFC0083BA22 /* AvailableDatesViewController.swift */,
 				23D2AB07294B7F1D0083BA22 /* MatchesViewController.swift */,
 				23D2AB09294B7F350083BA22 /* ChatViewController.swift */,
+				231808192A530ACF0051012B /* SettingsViewController.swift */,
+				2318081B2A5311D30051012B /* DistanceViewController.swift */,
+				2318081D2A53152C0051012B /* MyProfileViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -255,6 +264,8 @@
 				23D2AB04294B7E970083BA22 /* DatePlanViewController.swift in Sources */,
 				230284382A0852FD009EBDFC /* DatePlanCell.swift in Sources */,
 				230209C12A2D47AD00600B48 /* MatchModel.swift in Sources */,
+				2318081E2A53152C0051012B /* MyProfileViewController.swift in Sources */,
+				2318081C2A5311D30051012B /* DistanceViewController.swift in Sources */,
 				2341E60C2A423BE400619EE0 /* MessageModel.swift in Sources */,
 				23168E132A180C90009C0AD1 /* ExpiringMatchesModel.swift in Sources */,
 				23D2AAE8293EA5100083BA22 /* AppDelegate.swift in Sources */,
@@ -262,6 +273,7 @@
 				23D2AAEA293EA5100083BA22 /* SceneDelegate.swift in Sources */,
 				23B4F732294B8F5100C9DFB5 /* LoginViewController.swift in Sources */,
 				23D2AAF2293EA5100083BA22 /* BestLife.xcdatamodeld in Sources */,
+				2318081A2A530ACF0051012B /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

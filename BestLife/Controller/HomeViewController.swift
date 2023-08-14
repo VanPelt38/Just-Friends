@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import Kingfisher
 
 class HomeViewController: UIViewController {
 
@@ -18,8 +19,16 @@ class HomeViewController: UIViewController {
     private let db = Firestore.firestore()
     var profileArray: [ProfileModel] = []
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        loadProfile()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         
         setDistancePreference()
         
@@ -46,7 +55,7 @@ class HomeViewController: UIViewController {
        
         let userID = IDgenerator()
         
-        loadProfile()
+       
     
         
         saveID(userID: userID)
@@ -126,9 +135,12 @@ class HomeViewController: UIViewController {
                                     
                                     do {
                                         
-                                        let data = try Data(contentsOf: url)
-                                        let image = UIImage(data: data)
-                                        self.profilePicture.image = image
+                                        self.profilePicture.kf.setImage(with: url)
+                                        
+                                        
+//                                        let data = try Data(contentsOf: url)
+//                                        let image = UIImage(data: data)
+//                                        self.profilePicture.image = image
                                     } catch {
                                         
                                         print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")

@@ -128,6 +128,7 @@ class ProfileSetUpViewController: UIViewController {
         let storage = Storage.storage()
         let storageRef = storage.reference()
         let imageFileName = "\(UUID().uuidString).jpg"
+        UserDefaults.standard.set(imageFileName, forKey: "profilePicRef")
         let imageRef = storageRef.child("images/\(imageFileName)")
         
         let uploadTask = imageRef.putData(imageData, metadata: nil) { metadata, error in

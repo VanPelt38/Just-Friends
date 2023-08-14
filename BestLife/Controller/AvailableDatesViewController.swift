@@ -39,6 +39,7 @@ class AvailableDatesViewController: UIViewController {
     var notificationCount = 0
     var ownMatchStatus = MatchModel()
     var location = CLLocation()
+    var passedMatchProfile = ProfileModel()
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -219,6 +220,13 @@ class AvailableDatesViewController: UIViewController {
             
             destinationVC.ownMatch = ownMatchStatus
             
+        }
+        
+        if segue.identifier == "availableMatchProfileSeg" {
+            
+            let destinationVC = segue.destination as! MatchProfileViewController
+            
+            destinationVC.matchProfile = self.passedMatchProfile
         }
     }
     
@@ -607,6 +615,8 @@ extension AvailableDatesViewController: UITableViewDataSource {
                 
                 let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
                 
+                cell.delegate = self
+                cell.indexPath = indexPath
                 cell.acceptedButton.isHidden = true
                 cell.rejectedButton.isHidden = true
            
@@ -759,4 +769,23 @@ extension AvailableDatesViewController: UITableViewDelegate {
         confirmMatchAlert.addAction(nopeAction)
         present(confirmMatchAlert, animated: true)
     }
+}
+
+
+extension AvailableDatesViewController: CustomTableViewCellDelegate {
+    
+    
+    func customTableViewCellDidTapButton(_ cell: DatePlanCell, indexPath: IndexPath, buttonName: String) async {
+
+        if buttonName == "viewProfileButton" {
+            
+            passedMatchProfile.age = profilesArray[indexPath.row - 1].age
+            passedMatchProfile.name = profilesArray[indexPath.row - 1].name
+            passedMatchProfile.gender = profilesArray[indexPath.row - 1].gender
+            passedMatchProfile.picture = profilesArray[indexPath.row - 1].picture
+            
+            performSegue(withIdentifier: "availableMatchProfileSeg", sender: self)
+        }
+    }
+    
 }

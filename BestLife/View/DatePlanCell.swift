@@ -49,6 +49,18 @@ class DatePlanCell: UITableViewCell {
         
     }
     
+    @IBOutlet weak var viewProfileButton: UIButton!
+    
+    @IBAction func viewProfilePressed(_ sender: UIButton) {
+        
+        print("this is working")
+        
+        if let indexPath = indexPath {
+            Task.init {
+                await delegate?.customTableViewCellDidTapButton(self, indexPath: indexPath, buttonName: "viewProfileButton")
+            }
+        }
+    }
     
     
     override func awakeFromNib() {

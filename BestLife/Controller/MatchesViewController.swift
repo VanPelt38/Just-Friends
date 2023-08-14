@@ -22,6 +22,7 @@ class MatchesViewController: UIViewController {
     let db = Firestore.firestore()
     var ownMatch = MatchModel()
     var matchIDForChat = ""
+    var passedMatchProfile = ProfileModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,6 +105,33 @@ class MatchesViewController: UIViewController {
         }
     }
     
+    func deleteMatch(indexPath: Int) async {
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+        
+        let userCopy = db.collection("users").document(firebaseID).collection("matchStatuses").document(matchesArray[indexPath].ID)
+        
+        do {
+           try await userCopy.delete()
+        } catch {
+            print(error)
+        }
+        
+        let matchCopy = db.collection("users").document(matchesArray[indexPath].ID).collection("matchStatuses").document(firebaseID)
+        
+        do {
+           try await matchCopy.delete()
+        } catch {
+            print(error)
+        }
+        
+        matchesArray.remove(at: indexPath)
+           }
+    
     
     func addNotification(daterID: String, firebaseID: String) async {
         
@@ -156,6 +184,14 @@ class MatchesViewController: UIViewController {
             destinationVC.matchID = matchIDForChat
             
         }
+        
+        if segue.identifier == "matchesMatchProfileSeg" {
+            
+            let destinationVC = segue.destination as! MatchProfileViewController
+            
+            destinationVC.matchProfile = self.passedMatchProfile
+        }
+
     }
 
     func IDgenerator() -> String {
@@ -217,18 +253,48 @@ extension MatchesViewController: UITableViewDataSource {
         return cell
     }
     
-    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == .delete {
+            
+            let confirmDeleteAlert = UIAlertController(title: "Sure?", message: "", preferredStyle: .alert)
+            let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
+                
+//                let asyncHandler: @convention(block) (UIAlertAction) -> Void = { [self] _ in
+                    
+                    Task.init {
+                        await deleteMatch(indexPath: indexPath.row)
+                        
+                        
+                        matchesTableView.deleteRows(at: [indexPath], with: .fade)
+                        
+                        DispatchQueue.main.async {
+                            
+                            self.matchesTableView.reloadData()
+                        }
+                    }
+//                }
+                
+//                asyncHandler(alertAction)
+                
+                
+            }
+            
+            let nopeAction = UIAlertAction(title: "No", style: .default)
+            confirmDeleteAlert.addAction(okayAction)
+            confirmDeleteAlert.addAction(nopeAction)
+            present(confirmDeleteAlert, animated: true)
+            }
+ 
+        }
+
     
 }
 
 extension MatchesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-
-       
-            
             return 176.0
-        
     }
 
     
@@ -391,6 +457,14 @@ extension MatchesViewController: CustomTableViewCellDelegate {
             confirmAcceptAlert.addAction(nopeAction)
             present(confirmAcceptAlert, animated: true)
             
+        } else if buttonName == "viewProfileButton" {
+            
+            passedMatchProfile.age = matchesArray[indexPath.row].age
+            passedMatchProfile.name = matchesArray[indexPath.row].name
+            passedMatchProfile.gender = matchesArray[indexPath.row].gender
+            passedMatchProfile.picture = matchesArray[indexPath.row].imageURL
+            
+            performSegue(withIdentifier: "matchesMatchProfileSeg", sender: self)
         }
         
     

@@ -40,14 +40,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vfv-7a-DN8">
-                                <rect key="frame" x="108" y="37" width="107" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="tinted" title="VIEW PROFILE">
-                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="8"/>
-                                </buttonConfiguration>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Gender" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7hE-qk-bTO">
                                 <rect key="frame" x="245" y="38" width="45" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -55,6 +47,17 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vfv-7a-DN8">
+                                <rect key="frame" x="107" y="36" width="107" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="tinted" title="VIEW PROFILE">
+                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="8"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="viewProfilePressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ut7-mF-9BI"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
@@ -86,6 +89,7 @@
                 <outlet property="genderLabel" destination="7hE-qk-bTO" id="JFV-yO-Ocd"/>
                 <outlet property="profilePicture" destination="1uN-ta-svb" id="UhL-eU-r3X"/>
                 <outlet property="rejectedButton" destination="gDv-Vm-kwC" id="n0y-uu-iL5"/>
+                <outlet property="viewProfileButton" destination="vfv-7a-DN8" id="DKC-Ns-Ria"/>
             </connections>
             <point key="canvasLocation" x="138.93129770992365" y="19.718309859154932"/>
         </tableViewCell>

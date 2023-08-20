@@ -740,8 +740,10 @@ extension AvailableDatesViewController: UITableViewDelegate {
                 
                 let data: [String: Any] = [
                     "tapperID": field,
-                    "tappedID": passedID
+                    "tappedID": passedID!
                 ]
+                
+                print("this is tapped id: \(passedID)")
    
                
                 myFunctions.httpsCallable("notifyUser").call(data) { result, error in

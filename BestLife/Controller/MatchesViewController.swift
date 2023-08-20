@@ -28,13 +28,9 @@ class MatchesViewController: UIViewController {
         super.viewDidLoad()
         
         Task.init {
-            do {
-                try await deleteNotifications()
-                try await loadMatches()
-            } catch {
-                print(error)
-            }
-            
+                await deleteNotifications()
+                await loadUserDetails()
+                await loadMatches()
         }
 
         matchesTableView.delegate = self
@@ -42,6 +38,40 @@ class MatchesViewController: UIViewController {
         matchesTableView.dataSource = self
         
         
+    }
+    
+    func loadUserDetails() async {
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+            
+        let currentCollection = db.collection("users").document(firebaseID).collection("profile")
+        let secondCollection = db.collection("statuses")
+        let query = secondCollection.whereField("userID", isEqualTo: firebaseID)
+
+            do {
+                let querySnapshot = try await currentCollection.getDocuments()
+                let secondSnapshot = try await query.getDocuments()
+                
+                var profileDict: [String: Any] = [:]
+                var statusDict: [String: Any] = [:]
+                
+                for doc in querySnapshot.documents {
+                    profileDict = doc.data()
+                    }
+                for doc in secondSnapshot.documents {
+                    statusDict = doc.data()
+                }
+                
+                var myProfile = MatchModel(name: profileDict["name"] as! String, age: profileDict["age"] as! String, gender: profileDict["gender"] as! String, imageURL: profileDict["picture"] as! String, dateActivity: statusDict["activity"] as! String , dateTime: statusDict["time"] as! String, ID: profileDict["userID"] as! String, accepted: false, fcmToken: statusDict["fcmToken"] as! String, chatID: "")
+                ownMatch = myProfile
+
+            } catch {
+                print(error)
+            }
     }
     
     func deleteNotifications() async {
@@ -371,14 +401,16 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                 
                 
                 let chatID = IDgenerator()
-                
+                matchIDForChat = matchesArray[indexPath.row].ID
                 let myFunctions = Functions.functions()
                 
-                
+                print(matchesArray[indexPath.row])
                 let data: [String: Any] = [
                     "suitor": matchesArray[indexPath.row].fcmToken,
                     "suitee": self.firebaseID
                 ]
+                
+                print("this is data: \(data)")
    
                
                 myFunctions.httpsCallable("confirmMatch").call(data) { result, error in
@@ -386,7 +418,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                         if let error = error {
                             print("Error calling function: \(error.localizedDescription)")
                         } else if let result = result {
-                            print("Function result: \(result.data ?? "")")
+                            print("Function result: \(result.data)")
                         }
                     }
                 
@@ -435,7 +467,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                         
                         var daterID = matchesArray[indexPath.row].ID
                         
-                        try await addNotification(daterID: daterID, firebaseID: firebaseID)
+                        await addNotification(daterID: daterID, firebaseID: firebaseID)
   
                         
                         DispatchQueue.main.async { [self] in

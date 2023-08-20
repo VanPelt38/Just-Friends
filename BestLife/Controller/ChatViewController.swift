@@ -31,10 +31,9 @@ class ChatViewController: UIViewController {
         sortedCurrentMessages = []
         
         Task.init {
-            try await loadMatchDetails(matchID)
-            try await loadChatMessages()
+            await loadMatchDetails(matchID)
+            await loadChatMessages()
 
-            print("this is matchdetails.chatId right before setting up snapshot: \(matchDetails.chatID)")
             db.collection("chats").document(matchDetails.chatID).collection("messages").addSnapshotListener { [self] snapshot, error in
                 
                 guard let snapshot = snapshot else {
@@ -85,11 +84,7 @@ class ChatViewController: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
-        
-        
-        
-        
-        
+  
     }
     
     
@@ -138,8 +133,7 @@ class ChatViewController: UIViewController {
     }
     
     func loadChatMessages() async {
-        
-        print("load chat is triggered")
+
         self.currentMessages = []
         self.sortedCurrentMessages = []
             

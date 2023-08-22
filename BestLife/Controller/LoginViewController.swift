@@ -21,9 +21,19 @@ class LoginViewController: UIViewController {
         emailTextField.delegate = self
         passwordTextField.delegate = self
         
+        setUpViewColour()
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
 
+    }
+    
+    func setUpViewColour() {
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = self.view.bounds
+        gradientLayer.colors = [UIColor.systemBlue.cgColor, UIColor.systemIndigo.cgColor]
+        self.view.layer.insertSublayer(gradientLayer, at: 0)
     }
   
     @IBAction func loginButton(_ sender: UIButton) {

@@ -553,14 +553,9 @@ class AvailableDatesViewController: UIViewController {
             var matchLocation = CLLocation(latitude: matchStatus.latitude, longitude: matchStatus.longitude)
            
             if matchLocation.distance(from: userLocation) <= UserDefaults.standard.value(forKey: "distancePreference") as! CLLocationDistance {
-                
                 filteredArray.append(matchStatus)
             }
-            
         }
-        
-        
-        
         return filteredArray
     }
     
@@ -611,8 +606,6 @@ extension AvailableDatesViewController: UITableViewDataSource {
                 
             } else {
                 
-                print("this is currently the profilesarray account: \(self.profilesArray.count)")
-                
                 let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
                 
                 cell.delegate = self
@@ -642,14 +635,9 @@ extension AvailableDatesViewController: UITableViewDataSource {
                 
                 returnCell = cell
             }
-            
-            
         }
-      
-      
         return returnCell!
     }
-    
 }
 
 //MARK: - TableView Delegate Methods
@@ -705,13 +693,10 @@ extension AvailableDatesViewController: UITableViewDelegate {
             var daterID = statusArray[indexPath.row - 1].daterID
             
             Task.init {
-                
-                try await addNotification(daterID: daterID, firebaseID: firebaseID)
+                await addNotification(daterID: daterID, firebaseID: firebaseID)
             }
 
             let docRef1 = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
-            
-            print(db.collection("statuses").document(statusArray[indexPath.row - 1].dateActivity))
             
             let tappedPersonID = statusArray[indexPath.row - 1].daterID
             let docRef = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
@@ -742,8 +727,6 @@ extension AvailableDatesViewController: UITableViewDelegate {
                     "tapperID": field,
                     "tappedID": passedID!
                 ]
-                
-                print("this is tapped id: \(passedID)")
    
                
                 myFunctions.httpsCallable("notifyUser").call(data) { result, error in
@@ -751,7 +734,7 @@ extension AvailableDatesViewController: UITableViewDelegate {
                         if let error = error {
                             print("Error calling function: \(error.localizedDescription)")
                         } else if let result = result {
-                            print("Function result: \(result.data ?? "")")
+                            print("Function result: \(result.data)")
                         }
                     }
                 

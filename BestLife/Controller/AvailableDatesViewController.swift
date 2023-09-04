@@ -489,12 +489,20 @@ class AvailableDatesViewController: UIViewController {
         for expiringMatch in newArray {
             
             let currentTime = Date()
-            var matchTimeStamp = expiringMatch.timeStamp!.addingTimeInterval(10800)
+            let matchTimeStamp = expiringMatch.timeStamp!.addingTimeInterval(10800)
 
             
             if matchTimeStamp > currentTime {
                 
                 returnArray.append(expiringMatch)
+            } else {
+                let deleteMatchRef = db.collection("users").document(firebaseID).collection("expiringRequests").document(expiringMatch.userID)
+                
+                do {
+                    try await deleteMatchRef.delete()
+                } catch {
+                    print("error deleting expired match: \(error)")
+                }
             }
         }
         

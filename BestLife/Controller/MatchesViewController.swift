@@ -75,9 +75,7 @@ class MatchesViewController: UIViewController {
     }
     
     func deleteNotifications() async {
-        
-        
-        
+
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
         } else {
@@ -157,6 +155,14 @@ class MatchesViewController: UIViewController {
            try await matchCopy.delete()
         } catch {
             print(error)
+        }
+        
+        let chatRef = db.collection("chats").document(matchesArray[indexPath].chatID)
+        
+        do {
+            try await chatRef.delete()
+        } catch {
+            print("error deleting chat: \(error)")
         }
         
         matchesArray.remove(at: indexPath)

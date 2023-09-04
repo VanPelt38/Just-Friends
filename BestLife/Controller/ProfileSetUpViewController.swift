@@ -18,13 +18,14 @@ class ProfileSetUpViewController: UIViewController {
     
     @IBOutlet weak var nameTextField: UITextField!
     
-    @IBOutlet weak var ageTextField: UITextField!
+    @IBOutlet weak var ageDatePicker: UIDatePicker!
     
     @IBOutlet weak var maleCheck: UIImageView!
     
     @IBOutlet weak var femaleCheck: UIImageView!
     
     var isImageChosen = false
+    var isAgeChosen = false
     var gender: String?
     var imageString: String?
     var userID: String?
@@ -41,13 +42,12 @@ class ProfileSetUpViewController: UIViewController {
             print("no user is currently signed in")
         }
         
-       
+       setUpDatePicker()
         
         maleCheck.isHidden = true
         femaleCheck.isHidden = true
 
         nameTextField.delegate = self
-        ageTextField.delegate = self
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
@@ -79,42 +79,49 @@ class ProfileSetUpViewController: UIViewController {
     
     @IBAction func profileCompletePressed(_ sender: UIButton) {
         
-        if isImageChosen == true && nameTextField.text != "" && ageTextField.text != "" && gender != nil {
-            
-            
-            DispatchQueue.main.async { [self] in
-                
-                if let userName = nameTextField.text, let imageURL = imageString, let age = ageTextField.text, let userGender = gender, let id = userID {
+        if isImageChosen == true && nameTextField.text != "" && isAgeChosen == true && gender != nil {
+
+            if let userName = nameTextField.text, let imageURL = imageString, let userGender = gender, let id = userID {
                    
-                    db.collection("users").document(id).collection("profile").document("profile").setData([
-                        "age": age,
-                        "gender": userGender,
-                        "name": userName,
-                        "picture": imageURL,
-                        "userID": id
-                    ]) { (error) in
-                        
-                        if let e = error {
-                            print("There was an issue saving data to firestore, \(e)")
-                        } else {
-                            
-                            print("Successfully saved data.")
-                            
-                        }
+                    Task.init {
+                        await saveProfile(userName: userName, imageURL: imageURL, age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
+                        await flagProfileSetUp(id: id)
+                        self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
                     }
                 }
-                
-            }
-            
-            UserDefaults.standard.set(true, forKey: "profileSetUpComplete")
-            
-            self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
         } else {
             
             let alert = UIAlertController(title: "Profile Incomplete!", message: "Please fill out everything before proceeding.", preferredStyle: .alert)
             let okayAction = UIAlertAction(title: "Okay", style: .default)
             alert.addAction(okayAction)
             present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func saveProfile(userName: String, imageURL: String, age: Int, userGender: String, id: String) async {
+        
+        do {
+            try await db.collection("users").document(id).collection("profile").document("profile").setData([
+                "age": age,
+                "gender": userGender,
+                "name": userName,
+                "picture": imageURL,
+                "userID": id
+            ])
+        } catch {
+            print("There was an issue saving data to firestore, \(error)")
+        }
+    }
+    
+    func flagProfileSetUp(id: String) async {
+        
+        let userCollection = self.db.collection("users").document(id).collection("registration").document(id)
+        do {
+            try await userCollection.setData([
+                "profileSetUp" : true
+            ])
+        } catch {
+            print(error)
         }
     }
     
@@ -148,6 +155,32 @@ class ProfileSetUpViewController: UIViewController {
             }
             
         }
+    }
+    
+    func setUpDatePicker() {
+        ageDatePicker.datePickerMode = .date
+        ageDatePicker.locale = Locale(identifier: "en_GB")
+        ageDatePicker.minimumDate = Calendar.current.date(byAdding: .year, value: -150, to: Date())
+        ageDatePicker.maximumDate = Calendar.current.date(byAdding: .year, value: -18, to: Date())
+        ageDatePicker.addTarget(self, action: #selector(didPickDate), for: .valueChanged)
+    }
+    
+    @objc func didPickDate() {
+        isAgeChosen = true
+    }
+    
+    func calculatedAge(date: Date) -> Int {
+        
+        var age = 0
+        
+        let calendar = Calendar.current
+        let currentDate = Date()
+        let dateComponents = calendar.dateComponents([.year], from: date, to: currentDate)
+        if let years = dateComponents.year {
+            age = abs(years)
+            print("Age: \(age)")
+        }
+        return age
     }
     
 }
@@ -189,7 +222,6 @@ extension ProfileSetUpViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     
         nameTextField.endEditing(true)
-        ageTextField.endEditing(true)
         return true
         
     }
@@ -198,9 +230,6 @@ extension ProfileSetUpViewController: UITextFieldDelegate {
         
         nameTextField.resignFirstResponder()
         nameTextField.endEditing(true)
-        
-        ageTextField.resignFirstResponder()
-        ageTextField.endEditing(true)
     }
 
 }

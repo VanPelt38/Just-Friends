@@ -13,6 +13,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseMessaging
 import UserNotifications
+import IQKeyboardManagerSwift
 
 
 
@@ -39,6 +40,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         )
 
         application.registerForRemoteNotifications()
+        
+        IQKeyboardManager.shared.enable = true
+
                 
         return true
     }
@@ -68,6 +72,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
           userInfo: dataDict
         )
         
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler(.banner)
     }
     
    

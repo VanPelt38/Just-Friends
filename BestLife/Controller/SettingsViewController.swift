@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import FirebaseFirestore
+import FirebaseStorage
 
 class SettingsViewController: UIViewController {
     
@@ -35,8 +36,8 @@ class SettingsViewController: UIViewController {
                 print("Error signing out: \(signOutError)")
             }
             if let loginVC = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") {
-                loginVC.modalPresentationStyle = .fullScreen
-                self.present(loginVC, animated: true, completion: nil)
+                loginVC.modalPresentationStyle = .overFullScreen
+                self.present(loginVC, animated: false, completion: nil)
             }
         }
         let nopeAction = UIAlertAction(title: "No", style: .default)
@@ -63,7 +64,7 @@ class SettingsViewController: UIViewController {
                             
                             if let loginVC = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") {
                                 loginVC.modalPresentationStyle = .fullScreen
-                                self.present(loginVC, animated: true, completion: nil)
+                                self.present(loginVC, animated: false, completion: nil)
                                 let confirmDeleteAlert = UIAlertController(title: "Success!", message: "Your account has been deleted.", preferredStyle: .alert)
                                 let okayAction = UIAlertAction(title: "OK", style: .default)
                                 confirmDeleteAlert.addAction(okayAction)
@@ -145,6 +146,20 @@ class SettingsViewController: UIViewController {
             }
         } catch {
             print("error deleting user profile: \(error)")
+        }
+        
+        // Delete profile pic from storage
+        
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let imageRef = UserDefaults.standard.string(forKey: "profilePicRef")
+        if let safeImageRef = imageRef {
+            let storagePath = storageRef.child("images/\(safeImageRef)")
+            do {
+                try await storagePath.delete()
+            } catch {
+                print("error deleting image: \(error)")
+            }
         }
     }
 }

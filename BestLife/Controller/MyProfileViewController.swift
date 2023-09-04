@@ -207,8 +207,6 @@ extension MyProfileViewController: UIImagePickerControllerDelegate {
             }
         }
         picker.dismiss(animated: true, completion: nil)
-     
-        
     }
     
     

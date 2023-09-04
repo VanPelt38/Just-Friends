@@ -18,6 +18,7 @@
 		2341E60C2A423BE400619EE0 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2341E60B2A423BE400619EE0 /* MessageModel.swift */; };
 		2350108729B474E0007A3BBA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 2350108629B474E0007A3BBA /* FirebaseMessaging */; };
 		2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */; };
+		236ED1A72A9E7AA20085F616 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 236ED1A62A9E7AA20085F616 /* IQKeyboardManagerSwift */; };
 		237A4B972A01ACA40065EF6B /* ProfileSetUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */; };
 		237A4B9B2A02FE7C0065EF6B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 237A4B9A2A02FE7C0065EF6B /* FirebaseStorage */; };
 		2385C13129E9B71300EAF12E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2385C13029E9B71300EAF12E /* GoogleService-Info.plist */; };
@@ -84,6 +85,7 @@
 				23DED13C2A57130800C269B8 /* Kingfisher in Frameworks */,
 				23361C3229DCC4F7006D2410 /* FirebaseFunctions in Frameworks */,
 				239A19B2296BB5F1005B6294 /* FirebaseAuth in Frameworks */,
+				236ED1A72A9E7AA20085F616 /* IQKeyboardManagerSwift in Frameworks */,
 				23E30A0829810EC90091202E /* FirebaseFirestore in Frameworks */,
 				237A4B9B2A02FE7C0065EF6B /* FirebaseStorage in Frameworks */,
 			);
@@ -92,9 +94,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		236ED19F2A9E61810085F616 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		23D2AADB293EA5100083BA22 = {
 			isa = PBXGroup;
 			children = (
+				236ED19F2A9E61810085F616 /* Packages */,
 				23D2AAE6293EA5100083BA22 /* BestLife */,
 				23D2AAE5293EA5100083BA22 /* Products */,
 				23E30A0629810EC90091202E /* Frameworks */,
@@ -199,6 +209,7 @@
 				23361C3129DCC4F7006D2410 /* FirebaseFunctions */,
 				237A4B9A2A02FE7C0065EF6B /* FirebaseStorage */,
 				23DED13B2A57130800C269B8 /* Kingfisher */,
+				236ED1A62A9E7AA20085F616 /* IQKeyboardManagerSwift */,
 			);
 			productName = BestLife;
 			productReference = 23D2AAE4293EA5100083BA22 /* BestLife.app */;
@@ -231,6 +242,7 @@
 			packageReferences = (
 				239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				23DED13A2A57130800C269B8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				236ED1A52A9E7AA20085F616 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 			);
 			productRefGroup = 23D2AAE5293EA5100083BA22 /* Products */;
 			projectDirPath = "";
@@ -502,6 +514,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		236ED1A52A9E7AA20085F616 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
 		239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -530,6 +550,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		236ED1A62A9E7AA20085F616 /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 236ED1A52A9E7AA20085F616 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
 		};
 		237A4B9A2A02FE7C0065EF6B /* FirebaseStorage */ = {
 			isa = XCSwiftPackageProductDependency;

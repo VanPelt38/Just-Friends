@@ -9,7 +9,7 @@ import Foundation
 
 struct ProfileModel {
     
-    var age = "none"
+    var age = 0
     var gender = "none"
     var name = "none"
     var picture = "none"

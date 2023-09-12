@@ -68,10 +68,10 @@ class MyProfileViewController: UIViewController {
                     for doc in snapshotDocuments {
                         
                         let data = doc.data()
-                        if let age = data["age"] as? String, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
+                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
                           
                             self.profileDetailsArray.append(name)
-                            self.profileDetailsArray.append(age)
+                            self.profileDetailsArray.append(String(age))
                             self.profileDetailsArray.append(gender)
     
                         

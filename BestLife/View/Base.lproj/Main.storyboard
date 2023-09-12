@@ -421,6 +421,13 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorry - it doesn't seem like anyone's available around you. Expand your distance settings or try again later!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qlp-fM-kTo">
+                                <rect key="frame" x="54" y="291" width="285" height="168"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="eQB-CG-PSi"/>
                         <color key="backgroundColor" red="1" green="0.80495777383523848" blue="0.73657281371732775" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -447,6 +454,7 @@
                     <connections>
                         <outlet property="availableDatesTable" destination="dhV-2w-r2V" id="S7X-aX-G7v"/>
                         <outlet property="matchesButton" destination="f1w-kG-dPr" id="j5E-PC-DPU"/>
+                        <outlet property="nooneAvailableMessage" destination="qlp-fM-kTo" id="wA7-dC-ugE"/>
                         <segue destination="jEv-vw-ndJ" kind="show" identifier="availableMatchesSeg" id="wrL-sU-fes"/>
                         <segue destination="fVY-ud-XHM" kind="show" identifier="availableMatchProfileSeg" id="Nq8-3A-8oR"/>
                     </connections>
@@ -574,7 +582,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Age:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F4D-so-OYy">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Date of Birth:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F4D-so-OYy">
                                 <rect key="frame" x="-13" y="476" width="232" height="87"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="30"/>

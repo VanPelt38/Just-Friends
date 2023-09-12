@@ -81,10 +81,11 @@ class ProfileSetUpViewController: UIViewController {
         
         if isImageChosen == true && nameTextField.text != "" && isAgeChosen == true && gender != nil {
 
-            if let userName = nameTextField.text, let imageURL = imageString, let userGender = gender, let id = userID {
+            if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
                    
                     Task.init {
-                        await saveProfile(userName: userName, imageURL: imageURL, age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
+                        imageString = await uploadImageToFireStorage(picture: image)
+                        await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
                         await flagProfileSetUp(id: id)
                         self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
                     }
@@ -126,10 +127,9 @@ class ProfileSetUpViewController: UIViewController {
     }
     
    
-    func uploadImageToFireStorage(picture: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
+    func uploadImageToFireStorage(picture: UIImage) async -> String {
         guard let imageData = picture.jpegData(compressionQuality: 0.8) else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data."])))
-            return
+            return "Failed to convert image to data."
         }
         
         let storage = Storage.storage()
@@ -138,23 +138,16 @@ class ProfileSetUpViewController: UIViewController {
         UserDefaults.standard.set(imageFileName, forKey: "profilePicRef")
         let imageRef = storageRef.child("images/\(imageFileName)")
         
-        let uploadTask = imageRef.putData(imageData, metadata: nil) { metadata, error in
-            
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                imageRef.downloadURL { url, error in
-                    if let downloadURL = url {
-                        completion(.success(downloadURL.absoluteString))
-                    } else if let error = error {
-                        completion(.failure(error))
-                    } else {
-                        completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Failed to retrieve download URL"])))
-                    }
-                }
-            }
-            
+        do {
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            let uploadTask = try await imageRef.putDataAsync(imageData, metadata: metadata)
+            let downloadURL = try await imageRef.downloadURL()
+            return downloadURL.absoluteString
+        } catch {
+             return "failed to retrieve download url: \(error)"
         }
+        
     }
     
     func setUpDatePicker() {
@@ -192,23 +185,9 @@ extension ProfileSetUpViewController: UIImagePickerControllerDelegate {
         if let pickedImage = info[.originalImage] as? UIImage {
             
             profileImage.image = pickedImage
-            uploadImageToFireStorage(picture: pickedImage) { result in
-                
-                switch result {
-                    
-                case .success(let urlString):
-                    
-                    self.imageString = urlString
-                    
-                case .failure(let error):
-                    
-                    print("Error uploading image: \(error.localizedDescription)")
-                }
-            }
+            picker.dismiss(animated: true, completion: nil)
+            isImageChosen = true
         }
-        picker.dismiss(animated: true, completion: nil)
-        isImageChosen = true
-        
     }
 }
 

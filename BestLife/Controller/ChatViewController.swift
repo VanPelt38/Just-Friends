@@ -45,8 +45,6 @@ class ChatViewController: UIViewController {
                     
                     if change.type == .added {
                         
-                        print("ok something should have been added")
-                        
                         let documentData = change.document.data()
                         
                         if let time = documentData["timeStamp"] as? Timestamp {
@@ -120,7 +118,7 @@ class ChatViewController: UIViewController {
                     for doc in querySnapshot.documents {
                         
                         let data = doc.data()
-                        if let age = data["age"] as? String, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["imageURL"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let activity = data["activity"] as? String, let time = data["time"] as? String, let chatID = data["chatID"] as? String, let fcmToken = data["fcmToken"] as? String {
+                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["imageURL"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let activity = data["activity"] as? String, let time = data["time"] as? String, let chatID = data["chatID"] as? String, let fcmToken = data["fcmToken"] as? String {
                             
                             let newModel = MatchModel(name: name, age: age, gender: gender, imageURL: picture, dateActivity: activity, dateTime: time, ID: userID, accepted: accepted, fcmToken: fcmToken, chatID: chatID)
                             self.matchDetails = newModel
@@ -142,14 +140,12 @@ class ChatViewController: UIViewController {
         do {
             let querySnapshot = try await currentCollection.getDocuments()
            
-                    print("loading the collection worked at least")
-                    print("this is the chatID: \(matchDetails.chatID)")
                     
                 
                         
             for doc in querySnapshot.documents {
                             
-                            print("one message has been loaded up")
+                           
                             
                             let data = doc.data()
                             if let message = data["message"] as? String, let userID = data["ID"] as? String, let timeStamp = data["timeStamp"] as? Timestamp {

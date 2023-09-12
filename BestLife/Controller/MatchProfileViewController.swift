@@ -30,7 +30,7 @@ class MatchProfileViewController: UIViewController {
     func setupProfile() {
         
         profileDetailsArray.append(matchProfile.name)
-        profileDetailsArray.append(matchProfile.age)
+        profileDetailsArray.append(String(matchProfile.age))
         profileDetailsArray.append(matchProfile.gender)
         
         DispatchQueue.main.async { [self] in

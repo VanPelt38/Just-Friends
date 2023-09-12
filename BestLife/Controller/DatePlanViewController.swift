@@ -40,103 +40,113 @@ class DatePlanViewController: UIViewController {
         timePicker.delegate = self
         activityTextField.delegate = self
 
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
+        self.view.addGestureRecognizer(tapGesture)
     }
     
     
     @IBAction func seePartnersPressed(_ sender: UIButton) {
         
-        print(locationManager.location?.coordinate.latitude)
+        if timeChosen == "none" {
+            timeChosen = "Today"
+        }
         
-        var docsArray: [QueryDocumentSnapshot] = []
-    let userID = UserDefaults.standard.object(forKey: "uniqueID")
-        
-        var activity = activityTextField.text
-  
-        
-        DispatchQueue.main.async { [self] in
+        if activityTextField.text != "" && timeChosen != "none" {
             
-            let currentCollection = db.collection("statuses")
-            let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
+            var docsArray: [QueryDocumentSnapshot] = []
+            let userID = UserDefaults.standard.object(forKey: "uniqueID")
             
-            query.getDocuments { [self] querySnapshot, err in
+            var activity = activityTextField.text
+            
+            
+            DispatchQueue.main.async { [self] in
                 
-                if let err = err {
-                    print("Error getting docs: \(err)")
-                } else {
-                    
-                    for doc in querySnapshot!.documents {
-                        
-                        docsArray.append(doc)
-                        
-                        print("this is count of docsarray: \(docsArray.count)")
-                    }
-                }
+                let currentCollection = db.collection("statuses")
+                let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
                 
-                if docsArray.count == 0 {
-                
+                query.getDocuments { [self] querySnapshot, err in
                     
-                    
-                    if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
+                    if let err = err {
+                        print("Error getting docs: \(err)")
+                    } else {
                         
-                        db.collection("statuses").addDocument(data: [
-                            "activity": safeActivity,
-                            "time": timeChosen,
-                            "userID": firebaseID,
-                            "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
-                            "latitude": locationManager.location?.coordinate.latitude,
-                            "longitude": locationManager.location?.coordinate.longitude
-                        ]) { (error) in
+                        for doc in querySnapshot!.documents {
                             
-                            if let e = error {
-                                print("There was an issue saving data to firestore, \(e)")
-                            } else {
+                            docsArray.append(doc)
+                            
+                            print("this is count of docsarray: \(docsArray.count)")
+                        }
+                    }
+                    
+                    if docsArray.count == 0 {
+                        
+                        
+                        
+                        if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
+                            
+                            db.collection("statuses").addDocument(data: [
+                                "activity": safeActivity,
+                                "time": timeChosen,
+                                "userID": firebaseID,
+                                "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
+                                "latitude": locationManager.location?.coordinate.latitude,
+                                "longitude": locationManager.location?.coordinate.longitude
+                            ]) { (error) in
                                 
-                                print("Successfully saved data.")
+                                if let e = error {
+                                    print("There was an issue saving data to firestore, \(e)")
+                                } else {
+                                    
+                                    print("Successfully saved data.")
+                                    
+                                }
+                                
                                 
                             }
                             
                             
                         }
                         
+                    } else {
                         
-                    }
-                    
-                } else {
-                    
-                    if let safeActivity = activity {
-                        
-                        print("this is what the activity is after binding: \(safeActivity)")
-                        
-                        let docname = docsArray[0].documentID
-                        db.collection("statuses").document(docname).setData([
-                            "activity": safeActivity,
-                            "time": timeChosen,
-                            "userID": firebaseID,
-                            "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
-                            "latitude": locationManager.location?.coordinate.latitude,
-                            "longitude": locationManager.location?.coordinate.longitude
-                        ]) { err in
+                        if let safeActivity = activity {
                             
-                            if let err = err {
-                                print("error writing doc: \(err)")
-                            } else {
-                                print("doc written successfully.")
+                            print("this is what the activity is after binding: \(safeActivity)")
+                            
+                            let docname = docsArray[0].documentID
+                            db.collection("statuses").document(docname).setData([
+                                "activity": safeActivity,
+                                "time": timeChosen,
+                                "userID": firebaseID,
+                                "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
+                                "latitude": locationManager.location?.coordinate.latitude,
+                                "longitude": locationManager.location?.coordinate.longitude
+                            ]) { err in
+                                
+                                if let err = err {
+                                    print("error writing doc: \(err)")
+                                } else {
+                                    print("doc written successfully.")
+                                }
                             }
                         }
                     }
                 }
+                
+                
+                
             }
             
+            datePlanModel.dateActivity = activityTextField.text!
+            datePlanModel.dateTime = timeChosen
+            activityTextField.text = ""
             
             
+            performSegue(withIdentifier: "dateAvailableSeg", sender: self)
+        } else {
+            
+            showAlert(title: "Uh oh", message: "Please select a time and activity!")
         }
-    
-        datePlanModel.dateActivity = activityTextField.text!
-        datePlanModel.dateTime = timeChosen
-        activityTextField.text = ""
-        
-        
-        performSegue(withIdentifier: "dateAvailableSeg", sender: self)
         
     }
     
@@ -153,6 +163,14 @@ class DatePlanViewController: UIViewController {
             }
             
         }
+    }
+    
+    func showAlert(title: String, message: String) {
+        
+        let enterValidDetailsAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okayAction = UIAlertAction(title: "Okay", style: .default)
+        enterValidDetailsAlert.addAction(okayAction)
+        self.present(enterValidDetailsAlert, animated: true)
     }
    
 }
@@ -189,7 +207,6 @@ extension DatePlanViewController: UIPickerViewDataSource {
         
         return possibleDates.count
     }
-    
 }
 
 extension DatePlanViewController: UIPickerViewDelegate {

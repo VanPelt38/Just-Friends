@@ -11,7 +11,7 @@ import Foundation
 struct MatchModel {
     
     var name = "none"
-    var age = "none"
+    var age = 0
     var gender = "none"
     var imageURL = "none"
     var dateActivity = "none"

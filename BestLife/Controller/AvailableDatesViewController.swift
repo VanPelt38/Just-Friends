@@ -17,21 +17,15 @@ class AvailableDatesViewController: UIViewController {
 
     
     @IBOutlet weak var matchesButton: UIButton!
-    
-    
     @IBOutlet weak var availableDatesTable: UITableView!
-    
-    
+    @IBOutlet weak var nooneAvailableMessage: UILabel!
     
     let db = Firestore.firestore()
-    
     var statusArray: [DatePlanModel] = []
     var userProfileArray: [ProfileModel] = []
     var profilesArray: [ProfileModel] = []
     var dataLoadedArray: [Bool] = []
     var expiringMatchesArray: [ExpiringMatchesModel] = []
-  
-    
     var ownName = "Jake"
     var dateActivity = "none"
     var dateTime = "none"
@@ -44,9 +38,8 @@ class AvailableDatesViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        
-        print("view will appear has been triggered")
+
+        nooneAvailableMessage.isHidden = true
         
         for subview in matchesButton.subviews {
             
@@ -321,10 +314,8 @@ class AvailableDatesViewController: UIViewController {
                             for (index, status) in statusArray.enumerated() {
                              
                                 if expiredIDs.contains(status.daterID) {
-                                    print("this is deleted statusID: \(status.daterID)")
                                     statusArray.remove(at: index)
                                     returnArray.remove(at: index)
-                                    print("this is statusArray once expiredID is removed: \(statusArray.count)")
                                 }
                                     
                             }
@@ -341,8 +332,6 @@ class AvailableDatesViewController: UIViewController {
             print(error)
         }
             
-        
-        print("this is return array count: \(returnArray.count)")
         return returnArray
     }
     
@@ -370,7 +359,7 @@ class AvailableDatesViewController: UIViewController {
                     for doc in snapshotDocuments {
                         
                         let data = doc.data()
-                        if let age = data["age"] as? String, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
+                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
                             let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
                             self.userProfileArray.append(profile)
                             self.dataLoadedArray.append(true)
@@ -389,9 +378,7 @@ class AvailableDatesViewController: UIViewController {
     }
     
     func loadProfiles(statuses: [DatePlanModel]) async {
-        
-        print("this is statuses count: \(statuses.count)")
-        print("load profiles is being triggered")
+
         profilesArray = []
         
         if let currentUser = Auth.auth().currentUser {
@@ -418,7 +405,7 @@ class AvailableDatesViewController: UIViewController {
                         print("we've got some documents")
                         
                         let data = doc.data()
-                        if let age = data["age"] as? String, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
+                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
                             let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
                             self.profilesArray.append(profile)
                             print("this is the profilesArray count as soon as the data is downloaded: \(self.profilesArray.count)")
@@ -600,6 +587,10 @@ extension AvailableDatesViewController: UITableViewDataSource {
             
             if indexPath.row == 0 {
                 
+                if statusArray.isEmpty {
+                    nooneAvailableMessage.isHidden = false
+                }
+                
                 let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "dateCell", for: indexPath)
                 
                 cell.textLabel!.text = "I want to \(dateActivity) \(dateTime)"
@@ -615,14 +606,14 @@ extension AvailableDatesViewController: UITableViewDataSource {
             } else {
                 
                 let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
-                
+                                
                 cell.delegate = self
                 cell.indexPath = indexPath
                 cell.acceptedButton.isHidden = true
                 cell.rejectedButton.isHidden = true
            
                 cell.datePlanLabel.text = "\(self.profilesArray[indexPath.row - 1].name) wants to \(self.statusArray[indexPath.row - 1].dateActivity) \(self.statusArray[indexPath.row - 1].dateTime)"
-                cell.ageLabel.text = self.profilesArray[indexPath.row - 1].age
+                cell.ageLabel.text = String(self.profilesArray[indexPath.row - 1].age)
                 cell.genderLabel.text = self.profilesArray[indexPath.row - 1].gender
                 
                 DispatchQueue.main.async {
@@ -668,99 +659,131 @@ extension AvailableDatesViewController: UITableViewDelegate {
         let confirmMatchAlert = UIAlertController(title: "Great Stuff!", message: "Are you sure you want to match with this person?", preferredStyle: .alert)
         let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
             
-            db.collection("users").document(firebaseID).collection("expiringRequests").document(statusArray[indexPath.row - 1].daterID).setData([
-                "timeStamp": Date(),
-                "userID": statusArray[indexPath.row - 1].daterID
-            ]) { err in
-                
-                if let err = err {
-                    print("error writing doc: \(err)")
-                } else {
-                    print("doc written successfully.")
-                }
-            }
-            
-            db.collection("users").document(statusArray[indexPath.row - 1].daterID).collection("matchStatuses").document(firebaseID).setData([
-                "name" : self.userProfileArray[0].name,
-                "imageURL" : self.userProfileArray[0].picture,
-                    "activity" : dateActivity,
-                    "time" : dateTime,
-                    "ID" : firebaseID,
-                    "age" : self.userProfileArray[0].age,
-                    "gender" : self.userProfileArray[0].gender,
-                "accepted" : false,
-                "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken")
-            ]) { err in
-                if let err = err {
-                    print("error writing doc: \(err)")
-                } else {
-                    print("doc written successfully.")
-                }
-            }
-            
-            var daterID = statusArray[indexPath.row - 1].daterID
-            
             Task.init {
-                await addNotification(daterID: daterID, firebaseID: firebaseID)
-            }
-
-            let docRef1 = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
-            
-            let tappedPersonID = statusArray[indexPath.row - 1].daterID
-            let docRef = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
-            docRef.updateData(["suitorID" : firebaseID]) { err in
-                if let err = err {
-                    print("error updating field: \(err)")
-                } else {
-                    print("success")
-                }
+                let alreadyMatched = await checkIfAlreadyMatched(indexPath: indexPath)
                 
-            }
-
-            docRef1.addSnapshotListener { documentSnapshot, error in
-                guard let document = documentSnapshot else {
-                    print("Error fetching document: \(error!)")
-                    return
-                }
-                guard let field = document.data()?["suitorID"] as? String else {
-                    print("Field does not exist")
-                    return
-                }
-                print("Current field value: \(field)")
-                
-                let myFunctions = Functions.functions()
-                let passedID = document.data()?["fcmToken"] as? String
-                
-                let data: [String: Any] = [
-                    "tapperID": field,
-                    "tappedID": passedID!
-                ]
-   
-               
-                myFunctions.httpsCallable("notifyUser").call(data) { result, error in
+                if alreadyMatched {
                     
-                        if let error = error {
-                            print("Error calling function: \(error.localizedDescription)")
-                        } else if let result = result {
-                            print("Function result: \(result.data)")
-                        }
-                    }
-                
-                
-            
+                } else {
+                    matchWithUser(indexPath: indexPath)
+                }
             }
-            
-            self.statusArray.remove(at: indexPath.row - 1)
-            self.profilesArray.remove(at: indexPath.row - 1)
-            self.availableDatesTable.reloadData()
-  
-
         }
         
         let nopeAction = UIAlertAction(title: "Oops nope", style: .default)
         confirmMatchAlert.addAction(okayAction)
         confirmMatchAlert.addAction(nopeAction)
         present(confirmMatchAlert, animated: true)
+    }
+    
+    func checkIfAlreadyMatched(indexPath: IndexPath) async -> Bool {
+        
+        var isAlreadyMatched = false
+        var matchStatusIDs: [String] = []
+        let userCollection = db.collection("users").document(firebaseID).collection("matchStatuses")
+        
+        do {
+           let querySnapshot = try await userCollection.getDocuments()
+            for doc in querySnapshot.documents {
+                matchStatusIDs.append(doc.documentID)
+            }
+            if matchStatusIDs.contains(statusArray[indexPath.row - 1].daterID) {
+                    isAlreadyMatched = true
+                }
+
+        } catch {
+            print("error getting user's matchStatuses: \(error)")
+        }
+        
+        return isAlreadyMatched
+    }
+    
+    func matchWithUser(indexPath: IndexPath) {
+        
+        db.collection("users").document(firebaseID).collection("expiringRequests").document(statusArray[indexPath.row - 1].daterID).setData([
+            "timeStamp": Date(),
+            "userID": statusArray[indexPath.row - 1].daterID
+        ]) { err in
+            
+            if let err = err {
+                print("error writing doc: \(err)")
+            } else {
+                print("doc written successfully.")
+            }
+        }
+        
+        db.collection("users").document(statusArray[indexPath.row - 1].daterID).collection("matchStatuses").document(firebaseID).setData([
+            "name" : self.userProfileArray[0].name,
+            "imageURL" : self.userProfileArray[0].picture,
+                "activity" : dateActivity,
+                "time" : dateTime,
+                "ID" : firebaseID,
+                "age" : self.userProfileArray[0].age,
+                "gender" : self.userProfileArray[0].gender,
+            "accepted" : false,
+            "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken")
+        ]) { err in
+            if let err = err {
+                print("error writing doc: \(err)")
+            } else {
+                print("doc written successfully.")
+            }
+        }
+        
+        var daterID = statusArray[indexPath.row - 1].daterID
+        
+        Task.init {
+            await addNotification(daterID: daterID, firebaseID: firebaseID)
+        }
+
+        let docRef1 = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
+        
+        let tappedPersonID = statusArray[indexPath.row - 1].daterID
+        let docRef = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
+        docRef.updateData(["suitorID" : firebaseID]) { err in
+            if let err = err {
+                print("error updating field: \(err)")
+            } else {
+                print("success")
+            }
+            
+        }
+
+        docRef1.addSnapshotListener { documentSnapshot, error in
+            guard let document = documentSnapshot else {
+                print("Error fetching document: \(error!)")
+                return
+            }
+            guard let field = document.data()?["suitorID"] as? String else {
+                print("Field does not exist")
+                return
+            }
+            
+            let myFunctions = Functions.functions()
+            let passedID = document.data()?["fcmToken"] as? String
+            
+            let data: [String: Any] = [
+                "tapperID": field,
+                "tappedID": passedID!
+            ]
+
+           
+            myFunctions.httpsCallable("notifyUser").call(data) { result, error in
+                
+                    if let error = error {
+                        print("Error calling function: \(error.localizedDescription)")
+                    } else if let result = result {
+                        print("Function result: \(result.data)")
+                    }
+                }
+            
+            
+        
+        }
+        
+        self.statusArray.remove(at: indexPath.row - 1)
+        self.profilesArray.remove(at: indexPath.row - 1)
+        self.availableDatesTable.reloadData()
     }
 }
 

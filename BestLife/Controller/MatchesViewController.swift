@@ -66,7 +66,7 @@ class MatchesViewController: UIViewController {
                     statusDict = doc.data()
                 }
                 
-                var myProfile = MatchModel(name: profileDict["name"] as! String, age: profileDict["age"] as! String, gender: profileDict["gender"] as! String, imageURL: profileDict["picture"] as! String, dateActivity: statusDict["activity"] as! String , dateTime: statusDict["time"] as! String, ID: profileDict["userID"] as! String, accepted: false, fcmToken: statusDict["fcmToken"] as! String, chatID: "")
+                var myProfile = MatchModel(name: profileDict["name"] as! String, age: profileDict["age"] as! Int, gender: profileDict["gender"] as! String, imageURL: profileDict["picture"] as! String, dateActivity: statusDict["activity"] as! String , dateTime: statusDict["time"] as! String, ID: profileDict["userID"] as! String, accepted: false, fcmToken: statusDict["fcmToken"] as! String, chatID: "")
                 ownMatch = myProfile
 
             } catch {
@@ -113,7 +113,7 @@ class MatchesViewController: UIViewController {
             for doc in querySnapshot.documents {
                 
                 let data = doc.data()
-                if let name = data["name"] as? String, let age = data["age"] as? String, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String {
+                if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String {
                     var match = MatchModel(name: name, age: age, gender: gender, imageURL: image, dateActivity: dateActivity, dateTime: dateTime, ID: userID, accepted: accepted, fcmToken: fcmToken
                     )
                     self.matchesArray.append(match)
@@ -124,8 +124,6 @@ class MatchesViewController: UIViewController {
             
             print(error)
         }
-        
-        print("this is matches count after it's loaded: \(self.matchesArray.count)")
        
         DispatchQueue.main.async {
             
@@ -267,7 +265,7 @@ extension MatchesViewController: UITableViewDataSource {
         
        
         cell.datePlanLabel.text = "\(matchesArray[indexPath.row].name) wants to \(matchesArray[indexPath.row].dateActivity) \(matchesArray[indexPath.row].dateTime)"
-        cell.ageLabel.text = matchesArray[indexPath.row].age
+        cell.ageLabel.text = String(matchesArray[indexPath.row].age)
         cell.genderLabel.text = matchesArray[indexPath.row].gender
         
         DispatchQueue.main.async {
@@ -340,8 +338,6 @@ extension MatchesViewController: UITableViewDelegate {
             
             matchIDForChat = matchesArray[indexPath.row].ID
             
-            print("just set the matchIDForChat, which is: \(matchIDForChat), about to trigger segue")
-            
             performSegue(withIdentifier: "matchesChatSeg", sender: self)
         }
     }
@@ -376,7 +372,6 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             let querySnapshot = try await query.getDocuments()
                             
                             for doc in querySnapshot.documents {
-                                print("this is one match status")
                                 try await doc.reference.delete()
                             }
                         } catch {
@@ -415,8 +410,6 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                     "suitor": matchesArray[indexPath.row].fcmToken,
                     "suitee": self.firebaseID
                 ]
-                
-                print("this is data: \(data)")
    
                
                 myFunctions.httpsCallable("confirmMatch").call(data) { result, error in

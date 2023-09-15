@@ -38,8 +38,6 @@ class AvailableDatesViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        nooneAvailableMessage.isHidden = true
         
         for subview in matchesButton.subviews {
             
@@ -97,10 +95,8 @@ class AvailableDatesViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-       
-        print(location)
-       
+
+        nooneAvailableMessage.isHidden = true
         loadUserProfile()
         
         
@@ -656,13 +652,18 @@ extension AvailableDatesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let confirmMatchAlert = UIAlertController(title: "Great Stuff!", message: "Are you sure you want to match with this person?", preferredStyle: .alert)
+        let confirmMatchAlert = UIAlertController(title: "Great Stuff!", message: "Are you sure you want to connect with this person?", preferredStyle: .alert)
         let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
             
             Task.init {
                 let alreadyMatched = await checkIfAlreadyMatched(indexPath: indexPath)
                 
                 if alreadyMatched {
+                    
+                    let alreadyMatchedAlert = UIAlertController(title: "Uh oh", message: "Looks like the two of you are already connected. Try sending them a message instead!", preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "Okay", style: .default)
+                    alreadyMatchedAlert.addAction(okAction)
+                    present(alreadyMatchedAlert, animated: true)
                     
                 } else {
                     matchWithUser(indexPath: indexPath)

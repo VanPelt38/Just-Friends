@@ -14,6 +14,7 @@ class MatchesViewController: UIViewController {
 
     @IBOutlet weak var matchesTableView: UITableView!
     
+    @IBOutlet weak var noConnectionsYetLabel: UILabel!
     @IBAction func messagesButton(_ sender: UIBarButtonItem) {
     }
     
@@ -24,20 +25,29 @@ class MatchesViewController: UIViewController {
     var matchIDForChat = ""
     var passedMatchProfile = ProfileModel()
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        
+        matchesTableView.delegate = self
+        matchesTableView.register(UINib(nibName: "DatePlanCell", bundle: nil), forCellReuseIdentifier: "datePlanCell")
+        matchesTableView.dataSource = self
+        
+          loadAllMatches()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+
+    }
+    
+    func loadAllMatches() {
         
         Task.init {
                 await deleteNotifications()
                 await loadUserDetails()
                 await loadMatches()
         }
-
-        matchesTableView.delegate = self
-        matchesTableView.register(UINib(nibName: "DatePlanCell", bundle: nil), forCellReuseIdentifier: "datePlanCell")
-        matchesTableView.dataSource = self
-        
-        
     }
     
     func loadUserDetails() async {
@@ -66,8 +76,11 @@ class MatchesViewController: UIViewController {
                     statusDict = doc.data()
                 }
                 
-                var myProfile = MatchModel(name: profileDict["name"] as! String, age: profileDict["age"] as! Int, gender: profileDict["gender"] as! String, imageURL: profileDict["picture"] as! String, dateActivity: statusDict["activity"] as! String , dateTime: statusDict["time"] as! String, ID: profileDict["userID"] as! String, accepted: false, fcmToken: statusDict["fcmToken"] as! String, chatID: "")
-                ownMatch = myProfile
+                if let name = profileDict["name"] as? String, let age = profileDict["age"] as? Int, let gender = profileDict["gender"] as? String, let imageURL = profileDict["picture"] as? String, let dateActivity = statusDict["activity"] as? String, let dateTime = statusDict["time"] as? String, let id = profileDict["userID"] as? String, let fcmToken = statusDict["fcmToken"] as? String {
+                    
+                    var myProfile = MatchModel(name: name, age: age, gender: gender, imageURL: imageURL, dateActivity: dateActivity, dateTime: dateTime, ID: id, accepted: false, fcmToken: fcmToken, chatID: "")
+                    ownMatch = myProfile
+                }
 
             } catch {
                 print(error)
@@ -97,6 +110,8 @@ class MatchesViewController: UIViewController {
     }
     
     func loadMatches() async {
+        
+        matchesArray = []
         
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid

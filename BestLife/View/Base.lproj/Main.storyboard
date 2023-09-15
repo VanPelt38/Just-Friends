@@ -296,7 +296,7 @@
             <objects>
                 <viewController id="fVY-ud-XHM" customClass="MatchProfileViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NIR-m0-uFI">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="person.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="L0o-mn-lyM">
@@ -485,6 +485,13 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorry - you don't have any connections just yet. Try saying &quot;hi&quot; to a few people!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="nWd-Am-bll">
+                                <rect key="frame" x="28" y="342" width="311" height="167"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="FaN-Zi-Pc2"/>
                         <color key="backgroundColor" red="0.56370733567397613" green="1" blue="0.71004164305751594" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -500,6 +507,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="matchesTableView" destination="Yac-ST-I54" id="cS8-IQ-vSG"/>
+                        <outlet property="noConnectionsYetLabel" destination="nWd-Am-bll" id="zNd-8a-e8t"/>
                         <segue destination="7jA-YQ-KO7" kind="show" identifier="matchesChatSeg" id="YAG-UA-KRW"/>
                         <segue destination="fVY-ud-XHM" kind="show" identifier="matchesMatchProfileSeg" id="4b1-lw-4C2"/>
                     </connections>
@@ -773,7 +781,7 @@
     <inferredMetricsTieBreakers>
         <segue reference="e0l-9B-xxr"/>
         <segue reference="wrL-sU-fes"/>
-        <segue reference="Nq8-3A-8oR"/>
+        <segue reference="4b1-lw-4C2"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="camera" catalog="system" width="128" height="93"/>

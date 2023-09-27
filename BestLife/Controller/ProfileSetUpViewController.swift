@@ -29,6 +29,7 @@ class ProfileSetUpViewController: UIViewController {
     var gender: String?
     var imageString: String?
     var userID: String?
+    var imageExtension = ""
     private let db = Firestore.firestore()
     
     
@@ -82,7 +83,16 @@ class ProfileSetUpViewController: UIViewController {
         if isImageChosen == true && nameTextField.text != "" && isAgeChosen == true && gender != nil {
 
             if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
+                
+                var realmProfile = RProfile()
+                realmProfile.age = calculatedAge(date: ageDatePicker.date)
+                realmProfile.gender = userGender
+                realmProfile.name = userName
+                realmProfile.picture = convertImageToData(image: image)
+                realmProfile.userID = id
                    
+                persistProfileLocally(realmProfile: realmProfile)
+                
                     Task.init {
                         imageString = await uploadImageToFireStorage(picture: image)
                         await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
@@ -97,6 +107,27 @@ class ProfileSetUpViewController: UIViewController {
             alert.addAction(okayAction)
             present(alert, animated: true, completion: nil)
         }
+    }
+    
+    func convertImageToData(image: UIImage) -> Data {
+        
+        if imageExtension == "jpg" || imageExtension == "jpeg" {
+            return image.jpegData(compressionQuality: 0.8)!
+        } else if imageExtension == "png" {
+            return image.pngData()!
+        } else {
+            print("unsupported image type")
+            return image.pngData()!
+        }
+    }
+    
+    func persistProfileLocally(realmProfile: RProfile) {
+        
+        guard let realm = RealmManager.getRealm() else { return }
+        try! realm.write {
+            realm.add(realmProfile)
+        }
+        
     }
     
     func saveProfile(userName: String, imageURL: String, age: Int, userGender: String, id: String) async {
@@ -185,6 +216,23 @@ extension ProfileSetUpViewController: UIImagePickerControllerDelegate {
         if let pickedImage = info[.originalImage] as? UIImage {
             
             profileImage.image = pickedImage
+            
+            let photoPath = info[UIImagePickerController.InfoKey.referenceURL] as! NSURL
+            if let path = photoPath.absoluteString {
+                if path.hasSuffix("JPG") {
+                    print("jpg")
+                    imageExtension = "jpg"
+                } else if path.hasSuffix("PNG") {
+                    print("png")
+                    imageExtension = "png"
+                } else if path.hasSuffix("JPEG") {
+                    print("jpeg")
+                    imageExtension = "jpeg"
+                } else {
+                    print("unsupported image type")
+                }
+                    }
+            
             picker.dismiss(animated: true, completion: nil)
             isImageChosen = true
         }

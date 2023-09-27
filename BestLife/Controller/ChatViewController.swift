@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import FirebaseFirestore
+import IQKeyboardManagerSwift
 
 class ChatViewController: UIViewController {
 
@@ -21,11 +22,16 @@ class ChatViewController: UIViewController {
     var matchDetails = MatchModel()
     var currentMessages: [MessageModel] = []
     var sortedCurrentMessages: [MessageModel] = []
+    var chatFieldOriginalY: CGFloat = 0.0
+    var tableViewOriginalY: CGFloat = 0.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let currentTime = Date()
+        
+        IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
+        
 
         currentMessages = []
         sortedCurrentMessages = []
@@ -82,21 +88,58 @@ class ChatViewController: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
   
+    }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+            
+            if let userInfo = notification.userInfo, let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                
+                chatFieldOriginalY = chatTextField.frame.origin.y
+                let keyboardHeight = keyboardFrame.height
+                let screenHeight = UIScreen.main.bounds.height
+                
+                let chatTextFieldY = screenHeight - keyboardHeight - chatTextField.frame.height - 5
+                
+                self.chatTextField.frame.origin.y = chatTextFieldY
+                
+                if sortedCurrentMessages.count > 8 {
+                    
+                    tableViewOriginalY = chatTableView.frame.origin.y
+                    let distanceToMove = chatFieldOriginalY - chatTextField.frame.origin.y
+                    self.chatTableView.frame.origin.y -= distanceToMove
+                    scrollToBottom()
+                }
+            }
+        
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+
+            chatTextField.frame.origin.y = chatFieldOriginalY
+        if sortedCurrentMessages.count > 8 {
+            chatTableView.frame.origin.y = tableViewOriginalY
+        }
     }
     
     
     @IBAction func sendPressed(_ sender: UIButton) {
         
-        if let safeMessage = chatTextField.text {
+        if chatTextField.text != "" {
             
-            Task.init {
+            if let safeMessage = chatTextField.text {
                 
-                await saveChatToFirestore(safeMessage)
+                Task.init {
+                    
+                    await saveChatToFirestore(safeMessage)
+                }
+                
             }
-            
+            chatTextField.text = ""
         }
-        chatTextField.text = ""
     }
     
     func loadMatchDetails(_ matchID: String) async {
@@ -277,7 +320,7 @@ extension ChatViewController: UITextFieldDelegate {
         return true
         
     }
-    
+
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
         
         chatTextField.resignFirstResponder()

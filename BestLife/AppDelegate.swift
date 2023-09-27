@@ -24,6 +24,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
      
+        if let realm = RealmManager.getRealm() {
+            print("this is path to realm file: \(realm.configuration.fileURL!.absoluteString)")
+        }
        
         FirebaseApp.configure()
         

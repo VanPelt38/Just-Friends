@@ -10,12 +10,25 @@ import UIKit
 class DistanceViewController: UIViewController {
 
     @IBOutlet weak var distanceLabel: UILabel!
+    @IBOutlet weak var distanceSlider: UISlider!
     
     var distanceChosen = 10000
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if UserDefaults.standard.value(forKey: "distancePreference") != nil {
+           
+            let userDistance = UserDefaults.standard.value(forKey: "distancePreference") as? Int ?? 10000
+            let modifiedUserDistance = userDistance / 1000
+            print(UserDefaults.standard.value(forKey: "distancePreference"))
+            print(userDistance)
+            distanceLabel.text = "\(modifiedUserDistance)km"
+            distanceSlider.value = Float(modifiedUserDistance) / 100
+            let trackRect = distanceSlider.trackRect(forBounds: distanceSlider.frame)
+                let thumbRect = distanceSlider.thumbRect(forBounds: distanceSlider.bounds, trackRect: trackRect, value: distanceSlider.value)
+                self.distanceLabel.center = CGPoint(x: thumbRect.midX, y: self.distanceLabel.center.y)
+                    }
       
     }
     

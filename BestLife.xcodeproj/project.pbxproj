@@ -38,6 +38,10 @@
 		23D2AB06294B7EFC0083BA22 /* AvailableDatesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D2AB05294B7EFC0083BA22 /* AvailableDatesViewController.swift */; };
 		23D2AB08294B7F1D0083BA22 /* MatchesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D2AB07294B7F1D0083BA22 /* MatchesViewController.swift */; };
 		23D2AB0A294B7F350083BA22 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D2AB09294B7F350083BA22 /* ChatViewController.swift */; };
+		23DE21682AC0D60A005A31CF /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 23DE21672AC0D60A005A31CF /* Realm */; };
+		23DE216A2AC0D60A005A31CF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 23DE21692AC0D60A005A31CF /* RealmSwift */; };
+		23DE216C2AC0DEA8005A31CF /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DE216B2AC0DEA8005A31CF /* RealmManager.swift */; };
+		23DE216E2AC0E00E005A31CF /* RProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DE216D2AC0E00E005A31CF /* RProfile.swift */; };
 		23DED13C2A57130800C269B8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 23DED13B2A57130800C269B8 /* Kingfisher */; };
 		23E30A0829810EC90091202E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 23E30A0729810EC90091202E /* FirebaseFirestore */; };
 		23EE38862A06B2720013E63E /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EE38852A06B2720013E63E /* ProfileModel.swift */; };
@@ -72,6 +76,8 @@
 		23D2AB05294B7EFC0083BA22 /* AvailableDatesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableDatesViewController.swift; sourceTree = "<group>"; };
 		23D2AB07294B7F1D0083BA22 /* MatchesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesViewController.swift; sourceTree = "<group>"; };
 		23D2AB09294B7F350083BA22 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
+		23DE216B2AC0DEA8005A31CF /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
+		23DE216D2AC0E00E005A31CF /* RProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RProfile.swift; sourceTree = "<group>"; };
 		23EE38852A06B2720013E63E /* ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,7 +92,9 @@
 				23361C3229DCC4F7006D2410 /* FirebaseFunctions in Frameworks */,
 				239A19B2296BB5F1005B6294 /* FirebaseAuth in Frameworks */,
 				236ED1A72A9E7AA20085F616 /* IQKeyboardManagerSwift in Frameworks */,
+				23DE21682AC0D60A005A31CF /* Realm in Frameworks */,
 				23E30A0829810EC90091202E /* FirebaseFirestore in Frameworks */,
+				23DE216A2AC0D60A005A31CF /* RealmSwift in Frameworks */,
 				237A4B9B2A02FE7C0065EF6B /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,10 +150,12 @@
 			children = (
 				23B4F72F294B845E00C9DFB5 /* DatePlanModel.swift */,
 				23EE38852A06B2720013E63E /* ProfileModel.swift */,
+				23DE216D2AC0E00E005A31CF /* RProfile.swift */,
 				23168E122A180C90009C0AD1 /* ExpiringMatchesModel.swift */,
 				230209C02A2D47AD00600B48 /* MatchModel.swift */,
 				2341E60B2A423BE400619EE0 /* MessageModel.swift */,
 				2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */,
+				23DE216B2AC0DEA8005A31CF /* RealmManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -210,6 +220,8 @@
 				237A4B9A2A02FE7C0065EF6B /* FirebaseStorage */,
 				23DED13B2A57130800C269B8 /* Kingfisher */,
 				236ED1A62A9E7AA20085F616 /* IQKeyboardManagerSwift */,
+				23DE21672AC0D60A005A31CF /* Realm */,
+				23DE21692AC0D60A005A31CF /* RealmSwift */,
 			);
 			productName = BestLife;
 			productReference = 23D2AAE4293EA5100083BA22 /* BestLife.app */;
@@ -243,6 +255,7 @@
 				239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				23DED13A2A57130800C269B8 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				236ED1A52A9E7AA20085F616 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
+				23DE21662AC0D60A005A31CF /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			productRefGroup = 23D2AAE5293EA5100083BA22 /* Products */;
 			projectDirPath = "";
@@ -276,6 +289,7 @@
 				23EE38862A06B2720013E63E /* ProfileModel.swift in Sources */,
 				237A4B972A01ACA40065EF6B /* ProfileSetUpViewController.swift in Sources */,
 				23D2AB08294B7F1D0083BA22 /* MatchesViewController.swift in Sources */,
+				23DE216C2AC0DEA8005A31CF /* RealmManager.swift in Sources */,
 				23D2AB06294B7EFC0083BA22 /* AvailableDatesViewController.swift in Sources */,
 				23D2AB0A294B7F350083BA22 /* ChatViewController.swift in Sources */,
 				23D2AAEC293EA5100083BA22 /* HomeViewController.swift in Sources */,
@@ -283,6 +297,7 @@
 				23D2AB04294B7E970083BA22 /* DatePlanViewController.swift in Sources */,
 				230284382A0852FD009EBDFC /* DatePlanCell.swift in Sources */,
 				238625192A5A11170086DAE6 /* MatchProfileViewController.swift in Sources */,
+				23DE216E2AC0E00E005A31CF /* RProfile.swift in Sources */,
 				230209C12A2D47AD00600B48 /* MatchModel.swift in Sources */,
 				2318081E2A53152C0051012B /* MyProfileViewController.swift in Sources */,
 				2318081C2A5311D30051012B /* DistanceViewController.swift in Sources */,
@@ -530,6 +545,14 @@
 				minimumVersion = 9.6.0;
 			};
 		};
+		23DE21662AC0D60A005A31CF /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.42.3;
+			};
+		};
 		23DED13A2A57130800C269B8 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -570,6 +593,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		23DE21672AC0D60A005A31CF /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 23DE21662AC0D60A005A31CF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = Realm;
+		};
+		23DE21692AC0D60A005A31CF /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 23DE21662AC0D60A005A31CF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		23DED13B2A57130800C269B8 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;

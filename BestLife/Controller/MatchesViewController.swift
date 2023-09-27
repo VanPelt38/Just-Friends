@@ -28,7 +28,7 @@ class MatchesViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        
+        noConnectionsYetLabel.isHidden = true
         matchesTableView.delegate = self
         matchesTableView.register(UINib(nibName: "DatePlanCell", bundle: nil), forCellReuseIdentifier: "datePlanCell")
         matchesTableView.dataSource = self
@@ -141,7 +141,9 @@ class MatchesViewController: UIViewController {
         }
        
         DispatchQueue.main.async {
-            
+            if self.matchesArray.isEmpty {
+                self.noConnectionsYetLabel.isHidden = false
+            }
             self.matchesTableView.reloadData()
         }
     }
@@ -268,14 +270,16 @@ extension MatchesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = matchesTableView.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
-        
+        noConnectionsYetLabel.isHidden = true
         cell.delegate = self
         cell.indexPath = indexPath
+        cell.acceptedButton.isHidden = true
+        cell.rejectedButton.isHidden = true
         
-        if matchesArray[indexPath.row].accepted == true {
+        if matchesArray[indexPath.row].accepted == false {
             
-            cell.acceptedButton.isHidden = true
-            cell.rejectedButton.isHidden = true
+            cell.acceptedButton.isHidden = false
+            cell.rejectedButton.isHidden = false
         }
         
        
@@ -317,7 +321,11 @@ extension MatchesViewController: UITableViewDataSource {
                         
                         matchesTableView.deleteRows(at: [indexPath], with: .fade)
                         
-                        DispatchQueue.main.async {
+                        DispatchQueue.main.async { [self] in
+                            
+                            if matchesArray.count == 0 {
+                                noConnectionsYetLabel.isHidden = false
+                            }
                             
                             self.matchesTableView.reloadData()
                         }
@@ -395,6 +403,9 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                         
                         DispatchQueue.main.async { [self] in
                             matchesArray.remove(at: indexPath.row)
+                            if matchesArray.count == 0 {
+                                noConnectionsYetLabel.isHidden = false
+                            }
                             matchesTableView.reloadData()
                         }
                     }

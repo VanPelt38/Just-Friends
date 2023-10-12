@@ -20,4 +20,5 @@ struct MatchModel {
     var accepted = false
     var fcmToken = "none"
     var chatID = "none"
+    var realmID = "none"
 }

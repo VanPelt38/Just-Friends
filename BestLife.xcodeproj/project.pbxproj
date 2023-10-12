@@ -18,6 +18,8 @@
 		2341E60C2A423BE400619EE0 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2341E60B2A423BE400619EE0 /* MessageModel.swift */; };
 		2350108729B474E0007A3BBA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 2350108629B474E0007A3BBA /* FirebaseMessaging */; };
 		2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */; };
+		2364116F2AD4995300EAEB92 /* RExpiringMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */; };
+		236411712AD4B10200EAEB92 /* RChatDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236411702AD4B10200EAEB92 /* RChatDoc.swift */; };
 		236ED1A72A9E7AA20085F616 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 236ED1A62A9E7AA20085F616 /* IQKeyboardManagerSwift */; };
 		237A4B972A01ACA40065EF6B /* ProfileSetUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */; };
 		237A4B9B2A02FE7C0065EF6B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 237A4B9A2A02FE7C0065EF6B /* FirebaseStorage */; };
@@ -42,6 +44,7 @@
 		23DE216A2AC0D60A005A31CF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 23DE21692AC0D60A005A31CF /* RealmSwift */; };
 		23DE216C2AC0DEA8005A31CF /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DE216B2AC0DEA8005A31CF /* RealmManager.swift */; };
 		23DE216E2AC0E00E005A31CF /* RProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DE216D2AC0E00E005A31CF /* RProfile.swift */; };
+		23DE21702AC61092005A31CF /* RMatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23DE216F2AC61092005A31CF /* RMatchModel.swift */; };
 		23DED13C2A57130800C269B8 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 23DED13B2A57130800C269B8 /* Kingfisher */; };
 		23E30A0829810EC90091202E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 23E30A0729810EC90091202E /* FirebaseFirestore */; };
 		23EE38862A06B2720013E63E /* ProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EE38852A06B2720013E63E /* ProfileModel.swift */; };
@@ -57,6 +60,8 @@
 		2318081D2A53152C0051012B /* MyProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProfileViewController.swift; sourceTree = "<group>"; };
 		2341E60B2A423BE400619EE0 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
 		2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
+		2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RExpiringMatch.swift; sourceTree = "<group>"; };
+		236411702AD4B10200EAEB92 /* RChatDoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RChatDoc.swift; sourceTree = "<group>"; };
 		237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetUpViewController.swift; sourceTree = "<group>"; };
 		2385C13029E9B71300EAF12E /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		238625182A5A11170086DAE6 /* MatchProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchProfileViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +83,7 @@
 		23D2AB09294B7F350083BA22 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		23DE216B2AC0DEA8005A31CF /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		23DE216D2AC0E00E005A31CF /* RProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RProfile.swift; sourceTree = "<group>"; };
+		23DE216F2AC61092005A31CF /* RMatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMatchModel.swift; sourceTree = "<group>"; };
 		23EE38852A06B2720013E63E /* ProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -153,9 +159,12 @@
 				23DE216D2AC0E00E005A31CF /* RProfile.swift */,
 				23168E122A180C90009C0AD1 /* ExpiringMatchesModel.swift */,
 				230209C02A2D47AD00600B48 /* MatchModel.swift */,
+				23DE216F2AC61092005A31CF /* RMatchModel.swift */,
 				2341E60B2A423BE400619EE0 /* MessageModel.swift */,
 				2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */,
 				23DE216B2AC0DEA8005A31CF /* RealmManager.swift */,
+				2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */,
+				236411702AD4B10200EAEB92 /* RChatDoc.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -290,6 +299,8 @@
 				237A4B972A01ACA40065EF6B /* ProfileSetUpViewController.swift in Sources */,
 				23D2AB08294B7F1D0083BA22 /* MatchesViewController.swift in Sources */,
 				23DE216C2AC0DEA8005A31CF /* RealmManager.swift in Sources */,
+				23DE21702AC61092005A31CF /* RMatchModel.swift in Sources */,
+				2364116F2AD4995300EAEB92 /* RExpiringMatch.swift in Sources */,
 				23D2AB06294B7EFC0083BA22 /* AvailableDatesViewController.swift in Sources */,
 				23D2AB0A294B7F350083BA22 /* ChatViewController.swift in Sources */,
 				23D2AAEC293EA5100083BA22 /* HomeViewController.swift in Sources */,
@@ -305,6 +316,7 @@
 				23168E132A180C90009C0AD1 /* ExpiringMatchesModel.swift in Sources */,
 				23D2AAE8293EA5100083BA22 /* AppDelegate.swift in Sources */,
 				2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */,
+				236411712AD4B10200EAEB92 /* RChatDoc.swift in Sources */,
 				23D2AAEA293EA5100083BA22 /* SceneDelegate.swift in Sources */,
 				23B4F732294B8F5100C9DFB5 /* LoginViewController.swift in Sources */,
 				23D2AAF2293EA5100083BA22 /* BestLife.xcdatamodeld in Sources */,

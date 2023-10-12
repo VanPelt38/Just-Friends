@@ -23,6 +23,7 @@ class MyProfileViewController: UIViewController {
     var firebaseID: String?
     private let db = Firestore.firestore()
     var imageString: String?
+    var imageExtension = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +34,67 @@ class MyProfileViewController: UIViewController {
         myProfileTableView.backgroundView = nil
         loadProfile()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if let safeImage = profilePicture.image {
+            
+            let realmImage = convertImageToData(image: safeImage)
+            persistPictureLocally(realmPicture: realmImage)
+            
+            Task.init {
+                imageString = await uploadImageToFireStorage(picture: safeImage)
+                await saveImageToFireStore(imageURL: imageString ?? "none")
+            }
+        }
+    }
+    
+    func saveImageToFireStore(imageURL: String) async {
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+        
+        do {
+            try await db.collection("users").document(firebaseID!).collection("profile").document("profile").updateData([
+                "picture": imageURL
+            ])
+        } catch {
+            print("There was an issue saving data to firestore, \(error)")
+        }
+    }
+    
+    func persistPictureLocally(realmPicture: Data) {
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+        
+        guard let realm = RealmManager.getRealm() else { return }
+        if let profile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
+            try! realm.write {
+                profile.picture = realmPicture
+            }
+        }
+    }
+    
+    func convertImageToData(image: UIImage) -> Data {
+        
+        if imageExtension == "jpg" || imageExtension == "jpeg" {
+            return image.jpegData(compressionQuality: 0.8)!
+        } else if imageExtension == "png" {
+            return image.pngData()!
+        } else {
+            print("unsupported image type")
+            return image.pngData()!
+        }
+    }
+
     
     @IBAction func newPhotoPressed(_ sender: UIButton) {
         
@@ -52,56 +114,28 @@ class MyProfileViewController: UIViewController {
             print("no user is currently signed in")
         }
         
-        let currentCollection = db.collection("users").document(firebaseID!).collection("profile")
-        let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
+        self.profileDetailsArray = []
         
-        query.getDocuments { querySnapshot, error in
+        guard let realm = RealmManager.getRealm() else {return}
+        
+        if let profile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
             
-            self.profileDetailsArray = []
+            self.profileDetailsArray.append(profile.name)
+            self.profileDetailsArray.append(String(profile.age))
+            self.profileDetailsArray.append(profile.gender)
             
-            if let e = error {
-                print("There was an issue retrieving data from Firestore: \(e)")
-            } else {
+            DispatchQueue.main.async {
                 
-                if let snapshotDocuments = querySnapshot?.documents {
-                    
-                    for doc in snapshotDocuments {
-                        
-                        let data = doc.data()
-                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
-                          
-                            self.profileDetailsArray.append(name)
-                            self.profileDetailsArray.append(String(age))
-                            self.profileDetailsArray.append(gender)
-    
-                        
-                            DispatchQueue.main.async {
-                                
-                               
-                                
-                                if let url = URL(string: picture) {
-                                    
-                                    do {
-                                        
-                                        self.profilePicture.kf.setImage(with: url)
-                                        
-                                        
-//                                        let data = try Data(contentsOf: url)
-//                                        let image = UIImage(data: data)
-//                                        self.profilePicture.image = image
-                                    } catch {
-                                        
-                                        print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
-                                    }
-                                }
-                                self.myProfileTableView.reloadData()
-                            }
-                            
-                        }
-                    }
+                if let safeImage = profile.picture {
+                    let image = UIImage(data: safeImage)
+                    self.profilePicture.image = image
+                    self.myProfileTableView.reloadData()
                 }
             }
+        } else {
+            print("profile couldn't be found.")
         }
+        
     }
     
 }
@@ -172,48 +206,30 @@ extension MyProfileViewController: UIImagePickerControllerDelegate {
         if let pickedImage = info[.originalImage] as? UIImage {
             
             profilePicture.image = pickedImage
-            uploadImageToFireStorage(picture: pickedImage) { result in
-                
-                switch result {
-                    
-                case .success(let urlString):
-                    
-                    self.imageString = urlString
-                    
-                    DispatchQueue.main.async { [self] in
-
-                           
-                        db.collection("users").document(firebaseID!).collection("profile").document("profile").updateData([
-                                "picture": self.imageString
-                            ]) { (error) in
-                                
-                                if let e = error {
-                                    print("There was an issue saving data to firestore, \(e)")
-                                } else {
-                                    
-                                    print("Successfully saved data.")
-                                    
-                                }
-                            }
-                        
-                        
-                    }
-
-                    
-                case .failure(let error):
-                    
-                    print("Error uploading image: \(error.localizedDescription)")
+            
+            let photoPath = info[UIImagePickerController.InfoKey.referenceURL] as! NSURL
+            if let path = photoPath.absoluteString {
+                if path.hasSuffix("JPG") {
+                    print("jpg")
+                    imageExtension = "jpg"
+                } else if path.hasSuffix("PNG") {
+                    print("png")
+                    imageExtension = "png"
+                } else if path.hasSuffix("JPEG") {
+                    print("jpeg")
+                    imageExtension = "jpeg"
+                } else {
+                    print("unsupported image type")
                 }
-            }
+                    }
         }
         picker.dismiss(animated: true, completion: nil)
     }
     
     
-    func uploadImageToFireStorage(picture: UIImage, completion: @escaping (Result<String, Error>) -> Void) {
+    func uploadImageToFireStorage(picture: UIImage) async -> String {
         guard let imageData = picture.jpegData(compressionQuality: 0.8) else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to convert image to data."])))
-            return
+            return "Failed to convert image to data."
         }
         
         let storage = Storage.storage()
@@ -222,22 +238,14 @@ extension MyProfileViewController: UIImagePickerControllerDelegate {
         let imageFileName = "\(imageID).jpg"
         let imageRef = storageRef.child("images/\(imageFileName)")
         
-        let uploadTask = imageRef.putData(imageData, metadata: nil) { metadata, error in
-            
-            if let error = error {
-                completion(.failure(error))
-            } else {
-                imageRef.downloadURL { url, error in
-                    if let downloadURL = url {
-                        completion(.success(downloadURL.absoluteString))
-                    } else if let error = error {
-                        completion(.failure(error))
-                    } else {
-                        completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey : "Failed to retrieve download URL"])))
-                    }
-                }
-            }
-            
+        do {
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            let uploadTask = try await imageRef.putDataAsync(imageData, metadata: metadata)
+            let downloadURL = try await imageRef.downloadURL()
+            return downloadURL.absoluteString
+        } catch {
+             return "failed to retrieve download url: \(error)"
         }
     }
 }

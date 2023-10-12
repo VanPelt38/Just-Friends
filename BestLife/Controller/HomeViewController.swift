@@ -17,12 +17,18 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var profilePicture: UIImageView!
     
     private let db = Firestore.firestore()
+    var chatIDs: [String] = []
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        loadLocalProfile()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loadAllLocalData()
-        loadProfile()
+        loadAllUserData()
         setDistancePreference()
         
         
@@ -82,100 +88,200 @@ class HomeViewController: UIViewController {
         
     }
     
-    func loadAllLocalData() {
-        
-        if let currentUser = Auth.auth().currentUser {
-            firebaseID = currentUser.uid
-        } else {
-            print("no user is currently signed in")
-        }
-        
-        // Grab user profile and write to Realm (displaying also)
-        
-        // Grab user's matches and write to Realm
-        
-        // Grab user's expiring requests and write to Realm
-        
-        // Grab user's chat messages and write to Realm
-        
-        
-    }
-    
-    
-    func loadProfile() {
+    func loadLocalProfile() {
         
         guard let realm = RealmManager.getRealm() else {return}
         
+                if let profile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
+                    DispatchQueue.main.async {
+                        self.helloUser.text = "Hi \(profile.name)!"
+                                if let picture = profile.picture {
+                                    let image = UIImage(data: picture)
+                                    self.profilePicture.image = image
+                                }
+                    }
+                    } else {
+                        print("profile couldn't be found.")
+                    }
+    }
+    
+    func loadAllUserData() {
         
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
         } else {
             print("no user is currently signed in")
         }
-        if let profile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
-            DispatchQueue.main.async {
-                self.helloUser.text = "Hi \(profile.name)!"
-                        if let picture = profile.picture {
-                            let image = UIImage(data: picture)
-                            self.profilePicture.image = image
-                        }
-            }
-            } else {
-                print("profile couldn't be found.")
-            }
         
-        
-//
-//        let currentCollection = db.collection("users").document(firebaseID!).collection("profile")
-//        let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
-//
-//        query.getDocuments { querySnapshot, error in
-//
-//            self.profileArray = []
-//
-//            if let e = error {
-//                print("There was an issue retrieving data from Firestore: \(e)")
-//            } else {
-//
-//                if let snapshotDocuments = querySnapshot?.documents {
-//
-//                    for doc in snapshotDocuments {
-//
-//                        let data = doc.data()
-//                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
-//                            let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
-//                            self.profileArray.append(profile)
-//
-//
-//                            DispatchQueue.main.async {
-//
-//                                self.helloUser.text = "Hi \(profile.name)!"
-//
-//                                if let url = URL(string: profile.picture) {
-//
-//                                    do {
-//
-//                                        self.profilePicture.kf.setImage(with: url)
-//
-                                        
-//                                        let data = try Data(contentsOf: url)
-//                                        let image = UIImage(data: data)
-//                                        self.profilePicture.image = image
-//                                    } catch {
-//
-//                                        print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
-//                                    }
-//                                }
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        Task.init {
+            await loadProfile()
+            await loadMatches()
+            await loadExpiringRequests()
+            await loadChats()
+        }
     }
-
     
+    
+    func loadExpiringRequests() async {
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        if let safeID = firebaseID {
+           
+            let pathway = db.collection("users").document(safeID).collection("expiringRequests")
+            
+            do {
+                
+                let querySnapshot = try await pathway.getDocuments()
+                
+                for doc in querySnapshot.documents {
+                    
+                    let data = doc.data()
+                    if let timeStamp = data["timeStamp"] as? Timestamp, let userID = data["ID"] as? String {
+                        
+                        try! realm.write {
+                            
+                            var realmExpiringMatch = RExpiringMatch()
+                            realmExpiringMatch.id = doc.documentID
+                            realmExpiringMatch.userID = userID
+                            realmExpiringMatch.timeStamp = timeStamp.dateValue()
+                            realm.add(realmExpiringMatch, update: .modified)
+                        }
+                        
+                    }
+                }
+                
+            } catch {
+                
+                print("error downloading expired matches: \(error)")
+            }
+        }
+    }
+    
+    func loadChats() async {
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        if let safeID = firebaseID {
+            
+            for chatID in chatIDs {
+                
+                let pathway = db.collection("chats").document(chatID).collection("messages")
+                
+                do {
+                    let newChats = try await pathway.getDocuments()
+                    
+                    for chat in newChats.documents {
+                        let data = chat.data()
+                        if let timeStamp = data["timeStamp"] as? Timestamp, let userID = data["ID"] as? String, let message = data["message"] as? String {
+                            
+                            try! realm.write {
+                                
+                                var realmMessage = RChatDoc()
+                                realmMessage.id = chat.documentID
+                                realmMessage.message = message
+                                realmMessage.timeStamp = timeStamp.dateValue()
+                                realmMessage.userID = userID
+                                realm.add(realmMessage, update: .all)
+                            }
+                        }
+                    }
+                    
+                } catch {
+                    print("error grabbing chat: \(error)")
+                }
+            }
+        }
+    }
+    
+    func loadProfile() async {
+        
+        guard let realm = RealmManager.getRealm() else {return}
+
+        let currentCollection = db.collection("users").document(firebaseID!).collection("profile")
+        let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
+        
+        do {
+           let querySnapshot = try await query.getDocuments()
+
+                for doc in querySnapshot.documents {
+
+                    let data = doc.data()
+                    if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
+
+                        DispatchQueue.main.async {
+
+                            self.helloUser.text = "Hi \(name)!"
+
+                            if let url = URL(string:  picture) {
+
+                                do {
+                                    let data = try Data(contentsOf: url)
+                                    let image = UIImage(data: data)
+                                    try! realm.write {
+                                    var realmProfile = RProfile()
+                                    realmProfile.age = age
+                                    realmProfile.gender = gender
+                                    realmProfile.name = name
+                                    realmProfile.userID = userID
+                                    realmProfile.picture = data
+                                        realm.add(realmProfile, update: .modified)
+                                    }
+                                    self.profilePicture.image = image
+                                } catch {
+                                    print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                    }
+                }
+        } catch {
+            print("error loading user profile: \(error)")
+        }
+    }
+    
+    func loadMatches() async {
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        if let safeID = firebaseID {
+            
+            let pathway = db.collection("users").document(safeID).collection("matchStatuses")
+            
+            do {
+                
+                let querySnapshot = try await pathway.getDocuments()
+                
+                for doc in querySnapshot.documents {
+                    
+                    let data = doc.data()
+                    if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String, let chatID = data["chatID"] as? String, let realmID = data["realmID"] as? String {
+                        
+                        try! realm.write {
+                            
+                            var realmMatch = RMatchModel()
+                            realmMatch.name = name
+                            realmMatch.age = age
+                            realmMatch.gender = gender
+                            realmMatch.imageURL = image
+                            realmMatch.dateActivity = dateActivity
+                            realmMatch.dateTime = dateTime
+                            realmMatch.userID = userID
+                            realmMatch.accepted = accepted
+                            realmMatch.fcmToken = fcmToken
+                            realmMatch.chatID = chatID
+                            realmMatch.id = realmID
+                            realm.add(realmMatch, update: .all)
+                        }
+                        
+                        chatIDs.append(chatID)
+                        
+                    }
+                }
+                
+            } catch {
+                
+                print("error downloading matches: \(error)")
+            }
+        }
+    }
     
     @IBAction func createDatePressed(_ sender: UIButton) {
     }

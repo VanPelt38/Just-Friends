@@ -21,8 +21,6 @@ class DistanceViewController: UIViewController {
            
             let userDistance = UserDefaults.standard.value(forKey: "distancePreference") as? Int ?? 10000
             let modifiedUserDistance = userDistance / 1000
-            print(UserDefaults.standard.value(forKey: "distancePreference"))
-            print(userDistance)
             distanceLabel.text = "\(modifiedUserDistance)km"
             distanceSlider.value = Float(modifiedUserDistance) / 100
             let trackRect = distanceSlider.trackRect(forBounds: distanceSlider.frame)

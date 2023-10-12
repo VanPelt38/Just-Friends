@@ -32,8 +32,6 @@ class ProfileSetUpViewController: UIViewController {
     var imageExtension = ""
     private let db = Firestore.firestore()
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -84,7 +82,7 @@ class ProfileSetUpViewController: UIViewController {
 
             if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
                 
-                var realmProfile = RProfile()
+                let realmProfile = RProfile()
                 realmProfile.age = calculatedAge(date: ageDatePicker.date)
                 realmProfile.gender = userGender
                 realmProfile.name = userName

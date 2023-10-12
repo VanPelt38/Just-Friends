@@ -13,7 +13,6 @@ import IQKeyboardManagerSwift
 class ChatViewController: UIViewController {
 
     @IBOutlet weak var chatTableView: UITableView!
-    
     @IBOutlet weak var chatTextField: UITextField!
     
     var firebaseID = ""
@@ -161,9 +160,9 @@ class ChatViewController: UIViewController {
                     for doc in querySnapshot.documents {
                         
                         let data = doc.data()
-                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["imageURL"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let activity = data["activity"] as? String, let time = data["time"] as? String, let chatID = data["chatID"] as? String, let fcmToken = data["fcmToken"] as? String {
+                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["imageURL"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let activity = data["activity"] as? String, let time = data["time"] as? String, let chatID = data["chatID"] as? String, let fcmToken = data["fcmToken"] as? String, let realmID = data["realmID"] as? String {
                             
-                            let newModel = MatchModel(name: name, age: age, gender: gender, imageURL: picture, dateActivity: activity, dateTime: time, ID: userID, accepted: accepted, fcmToken: fcmToken, chatID: chatID)
+                            let newModel = MatchModel(name: name, age: age, gender: gender, imageURL: picture, dateActivity: activity, dateTime: time, ID: userID, accepted: accepted, fcmToken: fcmToken, chatID: chatID, realmID: realmID)
                             self.matchDetails = newModel
                         }
                     }

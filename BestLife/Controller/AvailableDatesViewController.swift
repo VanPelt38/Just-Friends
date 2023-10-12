@@ -14,8 +14,6 @@ import CoreLocation
 
 class AvailableDatesViewController: UIViewController {
     
-
-    
     @IBOutlet weak var matchesButton: UIButton!
     @IBOutlet weak var availableDatesTable: UITableView!
     @IBOutlet weak var nooneAvailableMessage: UILabel!
@@ -47,7 +45,7 @@ class AvailableDatesViewController: UIViewController {
         Task.init {
            
             do {
-               notificationCount = try await loadNotifications()
+               notificationCount = await loadNotifications()
 
                 
                 let badgeSize: CGFloat = 17
@@ -63,7 +61,6 @@ class AvailableDatesViewController: UIViewController {
                 badgeLabel.textColor = .white
                 badgeLabel.font = UIFont.boldSystemFont(ofSize: 10)
                 
-                print("this is notification count before we add to badge: \(notificationCount)")
                 
                 if notificationCount <= 10 {
                     badgeLabel.text = String(notificationCount)
@@ -174,13 +171,7 @@ class AvailableDatesViewController: UIViewController {
             }
             
         }
-        
-        
-        
-        
-        
-        
-        
+         
     }
     
 
@@ -292,7 +283,7 @@ class AvailableDatesViewController: UIViewController {
                             let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken, latitude: latitude, longitude: longitude)
                             self.statusArray.append(newStatus)
                             returnArray.append(newStatus)
-                            print("returnarray count directly afterloading: \(returnArray.count)")
+                            
                             
                             self.statusArray = filterMatchLocations()
                             returnArray = self.statusArray
@@ -305,7 +296,6 @@ class AvailableDatesViewController: UIViewController {
                                 expiredIDs.append(id.userID)
                             }
                             
-                            print("this is statusarray count before removing expired IDs: \(statusArray.count)")
                             
                             for (index, status) in statusArray.enumerated() {
                              
@@ -339,37 +329,21 @@ class AvailableDatesViewController: UIViewController {
             print("no user is currently signed in")
         }
         
-        let currentCollection = db.collection("users").document(firebaseID).collection("profile")
-        let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
+        guard let realm = RealmManager.getRealm() else {return}
+        self.userProfileArray = []
         
-        query.getDocuments { querySnapshot, error in
+        if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
             
-            self.userProfileArray = []
+            let imageString = realmProfile.picture?.base64EncodedString()
             
-            if let e = error {
-                print("There was an issue retrieving data from Firestore: \(e)")
-            } else {
-                
-                if let snapshotDocuments = querySnapshot?.documents {
-                    
-                    for doc in snapshotDocuments {
-                        
-                        let data = doc.data()
-                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
-                            let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
-                            self.userProfileArray.append(profile)
-                            self.dataLoadedArray.append(true)
-                            print("user true added")
-                            
-                            DispatchQueue.main.async {
-                                
-                                self.availableDatesTable.reloadData()
-                            }
-                            
-                        }
-                    }
-                }
-            }
+            let profile = ProfileModel(age: realmProfile.age, gender: realmProfile.gender, name: realmProfile.name, picture: imageString ?? "none", userID: realmProfile.userID)
+                                        self.userProfileArray.append(profile)
+                                        self.dataLoadedArray.append(true)
+            
+                                        DispatchQueue.main.async {
+            
+                                            self.availableDatesTable.reloadData()
+                                        }
         }
     }
     
@@ -385,9 +359,6 @@ class AvailableDatesViewController: UIViewController {
         
         for status in statuses {
             
-            print(firebaseID)
-            print(status.daterID)
-            
             let currentCollection = db.collection("users").document(status.daterID).collection("profile")
             let query = currentCollection.whereField("userID", isEqualTo: status.daterID)
            
@@ -397,14 +368,11 @@ class AvailableDatesViewController: UIViewController {
                
                     
                 for doc in querySnapshot.documents {
-                        
-                        print("we've got some documents")
-                        
+
                         let data = doc.data()
                         if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
                             let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
                             self.profilesArray.append(profile)
-                            print("this is the profilesArray count as soon as the data is downloaded: \(self.profilesArray.count)")
                          
                             var expiredIDs: [String] = []
                  
@@ -678,25 +646,16 @@ extension AvailableDatesViewController: UITableViewDelegate {
     }
     
     func checkIfAlreadyMatched(indexPath: IndexPath) async -> Bool {
-        
-        var isAlreadyMatched = false
-        var matchStatusIDs: [String] = []
-        let userCollection = db.collection("users").document(firebaseID).collection("matchStatuses")
-        
-        do {
-           let querySnapshot = try await userCollection.getDocuments()
-            for doc in querySnapshot.documents {
-                matchStatusIDs.append(doc.documentID)
-            }
-            if matchStatusIDs.contains(statusArray[indexPath.row - 1].daterID) {
-                    isAlreadyMatched = true
-                }
 
-        } catch {
-            print("error getting user's matchStatuses: \(error)")
-        }
+        guard let realm = RealmManager.getRealm() else {return false}
         
-        return isAlreadyMatched
+        let existingMatches = realm.objects(RMatchModel.self)
+        for match in existingMatches {
+            if match.userID == statusArray[indexPath.row - 1].daterID {
+                return true
+            }
+        }
+        return false
     }
     
     func matchWithUser(indexPath: IndexPath) {
@@ -722,7 +681,8 @@ extension AvailableDatesViewController: UITableViewDelegate {
                 "age" : self.userProfileArray[0].age,
                 "gender" : self.userProfileArray[0].gender,
             "accepted" : false,
-            "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken")
+            "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
+            "realmID" : UUID().uuidString
         ]) { err in
             if let err = err {
                 print("error writing doc: \(err)")

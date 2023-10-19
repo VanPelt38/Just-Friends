@@ -98,18 +98,10 @@ extension MatchProfileViewController: UITableViewDataSource {
             default:
                 cell.textLabel!.text = "Loading..."
             }
-            
         }
-        
-        
         return cell
     }
-    
-    
-    
 }
 
 extension MatchProfileViewController: UITableViewDelegate {
-    
-    
 }

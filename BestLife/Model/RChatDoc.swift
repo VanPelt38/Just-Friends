@@ -14,4 +14,5 @@ class RChatDoc: Object {
     @Persisted var timeStamp: Date?
     @Persisted var userID = "none"
     @Persisted var message = "none"
+    @Persisted var chatID = "none"
 }

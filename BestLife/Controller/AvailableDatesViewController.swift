@@ -23,7 +23,7 @@ class AvailableDatesViewController: UIViewController {
     var userProfileArray: [ProfileModel] = []
     var profilesArray: [ProfileModel] = []
     var dataLoadedArray: [Bool] = []
-    var expiringMatchesArray: [ExpiringMatchesModel] = []
+    var expiringMatchesArray: [RExpiringMatch] = []
     var ownName = "Jake"
     var dateActivity = "none"
     var dateTime = "none"
@@ -32,7 +32,6 @@ class AvailableDatesViewController: UIViewController {
     var ownMatchStatus = MatchModel()
     var location = CLLocation()
     var passedMatchProfile = ProfileModel()
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -83,19 +82,14 @@ class AvailableDatesViewController: UIViewController {
             } catch {
                 print(error)
             }
-            
         }
-
-        
     }
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         nooneAvailableMessage.isHidden = true
         loadUserProfile()
-        
         
         dataLoading()
 
@@ -197,9 +191,7 @@ class AvailableDatesViewController: UIViewController {
             ownMatchStatus.accepted = false
             ownMatchStatus.fcmToken = UserDefaults.standard.object(forKey: "fcmToken") as! String
 
-            
             destinationVC.ownMatch = ownMatchStatus
-            
         }
         
         if segue.identifier == "availableMatchProfileSeg" {
@@ -246,7 +238,6 @@ class AvailableDatesViewController: UIViewController {
                 let statuses = try await loadStatuses()
                 try await loadProfiles(statuses: statuses)
                 self.dataLoadedArray.append(true)
-                print("dataLoading true appended")
                 self.availableDatesTable.reloadData()
             } catch {
                 print(error)
@@ -306,9 +297,7 @@ class AvailableDatesViewController: UIViewController {
                                     
                             }
                             
-                            
                             DispatchQueue.main.async {
-                                
                                 self.availableDatesTable.reloadData()
                             }
                         }
@@ -377,7 +366,6 @@ class AvailableDatesViewController: UIViewController {
                             var expiredIDs: [String] = []
                  
                             for id in expiringMatchesArray {
-                                
                                 expiredIDs.append(id.userID)
                             }
                             
@@ -412,30 +400,20 @@ class AvailableDatesViewController: UIViewController {
         } else {
             print("no user is currently signed in")
         }
-            
-            let currentCollection = db.collection("users").document(firebaseID).collection("expiringRequests")
-
-            do {
-                let querySnapshot = try await currentCollection.getDocuments()
-                
-                for doc in querySnapshot.documents {
-                        let data = doc.data()
-                        if let userID = data["userID"] as? String, let timeStamp = data["timeStamp"] as? Timestamp {
-                            
-                            let date = timeStamp.dateValue()
-                            let expiringRequest = ExpiringMatchesModel(userID: userID, timeStamp: date)
-                            self.expiringMatchesArray.append(expiringRequest)
-                        }
-                    }
-            } catch {
-                print(error)
-            }
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        
+        let expiringRequests = realm.objects(RExpiringMatch.self)
+        for request in expiringRequests {
+            self.expiringMatchesArray.append(request)
+        }
     }
     
-    func filterExpiringMatches(matches: [ExpiringMatchesModel]) async -> [ExpiringMatchesModel] {
+    func filterExpiringMatches(matches: [RExpiringMatch]) async -> [RExpiringMatch] {
         
         let newArray = matches
-        var returnArray: [ExpiringMatchesModel] = []
+        var returnArray: [RExpiringMatch] = []
+        let realm = RealmManager.getRealm()
         
         for expiringMatch in newArray {
             
@@ -447,6 +425,14 @@ class AvailableDatesViewController: UIViewController {
                 
                 returnArray.append(expiringMatch)
             } else {
+                if let safeRealm = realm {
+                    if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
+                        try! safeRealm.write {
+                            safeRealm.delete(expiringRequestToDelete)
+                        }
+                    }
+                }
+                
                 let deleteMatchRef = db.collection("users").document(firebaseID).collection("expiringRequests").document(expiringMatch.userID)
                 
                 do {
@@ -660,14 +646,26 @@ extension AvailableDatesViewController: UITableViewDelegate {
     
     func matchWithUser(indexPath: IndexPath) {
         
+        guard let realm = RealmManager.getRealm() else {return}
+
         db.collection("users").document(firebaseID).collection("expiringRequests").document(statusArray[indexPath.row - 1].daterID).setData([
             "timeStamp": Date(),
             "userID": statusArray[indexPath.row - 1].daterID
-        ]) { err in
+        ]) { [self] err in
             
             if let err = err {
                 print("error writing doc: \(err)")
             } else {
+                
+                let id = db.collection("users").document(firebaseID).collection("expiringRequests").document(statusArray[indexPath.row - 1].daterID).documentID
+                
+                try! realm.write {
+                    var realmExpiringMatch = RExpiringMatch()
+                    realmExpiringMatch.id = id
+                    realmExpiringMatch.userID = firebaseID
+                    realmExpiringMatch.timeStamp = Date()
+                    realm.add(realmExpiringMatch, update: .all)
+                }
                 print("doc written successfully.")
             }
         }

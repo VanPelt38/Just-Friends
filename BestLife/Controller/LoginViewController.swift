@@ -104,35 +104,55 @@ class LoginViewController: UIViewController {
                     
                     let userID = Auth.auth().currentUser?.uid
                     
-                    if let safeID = userID {
-                        
-                        let userCollection = self.db.collection("users").document(safeID).collection("registration").document(safeID)
-                        do {
-                           let userDocument = try await userCollection.getDocument()
-                            if userDocument.exists {
-                                let data = userDocument.data()
-                                if let safeData = data {
-                                    if safeData["profileSetUp"] as? Bool ?? false {
-                                        performSegue(withIdentifier: "loginHomeSeg", sender: self)
-                                    } else {
-                                        performSegue(withIdentifier: "loginProfileSeg", sender: self)
-                                    }
-                                }
-                            } else {
-                                let userRegistrationID = self.db.collection("users").document(safeID).collection("registration").document(safeID)
-                                do {
-                                    try await userRegistrationID.setData([
-                                        "userID": safeID,
-                                        "profileSetUp": false
-                                    ])
+            if let safeID = userID {
+                
+                guard let realm = RealmManager.getRealm() else {return}
+                
+                if let existingRealmRegistration = realm.object(ofType: RRegistration.self, forPrimaryKey: safeID) {
+                    
+                    if existingRealmRegistration.profileSetUp {
+                        performSegue(withIdentifier: "loginHomeSeg", sender: self)
+                    } else {
+                        performSegue(withIdentifier: "loginProfileSeg", sender: self)
+                    }
+                } else {
+                    
+                    let userCollection = self.db.collection("users").document(safeID).collection("registration").document(safeID)
+                    do {
+                        let userDocument = try await userCollection.getDocument()
+                        if userDocument.exists {
+                            let data = userDocument.data()
+                            if let safeData = data {
+                                if safeData["profileSetUp"] as? Bool ?? false {
+                                    performSegue(withIdentifier: "loginHomeSeg", sender: self)
+                                } else {
                                     performSegue(withIdentifier: "loginProfileSeg", sender: self)
-                                } catch {
-                                    print("error setting userID")
                                 }
                             }
-                        } catch {
-                            print("error getting document: \(error)")
+                        } else {
+                            let userRegistrationID = self.db.collection("users").document(safeID).collection("registration").document(safeID)
+                            do {
+                                try await userRegistrationID.setData([
+                                    "userID": safeID,
+                                    "profileSetUp": false
+                                ])
+                                
+                                try! realm.write {
+                                    var realmRegistration = RRegistration()
+                                    realmRegistration.id = safeID
+                                    realmRegistration.profileSetUp = false
+                                    realm.add(realmRegistration, update: .all)
+                                }
+                                
+                                performSegue(withIdentifier: "loginProfileSeg", sender: self)
+                            } catch {
+                                print("error setting userID")
+                            }
                         }
+                    } catch {
+                        print("error getting document: \(error)")
+                    }
+            }
                     }
         } catch {
             DispatchQueue.main.async {

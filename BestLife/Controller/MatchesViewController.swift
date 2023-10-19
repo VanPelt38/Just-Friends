@@ -108,34 +108,19 @@ class MatchesViewController: UIViewController {
         } else {
             print("no user is currently signed in")
         }
-
-        let secondCollection = db.collection("statuses")
-        let query = secondCollection.whereField("userID", isEqualTo: firebaseID)
-
-            do {
-                let secondSnapshot = try await query.getDocuments()
-
-                var statusDict: [String: Any] = [:]
-
-                for doc in secondSnapshot.documents {
-                    statusDict = doc.data()
-                }
                 
                 guard let realm = RealmManager.getRealm() else {return}
                 
-                if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
+        if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first, let realmStatus = realm.object(ofType: RStatus.self, forPrimaryKey: firebaseID) {
                     
                     let imageString = realmProfile.picture?.base64EncodedString()
                     
-                    if let safeImageString = imageString, let activity = statusDict["activity"] as? String, let time = statusDict["time"] as? String, let fcmToken = statusDict["fcmToken"] as? String {
+            if let safeImageString = imageString {
                         
-                        var myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: safeImageString, dateActivity: activity, dateTime: time, ID: realmProfile.userID, accepted: false, fcmToken: fcmToken, chatID: "")
+                var myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: safeImageString, dateActivity: realmStatus.dateActivity, dateTime: realmStatus.dateTime, ID: realmProfile.userID, accepted: false, fcmToken: realmStatus.fcmToken, chatID: "")
                         ownMatch = myProfile
                     }
                 }
-            } catch {
-                print(error)
-            }
     }
     
     func deleteNotifications() async {
@@ -222,6 +207,15 @@ class MatchesViewController: UIViewController {
             try await chatRef.delete()
         } catch {
             print("error deleting chat: \(error)")
+        }
+        
+        let realmChats = realm.objects(RChatDoc.self)
+        for chat in realmChats {
+            if chat.chatID == matchesArray[indexPath].chatID {
+                try! realm.write {
+                    realm.delete(chat)
+                }
+            }
         }
         
         matchesArray.remove(at: indexPath)
@@ -467,10 +461,9 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                 
                 
                 let chatID = IDgenerator()
-                matchIDForChat = matchesArray[indexPath.row].userID
+                matchIDForChat = matchesArray[indexPath.row].id
                 let myFunctions = Functions.functions()
                 
-                print(matchesArray[indexPath.row])
                 let data: [String: Any] = [
                     "suitor": matchesArray[indexPath.row].fcmToken,
                     "suitee": self.firebaseID
@@ -547,7 +540,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             matchesArray[indexPath.row].accepted = true
                             matchesTableView.reloadData()
                         }
-                    }
+                    }    
                 }
                 
                 asyncHandler(alertAction)

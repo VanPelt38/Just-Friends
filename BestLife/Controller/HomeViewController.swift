@@ -29,6 +29,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
 
         loadAllUserData()
+        flagProfileSetUpInRealm()
         setDistancePreference()
         
         
@@ -88,6 +89,21 @@ class HomeViewController: UIViewController {
         
     }
     
+    func flagProfileSetUpInRealm() {
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        
+        if let safeID = firebaseID {
+            
+            try! realm.write {
+                var realmRegistration = RRegistration()
+                realmRegistration.id = safeID
+                realmRegistration.profileSetUp = true
+                realm.add(realmRegistration, update: .all)
+            }
+        }
+    }
+    
     func loadLocalProfile() {
         
         guard let realm = RealmManager.getRealm() else {return}
@@ -121,7 +137,6 @@ class HomeViewController: UIViewController {
         }
     }
     
-    
     func loadExpiringRequests() async {
         
         guard let realm = RealmManager.getRealm() else {return}
@@ -144,9 +159,8 @@ class HomeViewController: UIViewController {
                             realmExpiringMatch.id = doc.documentID
                             realmExpiringMatch.userID = userID
                             realmExpiringMatch.timeStamp = timeStamp.dateValue()
-                            realm.add(realmExpiringMatch, update: .modified)
+                            realm.add(realmExpiringMatch, update: .all)
                         }
-                        
                     }
                 }
                 
@@ -180,6 +194,7 @@ class HomeViewController: UIViewController {
                                 realmMessage.message = message
                                 realmMessage.timeStamp = timeStamp.dateValue()
                                 realmMessage.userID = userID
+                                realmMessage.chatID = chatID
                                 realm.add(realmMessage, update: .all)
                             }
                         }

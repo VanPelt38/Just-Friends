@@ -78,11 +78,23 @@ class DatePlanViewController: UIViewController {
                         }
                     }
                     
-                    if docsArray.count == 0 {
+                    if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
                         
+                        guard let realm = RealmManager.getRealm() else {return}
                         
+                        try! realm.write {
+                            let realmStatus = RStatus()
+                            realmStatus.id = firebaseID
+                            realmStatus.dateActivity = safeActivity
+                            realmStatus.dateTime = timeChosen
+                            realmStatus.fcmToken = UserDefaults.standard.object(forKey: "fcmToken") as! String
+                            realmStatus.latitude = locationManager.location?.coordinate.latitude ?? 0.0
+                            realmStatus.longitued = locationManager.location?.coordinate.longitude ?? 0.0
+                            realm.add(realmStatus, update: .all)
+                        }
                         
-                        if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
+                        if docsArray.count == 0 {
+                            
                             
                             db.collection("statuses").addDocument(data: [
                                 "activity": safeActivity,
@@ -105,13 +117,8 @@ class DatePlanViewController: UIViewController {
                             }
                             
                             
-                        }
-                        
-                    } else {
-                        
-                        if let safeActivity = activity {
                             
-                            print("this is what the activity is after binding: \(safeActivity)")
+                        } else {
                             
                             let docname = docsArray[0].documentID
                             db.collection("statuses").document(docname).setData([
@@ -129,6 +136,7 @@ class DatePlanViewController: UIViewController {
                                     print("doc written successfully.")
                                 }
                             }
+                            
                         }
                     }
                 }

@@ -18,9 +18,9 @@ class ChatViewController: UIViewController {
     var firebaseID = ""
     var matchID = ""
     private let db = Firestore.firestore()
-    var matchDetails = MatchModel()
-    var currentMessages: [MessageModel] = []
-    var sortedCurrentMessages: [MessageModel] = []
+    var matchDetails = RMatchModel()
+    var currentMessages: [RChatDoc] = []
+    var sortedCurrentMessages: [RChatDoc] = []
     var chatFieldOriginalY: CGFloat = 0.0
     var tableViewOriginalY: CGFloat = 0.0
     
@@ -31,7 +31,6 @@ class ChatViewController: UIViewController {
         
         IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
         
-
         currentMessages = []
         sortedCurrentMessages = []
         
@@ -52,22 +51,29 @@ class ChatViewController: UIViewController {
                         
                         let documentData = change.document.data()
                         
-                        if let time = documentData["timeStamp"] as? Timestamp {
+                        if let time = documentData["timeStamp"] as? Timestamp, let userID = documentData["ID"] as? String, let message = documentData["message"] as? String {
                             
                             let messageTime = time.dateValue()
                             
-                            if messageTime > currentTime {
+                            if messageTime > currentTime && userID != firebaseID {
                                 
+                                guard let realm = RealmManager.getRealm() else {return}
                                 
-                                currentMessages = []
-                                sortedCurrentMessages = []
-                                
-                                Task.init {
-                                    try await loadChatMessages()
+                                try! realm.write {
                                     
+                                    var newMessage = RChatDoc()
+                                    newMessage.id = change.document.documentID
+                                    newMessage.message = message
+                                    newMessage.timeStamp = messageTime
+                                    newMessage.userID = userID
+                                    newMessage.chatID = matchDetails.chatID
+                                    realm.add(newMessage)
+                                    
+                                    currentMessages.append(newMessage)
+                                    sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
+                                }
                                     chatTableView.reloadData()
                                     scrollToBottom()
-                                }
                             }
                         }
                         
@@ -80,8 +86,6 @@ class ChatViewController: UIViewController {
         
         chatTableView.delegate = self
         chatTableView.dataSource = self
-        
-        
         
         chatTextField.delegate = self
         
@@ -113,7 +117,6 @@ class ChatViewController: UIViewController {
                     scrollToBottom()
                 }
             }
-        
     }
     
     @objc func keyboardWillHide(_ notification: Notification) {
@@ -149,64 +152,25 @@ class ChatViewController: UIViewController {
             print("no user is currently signed in")
         }
         
-        let currentCollection = db.collection("users").document(firebaseID).collection("matchStatuses")
-        let query = currentCollection.whereField("ID", isEqualTo: matchID)
+        guard let realm = RealmManager.getRealm() else {return}
         
-        do {
-            let querySnapshot = try await query.getDocuments()
-        
-
-                    
-                    for doc in querySnapshot.documents {
-                        
-                        let data = doc.data()
-                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["imageURL"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let activity = data["activity"] as? String, let time = data["time"] as? String, let chatID = data["chatID"] as? String, let fcmToken = data["fcmToken"] as? String, let realmID = data["realmID"] as? String {
-                            
-                            let newModel = MatchModel(name: name, age: age, gender: gender, imageURL: picture, dateActivity: activity, dateTime: time, ID: userID, accepted: accepted, fcmToken: fcmToken, chatID: chatID, realmID: realmID)
-                            self.matchDetails = newModel
-                        }
-                    }
-                
-        } catch {
-            print("there was error getting firestore stuff: \(error)")
+        if let match = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchID) {
+            self.matchDetails = match
         }
     }
     
     func loadChatMessages() async {
-
+        
         self.currentMessages = []
         self.sortedCurrentMessages = []
-            
-            let currentCollection = db.collection("chats").document(matchDetails.chatID).collection("messages")
-          
-        do {
-            let querySnapshot = try await currentCollection.getDocuments()
-           
-                    
-                
-                        
-            for doc in querySnapshot.documents {
-                            
-                           
-                            
-                            let data = doc.data()
-                            if let message = data["message"] as? String, let userID = data["ID"] as? String, let timeStamp = data["timeStamp"] as? Timestamp {
-                                let time = timeStamp.dateValue()
-                                
-                                var newMessage = MessageModel(userID: userID, message: message, time: time)
-                                
-                                self.currentMessages.append(newMessage)
-                                
-                               
-                                
-                            }
-                        }
-        } catch {
-            print("error loading: \(error)")
-                }
-            
-            
-            sortedCurrentMessages = currentMessages.sorted { $0.time! < $1.time! }
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        
+        let chats = realm.objects(RChatDoc.self).filter("chatID == %@", matchDetails.chatID)
+        for chat in chats {
+            self.currentMessages.append(chat)
+        }
+        sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
        
             chatTableView.reloadData()
         scrollToBottom()
@@ -215,31 +179,39 @@ class ChatViewController: UIViewController {
 
     
     func saveChatToFirestore(_ message: String) async {
-
-
-        var newMessage = MessageModel(userID: firebaseID, message: message, time: Date())
+        
+        var newMessage = RChatDoc()
+        newMessage.timeStamp = Date()
+        newMessage.userID = firebaseID
+        newMessage.message = message
+        newMessage.chatID = matchDetails.chatID
         
         currentMessages.append(newMessage)
-        sortedCurrentMessages = currentMessages.sorted { $0.time! < $1.time! }
+        sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
         
         chatTableView.reloadData()
         scrollToBottom()
         
         do {
             
-            try await db.collection("chats").document(matchDetails.chatID).collection("messages").addDocument(data:
+            let docRef = try await db.collection("chats").document(matchDetails.chatID).collection("messages").addDocument(data:
                                                                                                                 [
                                                                                                                     "message" : message,
                                                                                                                     "ID" : firebaseID,
                                                                                                                     "timeStamp" : Date()
                                                                                                                 ]
-            ) } catch {
-                print(error)
+            )
+            
+            guard let realm = RealmManager.getRealm() else {return}
+            
+            try! realm.write {
+                newMessage.id = docRef.documentID
+                realm.add(newMessage)
             }
             
-            
-
-
+        } catch {
+                print(error)
+            }
     }
 
     
@@ -298,10 +270,6 @@ extension ChatViewController: UITableViewDataSource {
         }
         
     }
-    
-    
-    
-    
 }
 
 extension ChatViewController: UITableViewDelegate {

@@ -27,6 +27,8 @@
 		238625192A5A11170086DAE6 /* MatchProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238625182A5A11170086DAE6 /* MatchProfileViewController.swift */; };
 		239A19B0296BB5F1005B6294 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 239A19AF296BB5F1005B6294 /* FirebaseAnalytics */; };
 		239A19B2296BB5F1005B6294 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 239A19B1296BB5F1005B6294 /* FirebaseAuth */; };
+		23AB196E2ADF3F11007E64AA /* RRegistration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23AB196D2ADF3F11007E64AA /* RRegistration.swift */; };
+		23AB19702AE1CC27007E64AA /* RStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23AB196F2AE1CC27007E64AA /* RStatus.swift */; };
 		23B4F730294B845E00C9DFB5 /* DatePlanModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B4F72F294B845E00C9DFB5 /* DatePlanModel.swift */; };
 		23B4F732294B8F5100C9DFB5 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B4F731294B8F5100C9DFB5 /* LoginViewController.swift */; };
 		23D2AAE8293EA5100083BA22 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D2AAE7293EA5100083BA22 /* AppDelegate.swift */; };
@@ -66,6 +68,8 @@
 		2385C13029E9B71300EAF12E /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		238625182A5A11170086DAE6 /* MatchProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchProfileViewController.swift; sourceTree = "<group>"; };
 		2388E18D29E618D6000C83E9 /* BestLifeDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BestLifeDebug.entitlements; sourceTree = "<group>"; };
+		23AB196D2ADF3F11007E64AA /* RRegistration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RRegistration.swift; sourceTree = "<group>"; };
+		23AB196F2AE1CC27007E64AA /* RStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RStatus.swift; sourceTree = "<group>"; };
 		23B4F72F294B845E00C9DFB5 /* DatePlanModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePlanModel.swift; sourceTree = "<group>"; };
 		23B4F731294B8F5100C9DFB5 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		23D2AAE4293EA5100083BA22 /* BestLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BestLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -165,6 +169,8 @@
 				23DE216B2AC0DEA8005A31CF /* RealmManager.swift */,
 				2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */,
 				236411702AD4B10200EAEB92 /* RChatDoc.swift */,
+				23AB196D2ADF3F11007E64AA /* RRegistration.swift */,
+				23AB196F2AE1CC27007E64AA /* RStatus.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -301,6 +307,7 @@
 				23DE216C2AC0DEA8005A31CF /* RealmManager.swift in Sources */,
 				23DE21702AC61092005A31CF /* RMatchModel.swift in Sources */,
 				2364116F2AD4995300EAEB92 /* RExpiringMatch.swift in Sources */,
+				23AB196E2ADF3F11007E64AA /* RRegistration.swift in Sources */,
 				23D2AB06294B7EFC0083BA22 /* AvailableDatesViewController.swift in Sources */,
 				23D2AB0A294B7F350083BA22 /* ChatViewController.swift in Sources */,
 				23D2AAEC293EA5100083BA22 /* HomeViewController.swift in Sources */,
@@ -320,6 +327,7 @@
 				23D2AAEA293EA5100083BA22 /* SceneDelegate.swift in Sources */,
 				23B4F732294B8F5100C9DFB5 /* LoginViewController.swift in Sources */,
 				23D2AAF2293EA5100083BA22 /* BestLife.xcdatamodeld in Sources */,
+				23AB19702AE1CC27007E64AA /* RStatus.swift in Sources */,
 				2318081A2A530ACF0051012B /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

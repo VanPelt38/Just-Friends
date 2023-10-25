@@ -28,6 +28,8 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setUpUI()
+        loadLocalProfile()
         loadAllUserData()
         flagProfileSetUpInRealm()
         setDistancePreference()
@@ -60,6 +62,12 @@ class HomeViewController: UIViewController {
     @IBAction func profilePressed(_ sender: UIButton) {
         
         performSegue(withIdentifier: "homeProfileSeg", sender: self)
+    }
+    
+    func setUpUI() {
+        
+        profilePicture.layer.cornerRadius = profilePicture.frame.width / 2
+        profilePicture.clipsToBounds = true
     }
     
     func setDistancePreference() {
@@ -96,7 +104,7 @@ class HomeViewController: UIViewController {
         if let safeID = firebaseID {
             
             try! realm.write {
-                var realmRegistration = RRegistration()
+                let realmRegistration = RRegistration()
                 realmRegistration.id = safeID
                 realmRegistration.profileSetUp = true
                 realm.add(realmRegistration, update: .all)
@@ -106,8 +114,14 @@ class HomeViewController: UIViewController {
     
     func loadLocalProfile() {
         
-        guard let realm = RealmManager.getRealm() else {return}
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
         
+        guard let realm = RealmManager.getRealm() else {return}
+ 
                 if let profile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
                     DispatchQueue.main.async {
                         self.helloUser.text = "Hi \(profile.name)!"
@@ -155,7 +169,7 @@ class HomeViewController: UIViewController {
                         
                         try! realm.write {
                             
-                            var realmExpiringMatch = RExpiringMatch()
+                            let realmExpiringMatch = RExpiringMatch()
                             realmExpiringMatch.id = doc.documentID
                             realmExpiringMatch.userID = userID
                             realmExpiringMatch.timeStamp = timeStamp.dateValue()
@@ -220,24 +234,25 @@ class HomeViewController: UIViewController {
                 for doc in querySnapshot.documents {
 
                     let data = doc.data()
-                    if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
+                    if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String, let profilePicRef = data["profilePicRef"] as? String {
 
                         DispatchQueue.main.async {
 
                             self.helloUser.text = "Hi \(name)!"
 
-                            if let url = URL(string:  picture) {
+                            if let url = URL(string: picture) {
 
                                 do {
                                     let data = try Data(contentsOf: url)
                                     let image = UIImage(data: data)
                                     try! realm.write {
-                                    var realmProfile = RProfile()
+                                        let realmProfile = RProfile()
                                     realmProfile.age = age
                                     realmProfile.gender = gender
                                     realmProfile.name = name
                                     realmProfile.userID = userID
                                     realmProfile.picture = data
+                                        realmProfile.profilePicRef = profilePicRef
                                         realm.add(realmProfile, update: .modified)
                                     }
                                     self.profilePicture.image = image
@@ -267,7 +282,7 @@ class HomeViewController: UIViewController {
                 for doc in querySnapshot.documents {
                     
                     let data = doc.data()
-                    if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String, let chatID = data["chatID"] as? String, let realmID = data["realmID"] as? String {
+                    if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String, let chatID = data["chatID"] as? String, let realmID = data["realmID"] as? String, let ownUserID = data["ownUserID"] as? String {
                         
                         try! realm.write {
                             
@@ -283,6 +298,7 @@ class HomeViewController: UIViewController {
                             realmMatch.fcmToken = fcmToken
                             realmMatch.chatID = chatID
                             realmMatch.id = realmID
+                            realmMatch.ownUserID = ownUserID
                             realm.add(realmMatch, update: .all)
                         }
                         

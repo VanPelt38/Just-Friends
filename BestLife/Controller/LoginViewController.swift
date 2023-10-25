@@ -138,7 +138,7 @@ class LoginViewController: UIViewController {
                                 ])
                                 
                                 try! realm.write {
-                                    var realmRegistration = RRegistration()
+                                    let realmRegistration = RRegistration()
                                     realmRegistration.id = safeID
                                     realmRegistration.profileSetUp = false
                                     realm.add(realmRegistration, update: .all)

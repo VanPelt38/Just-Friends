@@ -74,7 +74,6 @@ class DatePlanViewController: UIViewController {
                             
                             docsArray.append(doc)
                             
-                            print("this is count of docsarray: \(docsArray.count)")
                         }
                     }
                     

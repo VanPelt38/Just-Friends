@@ -21,4 +21,5 @@ class RMatchModel: Object {
     @Persisted var accepted = false
     @Persisted var fcmToken = "none"
     @Persisted var chatID = "none"
+    @Persisted var ownUserID = "none"
 }

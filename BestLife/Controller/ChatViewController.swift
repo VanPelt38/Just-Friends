@@ -61,7 +61,7 @@ class ChatViewController: UIViewController {
                                 
                                 try! realm.write {
                                     
-                                    var newMessage = RChatDoc()
+                                    let newMessage = RChatDoc()
                                     newMessage.id = change.document.documentID
                                     newMessage.message = message
                                     newMessage.timeStamp = messageTime
@@ -153,9 +153,11 @@ class ChatViewController: UIViewController {
         }
         
         guard let realm = RealmManager.getRealm() else {return}
-        
+
         if let match = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchID) {
+            
             self.matchDetails = match
+    
         }
     }
     
@@ -180,7 +182,7 @@ class ChatViewController: UIViewController {
     
     func saveChatToFirestore(_ message: String) async {
         
-        var newMessage = RChatDoc()
+        let newMessage = RChatDoc()
         newMessage.timeStamp = Date()
         newMessage.userID = firebaseID
         newMessage.message = message

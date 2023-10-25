@@ -9,6 +9,7 @@ import UIKit
 import Firebase
 import FirebaseAuth
 import FirebaseFunctions
+import Kingfisher
 
 class MatchesViewController: UIViewController {
 
@@ -70,11 +71,11 @@ class MatchesViewController: UIViewController {
                 let data = doc.data()
                 if !currentMatchIDs.contains(data["ID"] as? String ?? "none") {
                     
-                    if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String, let chatID = data["chatID"] as? String, let realmID = data["realmID"] as? String {
+                    if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String, let chatID = data["chatID"] as? String, let realmID = data["realmID"] as? String, let ownUserID = data["ownUserID"] as? String {
                         
                         try! realm.write {
                             
-                            var realmMatch = RMatchModel()
+                            let realmMatch = RMatchModel()
                             realmMatch.name = name
                             realmMatch.age = age
                             realmMatch.gender = gender
@@ -86,6 +87,7 @@ class MatchesViewController: UIViewController {
                             realmMatch.fcmToken = fcmToken
                             realmMatch.chatID = chatID
                             realmMatch.id = realmID
+                            realmMatch.ownUserID = ownUserID
                             realm.add(realmMatch, update: .all)
                             
                             DispatchQueue.main.async {
@@ -117,7 +119,7 @@ class MatchesViewController: UIViewController {
                     
             if let safeImageString = imageString {
                         
-                var myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: safeImageString, dateActivity: realmStatus.dateActivity, dateTime: realmStatus.dateTime, ID: realmProfile.userID, accepted: false, fcmToken: realmStatus.fcmToken, chatID: "")
+                let myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: safeImageString, dateActivity: realmStatus.dateActivity, dateTime: realmStatus.dateTime, ID: realmProfile.userID, accepted: false, fcmToken: realmStatus.fcmToken, chatID: "")
                         ownMatch = myProfile
                     }
                 }
@@ -157,7 +159,7 @@ class MatchesViewController: UIViewController {
         
         guard let realm = RealmManager.getRealm() else {return}
         
-        let existingMatches = realm.objects(RMatchModel.self)
+        let existingMatches = realm.objects(RMatchModel.self).filter("ownUserID == %@", firebaseID)
         for match in existingMatches {
             matchesArray.append(match)
         }
@@ -326,16 +328,7 @@ extension MatchesViewController: UITableViewDataSource {
         DispatchQueue.main.async {
             
             if let url = URL(string: self.matchesArray[indexPath.row].imageURL) {
-                
-                do {
-                    
-                    let data = try Data(contentsOf: url)
-                    let image = UIImage(data: data)
-                    cell.profilePicture.image = image
-                } catch {
-                    
-                    print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
-                }
+                    cell.profilePicture.kf.setImage(with: url, options: [.cacheOriginalImage])
             }
         }
         
@@ -385,7 +378,7 @@ extension MatchesViewController: UITableViewDelegate {
         
         if matchesArray[indexPath.row].accepted == true {
             
-            matchIDForChat = matchesArray[indexPath.row].userID
+            matchIDForChat = matchesArray[indexPath.row].id
             
             performSegue(withIdentifier: "matchesChatSeg", sender: self)
         }
@@ -522,7 +515,8 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             "accepted" : true,
                             "fcmToken" : ownMatch.fcmToken,
                             "chatID" : chatID,
-                            "realmID" : UUID().uuidString
+                            "realmID" : UUID().uuidString,
+                            "ownUserID" : matchesArray[indexPath.row].userID
                         ]) { err in
                             if let err = err {
                                 print("error writing doc: \(err)")
@@ -531,7 +525,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             }
                         }
                         
-                        var daterID = matchesArray[indexPath.row].userID
+                        let daterID = matchesArray[indexPath.row].userID
                         
                         await addNotification(daterID: daterID, firebaseID: firebaseID)
   

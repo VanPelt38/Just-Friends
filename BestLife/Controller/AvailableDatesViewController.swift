@@ -10,6 +10,7 @@ import Firebase
 import FirebaseFunctions
 import FirebaseAuth
 import CoreLocation
+import Kingfisher
 
 
 class AvailableDatesViewController: UIViewController {
@@ -570,15 +571,7 @@ extension AvailableDatesViewController: UITableViewDataSource {
                     
                     if let url = URL(string: self.profilesArray[indexPath.row - 1].picture) {
                         
-                        do {
-                            
-                            let data = try Data(contentsOf: url)
-                            let image = UIImage(data: data)
-                            cell.profilePicture.image = image
-                        } catch {
-                            
-                            print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
-                        }
+                        cell.profilePicture.kf.setImage(with: url, options: [.cacheOriginalImage])
                     }
                 }
                 
@@ -680,7 +673,8 @@ extension AvailableDatesViewController: UITableViewDelegate {
                 "gender" : self.userProfileArray[0].gender,
             "accepted" : false,
             "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
-            "realmID" : UUID().uuidString
+            "realmID" : UUID().uuidString,
+            "ownUserID" : statusArray[indexPath.row - 1].daterID
         ]) { err in
             if let err = err {
                 print("error writing doc: \(err)")

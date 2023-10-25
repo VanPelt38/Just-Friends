@@ -33,9 +33,9 @@ class DistanceViewController: UIViewController {
 
     @IBAction func distanceChanged(_ sender: UISlider) {
         
-        var distance = sender.value * 100
-        var roundedDistance = distance.rounded()
-        var userNumber = Int(roundedDistance)
+        let distance = sender.value * 100
+        let roundedDistance = distance.rounded()
+        let userNumber = Int(roundedDistance)
         self.distanceLabel.text = "\(userNumber)km"
         self.distanceChosen = userNumber * 1000
         

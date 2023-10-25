@@ -24,6 +24,8 @@ class MyProfileViewController: UIViewController {
     private let db = Firestore.firestore()
     var imageString: String?
     var imageExtension = ""
+    var profilePicRef = ""
+    var newPicHasBeenChosen = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,14 +40,16 @@ class MyProfileViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if let safeImage = profilePicture.image {
-            
-            let realmImage = convertImageToData(image: safeImage)
-            persistPictureLocally(realmPicture: realmImage)
-            
-            Task.init {
-                imageString = await uploadImageToFireStorage(picture: safeImage)
-                await saveImageToFireStore(imageURL: imageString ?? "none")
+        if newPicHasBeenChosen {
+            if let safeImage = profilePicture.image {
+                
+                let realmImage = convertImageToData(image: safeImage)
+                persistPictureLocally(realmPicture: realmImage)
+                
+                Task.init {
+                    imageString = await uploadImageToFireStorage(picture: safeImage)
+                    await saveImageToFireStore(imageURL: imageString ?? "none")
+                }
             }
         }
     }
@@ -123,6 +127,7 @@ class MyProfileViewController: UIViewController {
             self.profileDetailsArray.append(profile.name)
             self.profileDetailsArray.append(String(profile.age))
             self.profileDetailsArray.append(profile.gender)
+            self.profilePicRef = profile.profilePicRef
             
             DispatchQueue.main.async {
                 
@@ -204,7 +209,7 @@ extension MyProfileViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let pickedImage = info[.originalImage] as? UIImage {
-            
+            newPicHasBeenChosen = true
             profilePicture.image = pickedImage
             
             let photoPath = info[UIImagePickerController.InfoKey.referenceURL] as! NSURL
@@ -234,8 +239,7 @@ extension MyProfileViewController: UIImagePickerControllerDelegate {
         
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let imageID = UserDefaults.standard.value(forKey: "profilePicRef")
-        let imageFileName = "\(imageID).jpg"
+        let imageFileName = profilePicRef
         let imageRef = storageRef.child("images/\(imageFileName)")
         
         do {

@@ -31,6 +31,7 @@ class ProfileSetUpViewController: UIViewController {
     var userID: String?
     var imageExtension = ""
     private let db = Firestore.firestore()
+    var profilePicRef = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,18 +82,18 @@ class ProfileSetUpViewController: UIViewController {
         if isImageChosen == true && nameTextField.text != "" && isAgeChosen == true && gender != nil {
 
             if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
-                
-                let realmProfile = RProfile()
-                realmProfile.age = calculatedAge(date: ageDatePicker.date)
-                realmProfile.gender = userGender
-                realmProfile.name = userName
-                realmProfile.picture = convertImageToData(image: image)
-                realmProfile.userID = id
-                   
-                persistProfileLocally(realmProfile: realmProfile)
-                
+ 
                     Task.init {
                         imageString = await uploadImageToFireStorage(picture: image)
+                        
+                        let realmProfile = RProfile()
+                        realmProfile.age = calculatedAge(date: ageDatePicker.date)
+                        realmProfile.gender = userGender
+                        realmProfile.name = userName
+                        realmProfile.picture = convertImageToData(image: image)
+                        realmProfile.userID = id
+                        persistProfileLocally(realmProfile: realmProfile)
+                        
                         await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
                         await flagProfileSetUp(id: id)
                         self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
@@ -136,7 +137,8 @@ class ProfileSetUpViewController: UIViewController {
                 "gender": userGender,
                 "name": userName,
                 "picture": imageURL,
-                "userID": id
+                "userID": id,
+                "profilePicRef": profilePicRef
             ])
         } catch {
             print("There was an issue saving data to firestore, \(error)")
@@ -164,13 +166,13 @@ class ProfileSetUpViewController: UIViewController {
         let storage = Storage.storage()
         let storageRef = storage.reference()
         let imageFileName = "\(UUID().uuidString).jpg"
-        UserDefaults.standard.set(imageFileName, forKey: "profilePicRef")
+        profilePicRef = imageFileName
         let imageRef = storageRef.child("images/\(imageFileName)")
         
         do {
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"
-            let uploadTask = try await imageRef.putDataAsync(imageData, metadata: metadata)
+            _ = try await imageRef.putDataAsync(imageData, metadata: metadata)
             let downloadURL = try await imageRef.downloadURL()
             return downloadURL.absoluteString
         } catch {

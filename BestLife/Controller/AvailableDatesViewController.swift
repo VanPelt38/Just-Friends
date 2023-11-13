@@ -323,10 +323,8 @@ class AvailableDatesViewController: UIViewController {
         self.userProfileArray = []
         
         if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
-            
-            let imageString = realmProfile.picture?.base64EncodedString()
-            
-            let profile = ProfileModel(age: realmProfile.age, gender: realmProfile.gender, name: realmProfile.name, picture: imageString ?? "none", userID: realmProfile.userID)
+
+            let profile = ProfileModel(age: realmProfile.age, gender: realmProfile.gender, name: realmProfile.name, picture: realmProfile.profilePicURL, userID: realmProfile.userID)
                                         self.userProfileArray.append(profile)
                                         self.dataLoadedArray.append(true)
             
@@ -404,7 +402,7 @@ class AvailableDatesViewController: UIViewController {
         
         guard let realm = RealmManager.getRealm() else {return}
         
-        let expiringRequests = realm.objects(RExpiringMatch.self)
+        let expiringRequests = realm.objects(RExpiringMatch.self).filter("ownUserID == %@", firebaseID)
         for request in expiringRequests {
             self.expiringMatchesArray.append(request)
         }
@@ -492,11 +490,11 @@ class AvailableDatesViewController: UIViewController {
     func filterMatchLocations() -> [DatePlanModel] {
         
     var filteredArray: [DatePlanModel] = []
-        var userLocation = CLLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+        let userLocation = CLLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
         
         for matchStatus in self.statusArray {
             
-            var matchLocation = CLLocation(latitude: matchStatus.latitude, longitude: matchStatus.longitude)
+            let matchLocation = CLLocation(latitude: matchStatus.latitude, longitude: matchStatus.longitude)
            
             if matchLocation.distance(from: userLocation) <= UserDefaults.standard.value(forKey: "distancePreference") as! CLLocationDistance {
                 filteredArray.append(matchStatus)
@@ -604,7 +602,6 @@ extension AvailableDatesViewController: UITableViewDelegate {
             
             Task.init {
                 let alreadyMatched = await checkIfAlreadyMatched(indexPath: indexPath)
-                
                 if alreadyMatched {
                     
                     let alreadyMatchedAlert = UIAlertController(title: "Uh oh", message: "Looks like the two of you are already connected. Try sending them a message instead!", preferredStyle: .alert)
@@ -640,30 +637,35 @@ extension AvailableDatesViewController: UITableViewDelegate {
     func matchWithUser(indexPath: IndexPath) {
         
         guard let realm = RealmManager.getRealm() else {return}
+        
+        var daterID = statusArray[indexPath.row - 1].daterID
+        var dateFirebaseDocID = statusArray[indexPath.row - 1].firebaseDocID
 
-        db.collection("users").document(firebaseID).collection("expiringRequests").document(statusArray[indexPath.row - 1].daterID).setData([
+        db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
             "timeStamp": Date(),
-            "userID": statusArray[indexPath.row - 1].daterID
+            "userID": daterID,
+            "ownUserID": firebaseID
         ]) { [self] err in
             
             if let err = err {
                 print("error writing doc: \(err)")
             } else {
-                
-                let id = db.collection("users").document(firebaseID).collection("expiringRequests").document(statusArray[indexPath.row - 1].daterID).documentID
+
+                let id = db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).documentID
                 
                 try! realm.write {
-                    var realmExpiringMatch = RExpiringMatch()
+                    let realmExpiringMatch = RExpiringMatch()
                     realmExpiringMatch.id = id
-                    realmExpiringMatch.userID = firebaseID
+                    realmExpiringMatch.userID = daterID
                     realmExpiringMatch.timeStamp = Date()
+                    realmExpiringMatch.ownUserID = firebaseID
                     realm.add(realmExpiringMatch, update: .all)
                 }
                 print("doc written successfully.")
             }
         }
         
-        db.collection("users").document(statusArray[indexPath.row - 1].daterID).collection("matchStatuses").document(firebaseID).setData([
+        db.collection("users").document(daterID).collection("matchStatuses").document(firebaseID).setData([
             "name" : self.userProfileArray[0].name,
             "imageURL" : self.userProfileArray[0].picture,
                 "activity" : dateActivity,
@@ -674,7 +676,8 @@ extension AvailableDatesViewController: UITableViewDelegate {
             "accepted" : false,
             "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
             "realmID" : UUID().uuidString,
-            "ownUserID" : statusArray[indexPath.row - 1].daterID
+            "ownUserID" : daterID,
+            "chatID" : "none"
         ]) { err in
             if let err = err {
                 print("error writing doc: \(err)")
@@ -683,16 +686,14 @@ extension AvailableDatesViewController: UITableViewDelegate {
             }
         }
         
-        var daterID = statusArray[indexPath.row - 1].daterID
-        
         Task.init {
             await addNotification(daterID: daterID, firebaseID: firebaseID)
         }
 
-        let docRef1 = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
+        let docRef1 = db.collection("statuses").document(dateFirebaseDocID)
         
-        let tappedPersonID = statusArray[indexPath.row - 1].daterID
-        let docRef = db.collection("statuses").document(statusArray[indexPath.row - 1].firebaseDocID)
+        let tappedPersonID = daterID
+        let docRef = db.collection("statuses").document(dateFirebaseDocID)
         docRef.updateData(["suitorID" : firebaseID]) { err in
             if let err = err {
                 print("error updating field: \(err)")

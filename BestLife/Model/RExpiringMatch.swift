@@ -13,4 +13,5 @@ class RExpiringMatch: Object {
     @Persisted(primaryKey: true) var id = ""
     @Persisted var timeStamp: Date?
     @Persisted var userID = "none"
+    @Persisted var ownUserID = "none"
 }

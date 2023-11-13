@@ -91,6 +91,7 @@ class ProfileSetUpViewController: UIViewController {
                         realmProfile.gender = userGender
                         realmProfile.name = userName
                         realmProfile.picture = convertImageToData(image: image)
+                        realmProfile.profilePicURL = imageString ?? "none"
                         realmProfile.userID = id
                         persistProfileLocally(realmProfile: realmProfile)
                         
@@ -202,7 +203,6 @@ class ProfileSetUpViewController: UIViewController {
         let dateComponents = calendar.dateComponents([.year], from: date, to: currentDate)
         if let years = dateComponents.year {
             age = abs(years)
-            print("Age: \(age)")
         }
         return age
     }

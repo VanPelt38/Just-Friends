@@ -56,7 +56,7 @@ class DatePlanViewController: UIViewController {
             var docsArray: [QueryDocumentSnapshot] = []
             let userID = UserDefaults.standard.object(forKey: "uniqueID")
             
-            var activity = activityTextField.text
+            let activity = activityTextField.text
             
             
             DispatchQueue.main.async { [self] in

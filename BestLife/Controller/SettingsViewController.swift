@@ -152,7 +152,9 @@ class SettingsViewController: UIViewController {
         
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let imageRef = UserDefaults.standard.string(forKey: "profilePicRef")
+        guard let realm = RealmManager.getRealm() else {return}
+        let userProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first
+        let imageRef = userProfile?.profilePicRef
         if let safeImageRef = imageRef {
             let storagePath = storageRef.child("images/\(safeImageRef)")
             do {

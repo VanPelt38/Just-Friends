@@ -148,6 +148,54 @@ class HomeViewController: UIViewController {
             await loadMatches()
             await loadExpiringRequests()
             await loadChats()
+            await loadStatus()
+        }
+    }
+    
+    func loadStatus() async {
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        if let safeID = firebaseID {
+            
+            let pathway = db.collection("statuses")
+            let query = pathway.whereField("userID", isEqualTo: safeID)
+            
+            do {
+                let querySnapshot = try await query.getDocuments()
+                
+                for doc in querySnapshot.documents {
+                    
+                    let data = doc.data()
+                    
+                    if let dateActivity = data["activity"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let time = data["time"] as? String {
+                        
+                        try! realm.write {
+                            
+                            let realmStatus = RStatus()
+                            realmStatus.id = safeID
+                            realmStatus.dateActivity = dateActivity
+                            realmStatus.dateTime = time
+                            realmStatus.latitude = latitude
+                            realmStatus.longitued = longitude
+                            if let fcmToken = data["fcmToken"] as? String {
+                                realmStatus.fcmToken = fcmToken
+                            }
+                            if let suitorID = data["suitorID"] as? String {
+                                realmStatus.suitorID = suitorID
+                            }
+                            if let suitorName = data["suitorName"] as? String {
+                                realmStatus.suitorName = suitorName
+                            }
+                            realmStatus.firebaseDocID = doc.documentID
+                            realm.add(realmStatus, update: .all)
+                        }
+                    }
+                    
+                }
+                
+            } catch {
+                print("error getting user status: \(error)")
+            }
         }
     }
     
@@ -165,7 +213,7 @@ class HomeViewController: UIViewController {
                 for doc in querySnapshot.documents {
                     
                     let data = doc.data()
-                    if let timeStamp = data["timeStamp"] as? Timestamp, let userID = data["ID"] as? String {
+                    if let timeStamp = data["timeStamp"] as? Timestamp, let userID = data["ID"] as? String, let ownUserID = data["ownUserID"] as? String {
                         
                         try! realm.write {
                             
@@ -173,6 +221,7 @@ class HomeViewController: UIViewController {
                             realmExpiringMatch.id = doc.documentID
                             realmExpiringMatch.userID = userID
                             realmExpiringMatch.timeStamp = timeStamp.dateValue()
+                            realmExpiringMatch.ownUserID = ownUserID
                             realm.add(realmExpiringMatch, update: .all)
                         }
                     }
@@ -203,7 +252,7 @@ class HomeViewController: UIViewController {
                             
                             try! realm.write {
                                 
-                                var realmMessage = RChatDoc()
+                                let realmMessage = RChatDoc()
                                 realmMessage.id = chat.documentID
                                 realmMessage.message = message
                                 realmMessage.timeStamp = timeStamp.dateValue()
@@ -252,8 +301,9 @@ class HomeViewController: UIViewController {
                                     realmProfile.name = name
                                     realmProfile.userID = userID
                                     realmProfile.picture = data
+                                        realmProfile.profilePicURL = picture
                                         realmProfile.profilePicRef = profilePicRef
-                                        realm.add(realmProfile, update: .modified)
+                                        realm.add(realmProfile, update: .all)
                                     }
                                     self.profilePicture.image = image
                                 } catch {
@@ -272,7 +322,6 @@ class HomeViewController: UIViewController {
         
         guard let realm = RealmManager.getRealm() else {return}
         if let safeID = firebaseID {
-            
             let pathway = db.collection("users").document(safeID).collection("matchStatuses")
             
             do {
@@ -280,13 +329,13 @@ class HomeViewController: UIViewController {
                 let querySnapshot = try await pathway.getDocuments()
                 
                 for doc in querySnapshot.documents {
-                    
+                  
                     let data = doc.data()
                     if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String, let chatID = data["chatID"] as? String, let realmID = data["realmID"] as? String, let ownUserID = data["ownUserID"] as? String {
                         
                         try! realm.write {
                             
-                            var realmMatch = RMatchModel()
+                            let realmMatch = RMatchModel()
                             realmMatch.name = name
                             realmMatch.age = age
                             realmMatch.gender = gender

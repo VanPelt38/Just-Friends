@@ -28,7 +28,7 @@ class ChatViewController: UIViewController {
         super.viewDidLoad()
         
         let currentTime = Date()
-        
+
         IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
         
         currentMessages = []
@@ -58,9 +58,9 @@ class ChatViewController: UIViewController {
                             if messageTime > currentTime && userID != firebaseID {
                                 
                                 guard let realm = RealmManager.getRealm() else {return}
-                                
+                           
                                 try! realm.write {
-                                    
+                                 
                                     let newMessage = RChatDoc()
                                     newMessage.id = change.document.documentID
                                     newMessage.message = message
@@ -154,10 +154,11 @@ class ChatViewController: UIViewController {
         
         guard let realm = RealmManager.getRealm() else {return}
 
-        if let match = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchID) {
+        try! realm.write {
             
-            self.matchDetails = match
-    
+            if let match = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchID) {
+                self.matchDetails = match
+            }
         }
     }
     
@@ -168,9 +169,13 @@ class ChatViewController: UIViewController {
         
         guard let realm = RealmManager.getRealm() else {return}
         
-        let chats = realm.objects(RChatDoc.self).filter("chatID == %@", matchDetails.chatID)
-        for chat in chats {
-            self.currentMessages.append(chat)
+        try! realm.write {
+            
+            let chats = realm.objects(RChatDoc.self).filter("chatID == %@", matchDetails.chatID)
+            for chat in chats {
+                self.currentMessages.append(chat)
+            }
+           
         }
         sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
        
@@ -205,7 +210,7 @@ class ChatViewController: UIViewController {
             )
             
             guard let realm = RealmManager.getRealm() else {return}
-            
+      
             try! realm.write {
                 newMessage.id = docRef.documentID
                 realm.add(newMessage)

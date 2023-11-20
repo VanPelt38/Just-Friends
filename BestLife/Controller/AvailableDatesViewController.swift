@@ -393,7 +393,7 @@ class AvailableDatesViewController: UIViewController {
     }
     
     func loadExpiringMatches() async {
-        
+
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
         } else {
@@ -409,13 +409,13 @@ class AvailableDatesViewController: UIViewController {
     }
     
     func filterExpiringMatches(matches: [RExpiringMatch]) async -> [RExpiringMatch] {
-        
+
         let newArray = matches
         var returnArray: [RExpiringMatch] = []
         let realm = RealmManager.getRealm()
         
         for expiringMatch in newArray {
-            
+
             let currentTime = Date()
             let matchTimeStamp = expiringMatch.timeStamp!.addingTimeInterval(10800)
 
@@ -427,13 +427,14 @@ class AvailableDatesViewController: UIViewController {
                 if let safeRealm = realm {
                     if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
                         try! safeRealm.write {
+                          
                             safeRealm.delete(expiringRequestToDelete)
                         }
                     }
                 }
                 
                 let deleteMatchRef = db.collection("users").document(firebaseID).collection("expiringRequests").document(expiringMatch.userID)
-                
+            
                 do {
                     try await deleteMatchRef.delete()
                 } catch {
@@ -569,7 +570,7 @@ extension AvailableDatesViewController: UITableViewDataSource {
                     
                     if let url = URL(string: self.profilesArray[indexPath.row - 1].picture) {
                         
-                        cell.profilePicture.kf.setImage(with: url, options: [.cacheOriginalImage])
+                        cell.profilePicture.kf.setImage(with: url)
                     }
                 }
                 
@@ -625,7 +626,7 @@ extension AvailableDatesViewController: UITableViewDelegate {
 
         guard let realm = RealmManager.getRealm() else {return false}
         
-        let existingMatches = realm.objects(RMatchModel.self)
+        let existingMatches = realm.objects(RMatchModel.self).filter("ownUserID == %@", firebaseID)
         for match in existingMatches {
             if match.userID == statusArray[indexPath.row - 1].daterID {
                 return true
@@ -638,8 +639,8 @@ extension AvailableDatesViewController: UITableViewDelegate {
         
         guard let realm = RealmManager.getRealm() else {return}
         
-        var daterID = statusArray[indexPath.row - 1].daterID
-        var dateFirebaseDocID = statusArray[indexPath.row - 1].firebaseDocID
+        let daterID = statusArray[indexPath.row - 1].daterID
+        let dateFirebaseDocID = statusArray[indexPath.row - 1].firebaseDocID
 
         db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
             "timeStamp": Date(),
@@ -661,7 +662,6 @@ extension AvailableDatesViewController: UITableViewDelegate {
                     realmExpiringMatch.ownUserID = firebaseID
                     realm.add(realmExpiringMatch, update: .all)
                 }
-                print("doc written successfully.")
             }
         }
         

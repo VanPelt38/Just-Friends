@@ -15,13 +15,9 @@ import FirebaseFirestore
 class ProfileSetUpViewController: UIViewController {
     
     @IBOutlet weak var profileImage: UIImageView!
-    
     @IBOutlet weak var nameTextField: UITextField!
-    
     @IBOutlet weak var ageDatePicker: UIDatePicker!
-    
     @IBOutlet weak var maleCheck: UIImageView!
-    
     @IBOutlet weak var femaleCheck: UIImageView!
     
     var isImageChosen = false

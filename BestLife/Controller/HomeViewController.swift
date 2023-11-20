@@ -128,6 +128,7 @@ class HomeViewController: UIViewController {
                                 if let picture = profile.picture {
                                     let image = UIImage(data: picture)
                                     self.profilePicture.image = image
+                                    
                                 }
                     }
                     } else {

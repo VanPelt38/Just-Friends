@@ -60,10 +60,13 @@ class MatchesViewController: UIViewController {
  
         guard let realm = RealmManager.getRealm() else {return}
         for match in matchesArray! {
+            
             if !matchIDsForDeletion.contains(match.userID) {
+               
                 try! realm.write {
                     if let missingMatch = realm.object(ofType: RMatchModel.self, forPrimaryKey: match.id) {
                         realm.delete(missingMatch)
+                        
                     }
                 }
             }
@@ -99,7 +102,7 @@ class MatchesViewController: UIViewController {
                 if !currentMatchIDs.contains(data["ID"] as? String ?? "none") {
                     
                     if let name = data["name"] as? String, let age = data["age"] as? Int, let gender = data["gender"] as? String, let image = data["imageURL"] as? String, let dateTime = data["time"] as? String, let dateActivity = data["activity"] as? String, let userID = data["ID"] as? String, let accepted = data["accepted"] as? Bool, let fcmToken = data["fcmToken"] as? String, let chatID = data["chatID"] as? String, let realmID = data["realmID"] as? String, let ownUserID = data["ownUserID"] as? String {
-                        
+                      
                         try! realm.write {
                             
                             let realmMatch = RMatchModel()
@@ -210,13 +213,10 @@ class MatchesViewController: UIViewController {
         }
        
         if let matchToDelete = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchesArray![indexPath].id) {
-            if matchToDelete.isInvalidated {
-                print("but now it's invalid")
-            } else {
                 try! realm.write {
                     realm.delete(matchToDelete)
                 }
-            }
+            
         }
         
         let matchCopy = db.collection("users").document(userID2Delete).collection("matchStatuses").document(firebaseID)
@@ -355,7 +355,8 @@ extension MatchesViewController: UITableViewDataSource {
         DispatchQueue.main.async {
             
             if let url = URL(string: self.matchesArray![indexPath.row].imageURL) {
-                    cell.profilePicture.kf.setImage(with: url, options: [.cacheOriginalImage])
+                
+                    cell.profilePicture.kf.setImage(with: url)
             }
         }
         
@@ -365,7 +366,6 @@ extension MatchesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
         if editingStyle == .delete {
-            guard let realm = RealmManager.getRealm() else {return}
             
             let confirmDeleteAlert = UIAlertController(title: "Sure?", message: "", preferredStyle: .alert)
             let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in

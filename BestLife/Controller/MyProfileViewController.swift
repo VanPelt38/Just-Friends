@@ -16,7 +16,6 @@ import FirebaseStorage
 class MyProfileViewController: UIViewController {
     
     @IBOutlet weak var myProfileTableView: UITableView!
-    
     @IBOutlet weak var profilePicture: UIImageView!
     
     var profileDetailsArray: [String] = []
@@ -34,6 +33,7 @@ class MyProfileViewController: UIViewController {
         myProfileTableView.dataSource = self
         myProfileTableView.backgroundColor = .clear
         myProfileTableView.backgroundView = nil
+        setUpUI()
         loadProfile()
     }
     
@@ -52,6 +52,13 @@ class MyProfileViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    func setUpUI() {
+        
+        let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
+        profilePicture.frame.size = size
+        profilePicture.frame.origin.y = 0
     }
     
     func saveImageToFireStore(imageURL: String) async {
@@ -133,6 +140,7 @@ class MyProfileViewController: UIViewController {
                 
                 if let safeImage = profile.picture {
                     let image = UIImage(data: safeImage)
+                    self.title = self.profileDetailsArray[0]
                     self.profilePicture.image = image
                     self.myProfileTableView.reloadData()
                 }

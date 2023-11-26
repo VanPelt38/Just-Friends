@@ -544,10 +544,11 @@ extension AvailableDatesViewController: UITableViewDataSource {
                 let cell = availableDatesTable.dequeueReusableCell(withIdentifier: "dateCell", for: indexPath)
                 
                 cell.textLabel!.text = "I want to \(dateActivity) \(dateTime)"
+                cell.textLabel?.font = UIFont(name: "Gill Sans", size: 20)
                 cell.textLabel!.textAlignment = .center
                 cell.layer.backgroundColor = CGColor(red: 67.8, green: 84.7, blue: 90.2, alpha: 1.0)
                 let lightBlue = UIColor(red: 240/255, green: 248/255, blue: 255/255, alpha: 1.0)
-                cell.backgroundColor = lightBlue
+                cell.backgroundColor =  UIColor(red: 245/255, green: 195/255, blue: 194/255, alpha: 0.5)
                 cell.isUserInteractionEnabled = false
                 
                 
@@ -561,10 +562,15 @@ extension AvailableDatesViewController: UITableViewDataSource {
                 cell.indexPath = indexPath
                 cell.acceptedButton.isHidden = true
                 cell.rejectedButton.isHidden = true
+                cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
+                cell.profilePicture.clipsToBounds = true
            
                 cell.datePlanLabel.text = "\(self.profilesArray[indexPath.row - 1].name) wants to \(self.statusArray[indexPath.row - 1].dateActivity) \(self.statusArray[indexPath.row - 1].dateTime)"
                 cell.ageLabel.text = String(self.profilesArray[indexPath.row - 1].age)
-                cell.genderLabel.text = self.profilesArray[indexPath.row - 1].gender
+                cell.genderLabel.image = UIImage(named: "big male")
+                if self.profilesArray[indexPath.row - 1].gender == "female" {
+                    cell.genderLabel.image = UIImage(named: "big female")
+                }
                 
                 DispatchQueue.main.async {
                     
@@ -592,11 +598,13 @@ extension AvailableDatesViewController: UITableViewDelegate {
             return 44.0
         } else {
             
-            return 176.0
+            return 150.0
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: true)
         
         let confirmMatchAlert = UIAlertController(title: "Great Stuff!", message: "Are you sure you want to connect with this person?", preferredStyle: .alert)
         let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in

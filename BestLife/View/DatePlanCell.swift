@@ -24,7 +24,7 @@ class DatePlanCell: UITableViewCell {
     
     @IBOutlet weak var ageLabel: UILabel!
     
-    @IBOutlet weak var genderLabel: UILabel!
+    @IBOutlet weak var genderLabel: UIImageView!
     
     @IBOutlet weak var acceptedButton: UIButton!
     
@@ -52,9 +52,7 @@ class DatePlanCell: UITableViewCell {
     @IBOutlet weak var viewProfileButton: UIButton!
     
     @IBAction func viewProfilePressed(_ sender: UIButton) {
-        
-        print("this is working")
-        
+
         if let indexPath = indexPath {
             Task.init {
                 await delegate?.customTableViewCellDidTapButton(self, indexPath: indexPath, buttonName: "viewProfileButton")
@@ -65,7 +63,10 @@ class DatePlanCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+       
+        viewProfileButton.clipsToBounds = true
+        viewProfileButton.layer.cornerRadius = viewProfileButton.frame.size.width / 2
+        viewProfileButton.tintColor = .black
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

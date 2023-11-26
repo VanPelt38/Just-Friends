@@ -178,6 +178,7 @@ extension SettingsViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "settingsCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
         content.text = settingTitles[indexPath.row]
+        content.textProperties.font = UIFont(name: "Gill Sans", size: 20)!
         
         cell.contentConfiguration = content
         

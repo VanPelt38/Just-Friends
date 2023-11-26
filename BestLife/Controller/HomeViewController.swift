@@ -12,12 +12,13 @@ import Kingfisher
 
 class HomeViewController: UIViewController {
 
-    @IBOutlet weak var helloUser: UILabel!
-    var firebaseID: String?
     @IBOutlet weak var profilePicture: UIImageView!
+    @IBOutlet weak var makeFriendButton: UIButton!
     
+    @IBOutlet weak var viewProfileButton: UIButton!
     private let db = Firestore.firestore()
     var chatIDs: [String] = []
+    var firebaseID: String?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
@@ -27,6 +28,21 @@ class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let gradientLayer = CAGradientLayer()
+        var updatedFrame = self.navigationController!.navigationBar.bounds
+        updatedFrame.size.height += 20
+        gradientLayer.frame = updatedFrame
+        gradientLayer.colors = [UIColor.green.cgColor, UIColor.blue.cgColor]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0) // vertical gradient start
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0) // vertical gradient end
+
+        UIGraphicsBeginImageContext(gradientLayer.bounds.size)
+        gradientLayer.render(in: UIGraphicsGetCurrentContext()!)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        self.navigationController!.navigationBar.setBackgroundImage(image, for: UIBarMetrics.default)
 
         setUpUI()
         loadLocalProfile()
@@ -44,9 +60,11 @@ class HomeViewController: UIViewController {
 
                 let firstTabBarItem = varTabItems[0]
                 firstTabBarItem.image = UIImage(systemName: "house.fill")
+                firstTabBarItem.title = nil
+                firstTabBarItem.imageInsets = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
               
                 let secondTabBarItem = varTabItems[1]
-                secondTabBarItem.image = UIImage(systemName: "mail")
+                secondTabBarItem.image = UIImage(systemName: "person.2")
 
                 let thirdTabBarItem = varTabItems[2]
                 thirdTabBarItem.image = UIImage(systemName: "gearshape")
@@ -66,8 +84,15 @@ class HomeViewController: UIViewController {
     
     func setUpUI() {
         
-        profilePicture.layer.cornerRadius = profilePicture.frame.width / 2
-        profilePicture.clipsToBounds = true
+        makeFriendButton.layer.cornerRadius = makeFriendButton.frame.height / 2
+        
+        let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
+        profilePicture.frame.size = size
+        profilePicture.frame.origin.y = 0
+        
+        viewProfileButton.clipsToBounds = true
+        viewProfileButton.layer.cornerRadius = viewProfileButton.frame.size.width / 2
+        viewProfileButton.tintColor = .black
     }
     
     func setDistancePreference() {
@@ -124,7 +149,8 @@ class HomeViewController: UIViewController {
  
                 if let profile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
                     DispatchQueue.main.async {
-                        self.helloUser.text = "Hi \(profile.name)!"
+                        self.navigationItem.title = "Hi \(profile.name)"
+                       
                                 if let picture = profile.picture {
                                     let image = UIImage(data: picture)
                                     self.profilePicture.image = image
@@ -288,8 +314,8 @@ class HomeViewController: UIViewController {
 
                         DispatchQueue.main.async {
 
-                            self.helloUser.text = "Hi \(name)!"
-
+                            self.navigationItem.title = "Hi \(name)"
+                            
                             if let url = URL(string: picture) {
 
                                 do {

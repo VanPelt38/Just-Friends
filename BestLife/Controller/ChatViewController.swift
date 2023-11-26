@@ -97,6 +97,34 @@ class ChatViewController: UIViewController {
   
     }
     
+    @IBAction func flagButtonPressed(_ sender: UIBarButtonItem) {
+        
+        let safetyAlertController = UIAlertController(title: "Is this user behaving inappropriately?", message: nil, preferredStyle: .actionSheet)
+        
+        let reportUserAction = UIAlertAction(title: "Report User", style: .default) { action in
+            
+            let reportOptions = ["Inappropriate Content", "Dangerous/Criminal Behaviour", "User is Underage", "User is Fake/Spam/Scammer"]
+            let reportAlertController = UIAlertController(title: "Dont worry - your report is anonymous.", message: nil, preferredStyle: .actionSheet)
+            for option in reportOptions {
+                let reportOptionAction = UIAlertAction(title: option, style: .default) { action in
+                    //block user
+                }
+                reportAlertController.addAction(reportOptionAction)
+            }
+            
+        }
+        let blockUserAction = UIAlertAction(title: "Block User", style: .default) { action in
+            //block user
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { action in
+            safetyAlertController.dismiss(animated: true)
+        }
+        safetyAlertController.addAction(reportUserAction)
+        safetyAlertController.addAction(blockUserAction)
+        safetyAlertController.addAction(cancelAction)
+        self.present(safetyAlertController, animated: true)
+    }
+    
     @objc func keyboardWillShow(_ notification: Notification) {
             
             if let userInfo = notification.userInfo, let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {

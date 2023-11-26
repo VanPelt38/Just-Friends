@@ -19,12 +19,19 @@ class MatchProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setUpUI()
         setupProfile()
-        
         matchProfileTableView.dataSource = self
         matchProfileTableView.delegate = self
         matchProfileTableView.backgroundColor = .clear
         matchProfileTableView.backgroundView = nil
+    }
+    
+    func setUpUI() {
+        
+        let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
+        matchProfilePicture.frame.size = size
+        matchProfilePicture.frame.origin.y = 0
     }
     
     func setupProfile() {
@@ -35,7 +42,7 @@ class MatchProfileViewController: UIViewController {
         
         DispatchQueue.main.async { [self] in
             
-           
+            self.navigationItem.title = self.profileDetailsArray[0]
             
             if let url = URL(string: matchProfile.picture) {
                 

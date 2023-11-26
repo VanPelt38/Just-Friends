@@ -341,6 +341,9 @@ extension MatchesViewController: UITableViewDataSource {
         cell.acceptedButton.isHidden = true
         cell.rejectedButton.isHidden = true
         
+        cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
+        cell.profilePicture.clipsToBounds = true
+        
         if matchesArray![indexPath.row].accepted == false {
             
             cell.acceptedButton.isHidden = false
@@ -350,7 +353,11 @@ extension MatchesViewController: UITableViewDataSource {
        
         cell.datePlanLabel.text = "\(matchesArray![indexPath.row].name) wants to \(matchesArray![indexPath.row].dateActivity) \(matchesArray![indexPath.row].dateTime)"
         cell.ageLabel.text = String(matchesArray![indexPath.row].age)
-        cell.genderLabel.text = matchesArray![indexPath.row].gender
+        cell.genderLabel.image = UIImage(named: "big male")
+        if matchesArray![indexPath.row].gender == "female" {
+            cell.genderLabel.image = UIImage(named: "big female")
+        }
+       
         
         DispatchQueue.main.async {
             
@@ -397,11 +404,13 @@ extension MatchesViewController: UITableViewDataSource {
 extension MatchesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 176.0
+            return 150.0
     }
 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: true)
         
         if matchesArray![indexPath.row].accepted == true {
             

@@ -11,72 +11,71 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="datePlanCell" id="KGk-i7-Jjw" customClass="DatePlanCell" customModule="BestLife" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="176"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="datePlanCell" rowHeight="141" id="KGk-i7-Jjw" customClass="DatePlanCell" customModule="BestLife" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="570" height="141"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="176"/>
+                <rect key="frame" x="0.0" y="0.0" width="570" height="141"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="person.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="1uN-ta-svb">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="175"/>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="person.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="1uN-ta-svb">
+                        <rect key="frame" x="11" y="3" width="136" height="136"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UDq-4K-nZI">
-                        <rect key="frame" x="0.0" y="107" width="320" height="69"/>
+                        <rect key="frame" x="165" y="15" width="393" height="117"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="*NAME* wants to X Y" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UxF-E8-G0U">
-                                <rect key="frame" x="24" y="12" width="274" height="15"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Age" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zjT-u8-iB4">
-                                <rect key="frame" x="48" y="37" width="24" height="15"/>
+                                <rect key="frame" x="16" y="102" width="24" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Gender" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7hE-qk-bTO">
-                                <rect key="frame" x="245" y="38" width="45" height="15"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vfv-7a-DN8">
-                                <rect key="frame" x="107" y="36" width="107" height="21"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gDv-Vm-kwC">
+                                <rect key="frame" x="303" y="92" width="82" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="tinted" title="VIEW PROFILE">
-                                    <fontDescription key="titleFontDescription" type="boldSystem" pointSize="8"/>
+                                <buttonConfiguration key="configuration" style="filled" title="not today, thanks">
+                                    <fontDescription key="titleFontDescription" name="GillSans" family="Gill Sans" pointSize="8"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="viewProfilePressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ut7-mF-9BI"/>
+                                    <action selector="rejectedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7fF-sN-FZQ"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="*NAME* wants to X Y" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UxF-E8-G0U">
+                                <rect key="frame" x="16" y="19" width="228" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="37"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="big male" translatesAutoresizingMaskIntoConstraints="NO" id="nOW-Ub-ZZc">
+                                <rect key="frame" x="48" y="102" width="17" height="15"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XfZ-CO-e1k">
+                                <rect key="frame" x="225" y="91" width="70" height="22"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="sounds good">
+                                    <fontDescription key="titleFontDescription" name="GillSans" family="Gill Sans" pointSize="8"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="acceptedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OtS-5V-FXd"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XfZ-CO-e1k">
-                        <rect key="frame" x="268" y="28" width="36" height="22"/>
+                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vfv-7a-DN8">
+                        <rect key="frame" x="114" y="109" width="27" height="27"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="filled" image="checkmark" catalog="system"/>
+                        <buttonConfiguration key="configuration" style="filled" image="person.circle" catalog="system"/>
                         <connections>
-                            <action selector="acceptedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OtS-5V-FXd"/>
-                        </connections>
-                    </button>
-                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gDv-Vm-kwC">
-                        <rect key="frame" x="268" y="64" width="36" height="21"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="filled" image="xmark" catalog="system"/>
-                        <connections>
-                            <action selector="rejectedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7fF-sN-FZQ"/>
+                            <action selector="viewProfilePressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ut7-mF-9BI"/>
                         </connections>
                     </button>
                 </subviews>
@@ -86,18 +85,18 @@
                 <outlet property="acceptedButton" destination="XfZ-CO-e1k" id="Frh-s6-gXZ"/>
                 <outlet property="ageLabel" destination="zjT-u8-iB4" id="Ls4-wW-Ory"/>
                 <outlet property="datePlanLabel" destination="UxF-E8-G0U" id="RVc-YT-8y0"/>
-                <outlet property="genderLabel" destination="7hE-qk-bTO" id="JFV-yO-Ocd"/>
+                <outlet property="genderLabel" destination="nOW-Ub-ZZc" id="D2l-hE-dqs"/>
                 <outlet property="profilePicture" destination="1uN-ta-svb" id="UhL-eU-r3X"/>
                 <outlet property="rejectedButton" destination="gDv-Vm-kwC" id="n0y-uu-iL5"/>
                 <outlet property="viewProfileButton" destination="vfv-7a-DN8" id="DKC-Ns-Ria"/>
             </connections>
-            <point key="canvasLocation" x="138.93129770992365" y="19.718309859154932"/>
+            <point key="canvasLocation" x="329.7709923664122" y="7.394366197183099"/>
         </tableViewCell>
     </objects>
     <resources>
-        <image name="checkmark" catalog="system" width="128" height="114"/>
+        <image name="big male" width="100" height="100"/>
+        <image name="person.circle" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
-        <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -23,6 +23,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        let navAppearance = UINavigationBarAppearance()
+//        navAppearance.configureWithOpaqueBackground()
+        navAppearance.backgroundColor = UIColor(red: 0.075, green: 0, blue: 0.557, alpha: 1.0)
+        navAppearance.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: UIColor.white,
+            NSAttributedString.Key.font: UIFont(name: "Gill Sans", size: 25)
+        ]
+        UINavigationBar.appearance().standardAppearance = navAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+        UINavigationBar.appearance().tintColor = .white
+
+        
+        UITabBar.appearance().barTintColor = .blue
+        UITabBar.appearance().tintColor = .white
+        UITabBar.appearance().backgroundColor = UIColor(red: 0.075, green: 0, blue: 0.557, alpha: 1.0)
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 100)
+        gradientLayer.colors = [UIColor(red: 0.075, green: 0, blue: 0.557, alpha: 1).cgColor, UIColor(red: 0.510, green: 0.482, blue: 1, alpha: 1).cgColor]
+        UIGraphicsBeginImageContext(gradientLayer.frame.size)
+        gradientLayer.render(in: UIGraphicsGetCurrentContext()!)
+        let backgroundImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        UITabBar.appearance().backgroundImage = backgroundImage
+        UINavigationBar.appearance().setBackgroundImage(UIImage(named: "Group 1"), for: .default)
      
         if let realm = RealmManager.getRealm() {
             print("this is path to realm file: \(realm.configuration.fileURL!.absoluteString)")

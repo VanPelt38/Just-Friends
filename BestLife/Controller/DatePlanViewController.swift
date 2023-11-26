@@ -15,10 +15,10 @@ class DatePlanViewController: UIViewController {
     
     @IBOutlet weak var activityTextField: UITextField!
     @IBOutlet weak var timePicker: UIPickerView!
-    
+    @IBOutlet weak var seeAvailableButton: UIButton!
     var datePlanModel = DatePlanModel()
     
-    private let possibleDates = ["Today", "Tonight", "Tomorrow"]
+    private let possibleDates = ["today", "tonight", "tomorrow"]
     private var timeChosen = "none"
     var firebaseID = ""
     let locationManager = CLLocationManager()
@@ -30,6 +30,8 @@ class DatePlanViewController: UIViewController {
         super.viewDidLoad()
         
        startLocationServices()
+        
+        seeAvailableButton.layer.cornerRadius = seeAvailableButton.frame.height / 2
         
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
@@ -48,7 +50,7 @@ class DatePlanViewController: UIViewController {
     @IBAction func seePartnersPressed(_ sender: UIButton) {
         
         if timeChosen == "none" {
-            timeChosen = "Today"
+            timeChosen = "today"
         }
         
         if activityTextField.text != "" && timeChosen != "none" {

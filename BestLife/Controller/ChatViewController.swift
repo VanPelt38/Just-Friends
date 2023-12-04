@@ -8,6 +8,7 @@
 import UIKit
 import Firebase
 import FirebaseFirestore
+import FirebaseFunctions
 import IQKeyboardManagerSwift
 
 class ChatViewController: UIViewController {
@@ -23,6 +24,7 @@ class ChatViewController: UIViewController {
     var sortedCurrentMessages: [RChatDoc] = []
     var chatFieldOriginalY: CGFloat = 0.0
     var tableViewOriginalY: CGFloat = 0.0
+    var ownMatch = MatchModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,15 +105,19 @@ class ChatViewController: UIViewController {
         
         let reportUserAction = UIAlertAction(title: "Report User", style: .default) { action in
             
-            let reportOptions = ["Inappropriate Content", "Dangerous/Criminal Behaviour", "User is Underage", "User is Fake/Spam/Scammer"]
+            let reportOptions = ["Inappropriate Content", "Harassment", "Criminal Behaviour", "User is Underage", "User is Fake/Spam/Scammer", "Cancel"]
             let reportAlertController = UIAlertController(title: "Dont worry - your report is anonymous.", message: nil, preferredStyle: .actionSheet)
             for option in reportOptions {
-                let reportOptionAction = UIAlertAction(title: option, style: .default) { action in
-                    //block user
+                let reportOptionAction = UIAlertAction(title: option, style: .default) { [self] action in
+                    
+                    Task.init {
+                        await addUserReport(userID: firebaseID, userName: ownMatch.name, abuserID: matchDetails.id, abuserName: matchDetails.name, reportType: option)
+                    }
                 }
                 reportAlertController.addAction(reportOptionAction)
             }
-            
+            safetyAlertController.dismiss(animated: true)
+            self.present(reportAlertController, animated: true)
         }
         let blockUserAction = UIAlertAction(title: "Block User", style: .default) { action in
             //block user
@@ -123,6 +129,24 @@ class ChatViewController: UIViewController {
         safetyAlertController.addAction(blockUserAction)
         safetyAlertController.addAction(cancelAction)
         self.present(safetyAlertController, animated: true)
+    }
+    
+    func addUserReport(userID: String, userName: String, abuserID: String, abuserName: String, reportType: String) async {
+        
+        do {
+            let docRef = try await db.collection("userReports").addDocument(data:
+       [
+      "userID" : userID,
+      "userName" : userName,
+      "abuserID" : abuserID,
+      "abuserName" : abuserName,
+      "reportType" : reportType
+     ]
+            )
+        } catch {
+            print("error: \(error)")
+        }
+        
     }
     
     @objc func keyboardWillShow(_ notification: Notification) {

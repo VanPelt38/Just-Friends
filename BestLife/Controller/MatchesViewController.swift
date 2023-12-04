@@ -294,6 +294,7 @@ class MatchesViewController: UIViewController {
             let destinationVC = segue.destination as! ChatViewController
             destinationVC.firebaseID = firebaseID
             destinationVC.matchID = matchIDForChat
+            destinationVC.ownMatch = ownMatch
             
         }
         

@@ -18,7 +18,7 @@ class DatePlanViewController: UIViewController {
     @IBOutlet weak var seeAvailableButton: UIButton!
     var datePlanModel = DatePlanModel()
     
-    private let possibleDates = ["today", "tonight", "tomorrow"]
+    private let possibleDates = ["today", "tonight", "tomorrow", "this week", "this weekend", "next week", "next weekend"]
     private var timeChosen = "none"
     var firebaseID = ""
     let locationManager = CLLocationManager()

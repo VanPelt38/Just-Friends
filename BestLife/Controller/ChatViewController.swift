@@ -10,6 +10,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
 import IQKeyboardManagerSwift
+import RealmSwift
 
 class ChatViewController: UIViewController {
 
@@ -19,7 +20,7 @@ class ChatViewController: UIViewController {
     var firebaseID = ""
     var matchID = ""
     private let db = Firestore.firestore()
-    var matchDetails = RMatchModel()
+    var matchDetails: Results<RMatchModel>?
     var currentMessages: [RChatDoc] = []
     var sortedCurrentMessages: [RChatDoc] = []
     var chatFieldOriginalY: CGFloat = 0.0
@@ -40,7 +41,7 @@ class ChatViewController: UIViewController {
             await loadMatchDetails(matchID)
             await loadChatMessages()
 
-            db.collection("chats").document(matchDetails.chatID).collection("messages").addSnapshotListener { [self] snapshot, error in
+            db.collection("chats").document(matchDetails![0].chatID).collection("messages").addSnapshotListener { [self] snapshot, error in
                 
                 guard let snapshot = snapshot else {
                     print("error fetching snapshot: \(error)")
@@ -68,7 +69,7 @@ class ChatViewController: UIViewController {
                                     newMessage.message = message
                                     newMessage.timeStamp = messageTime
                                     newMessage.userID = userID
-                                    newMessage.chatID = matchDetails.chatID
+                                    newMessage.chatID = matchDetails![0].chatID
                                     realm.add(newMessage)
                                     
                                     currentMessages.append(newMessage)
@@ -108,19 +109,74 @@ class ChatViewController: UIViewController {
             let reportOptions = ["Inappropriate Content", "Harassment", "Criminal Behaviour", "User is Underage", "User is Fake/Spam/Scammer", "Cancel"]
             let reportAlertController = UIAlertController(title: "Dont worry - your report is anonymous.", message: nil, preferredStyle: .actionSheet)
             for option in reportOptions {
-                let reportOptionAction = UIAlertAction(title: option, style: .default) { [self] action in
+                if option == "Cancel" {
                     
-                    Task.init {
-                        await addUserReport(userID: firebaseID, userName: ownMatch.name, abuserID: matchDetails.id, abuserName: matchDetails.name, reportType: option)
+                    let cancelAction2 = UIAlertAction(title: "Cancel", style: .default) { action in
+                        reportAlertController.dismiss(animated: true)
                     }
+                    reportAlertController.addAction(cancelAction2)
+                } else {
+                    let reportOptionAction = UIAlertAction(title: option, style: .default) { [self] action in
+                        
+                        let areYouSureAlert = UIAlertController(title: "Are you sure you'd like to report this user?", message: nil, preferredStyle: .alert)
+                        let okayAction = UIAlertAction(title: "Yes", style: .default) { action in
+                            
+                            Task.init {
+                                await addUserReport(userID: firebaseID, userName: ownMatch.name, abuserID: matchDetails![0].userID, abuserName: matchDetails![0].name, reportType: option)
+                                let reportSentAlert = UIAlertController(title: "Report Sent Successfully", message: "Thanks for letting us know - our report team will investigate your concern thoroughly.", preferredStyle: .alert)
+                                let okayAction2 = UIAlertAction(title: "Okay", style: .default)
+                                reportSentAlert.addAction(okayAction2)
+                                self.present(reportSentAlert, animated: true)
+                            }
+                        }
+                        let noAction = UIAlertAction(title: "No", style: .default)
+                        areYouSureAlert.addAction(okayAction)
+                        areYouSureAlert.addAction(noAction)
+                        self.present(areYouSureAlert, animated: true)
+                    }
+                    reportAlertController.addAction(reportOptionAction)
                 }
-                reportAlertController.addAction(reportOptionAction)
             }
             safetyAlertController.dismiss(animated: true)
             self.present(reportAlertController, animated: true)
         }
         let blockUserAction = UIAlertAction(title: "Block User", style: .default) { action in
-            //block user
+            
+            
+            let areYouSureAlert = UIAlertController(title: "Are you sure you'd like to block this user?", message: "They will no longer appear in your friends lists, and will be unable to see you either.", preferredStyle: .alert)
+            let okayAction = UIAlertAction(title: "Yes", style: .default) { [self] action in
+                
+                Task.init {
+                    let newBlockID = await self.addBlockedUser(blockedUserID: (matchDetails?[0].userID)!)
+                    await self.addSelfToBlockedUserStore(blockedUserID: matchDetails![0].userID)
+                    
+                    guard let realm = RealmManager.getRealm() else {return}
+                    
+                    try! realm.write {
+                        
+                        let newBlock = BlockedUser()
+                        newBlock.id = newBlockID
+                        newBlock.blockID = matchDetails![0].userID
+                        newBlock.userID = firebaseID
+                        newBlock.blockType = "blocked"
+                        realm.add(newBlock)
+                    }
+                    
+                    await self.wipeBlockedUserData()
+                    
+                    let blockSuccessfulAlert = UIAlertController(title: "Success", message: "You will no longer be able to interact with this user.", preferredStyle: .alert)
+                    let okayAction2 = UIAlertAction(title: "Okay", style: .default) { action in
+                        navigationController?.popViewController(animated: true)
+                    }
+                    blockSuccessfulAlert.addAction(okayAction2)
+                    self.present(blockSuccessfulAlert, animated: true)
+                }
+            }
+            let noAction = UIAlertAction(title: "No", style: .default)
+            areYouSureAlert.addAction(okayAction)
+            areYouSureAlert.addAction(noAction)
+            self.present(areYouSureAlert, animated: true)
+            
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .default) { action in
             safetyAlertController.dismiss(animated: true)
@@ -148,6 +204,98 @@ class ChatViewController: UIViewController {
         }
         
     }
+    
+    func addBlockedUser(blockedUserID: String) async -> String {
+        
+        var docID = ""
+        
+        do {
+            let docRef = try await db.collection("users").document(firebaseID).collection("blockedUsers").addDocument(data:
+       [
+      "blockedUserID" : blockedUserID,
+      "blockType" : "blocked"
+     ]
+            )
+            docID = docRef.documentID
+        } catch {
+            print("error: \(error)")
+        }
+        return docID
+    }
+    
+    func addSelfToBlockedUserStore(blockedUserID: String) async {
+        
+        do {
+            let docRef = try await db.collection("users").document(blockedUserID).collection("blockedUsers").addDocument(data:
+       [
+      "blockedUserID" : firebaseID,
+      "blockType" : "blocker"
+     ]
+            )
+        } catch {
+            print("error: \(error)")
+        }
+
+    }
+    
+    func wipeBlockedUserData() async {
+        
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
+        
+        let matchUserID = matchDetails![0].userID
+        let userChatID = matchDetails![0].chatID
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        
+        let userCopy = db.collection("users").document(firebaseID).collection("matchStatuses").document(matchUserID)
+        
+        do {
+           try await userCopy.delete()
+        } catch {
+            print(error)
+        }
+        print("and this is matchdeatils.id right before deletion: \(matchDetails![0].id)")
+        if let matchToDelete = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchDetails![0].id) {
+                try! realm.write {
+                    realm.delete(matchToDelete)
+                }
+            
+        }
+        print("but we never get here")
+        let matchCopy = db.collection("users").document(matchUserID).collection("matchStatuses").document(firebaseID)
+
+        do {
+           try await matchCopy.delete()
+        } catch {
+            print(error)
+        }
+        
+        let chatRef = db.collection("chats").document(userChatID)
+ 
+        do {
+            try await chatRef.delete()
+        } catch {
+            print("error deleting chat: \(error)")
+        }
+        
+        // what if they still chat to you after you've blocked them? would it still crash if we don't bother deleting chats?
+        // and if not, why is it that when you delete a match, and they still try and chat, it doesn't crash? or does it?
+        
+        let realmChats = realm.objects(RChatDoc.self)
+        print(realmChats.count)
+        for chat in realmChats {
+            print("deleting one: \(chat.chatID)")
+            if chat.chatID == userChatID {
+                try! realm.write {
+                    realm.delete(chat)
+                }
+            }
+        }
+        }
     
     @objc func keyboardWillShow(_ notification: Notification) {
             
@@ -208,9 +356,7 @@ class ChatViewController: UIViewController {
 
         try! realm.write {
             
-            if let match = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchID) {
-                self.matchDetails = match
-            }
+            self.matchDetails = realm.objects(RMatchModel.self).filter("id == %@", matchID)
         }
     }
     
@@ -223,7 +369,7 @@ class ChatViewController: UIViewController {
         
         try! realm.write {
             
-            let chats = realm.objects(RChatDoc.self).filter("chatID == %@", matchDetails.chatID)
+            let chats = realm.objects(RChatDoc.self).filter("chatID == %@", matchDetails![0].chatID)
             for chat in chats {
                 self.currentMessages.append(chat)
             }
@@ -243,7 +389,7 @@ class ChatViewController: UIViewController {
         newMessage.timeStamp = Date()
         newMessage.userID = firebaseID
         newMessage.message = message
-        newMessage.chatID = matchDetails.chatID
+        newMessage.chatID = matchDetails![0].chatID
         
         currentMessages.append(newMessage)
         sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
@@ -253,7 +399,7 @@ class ChatViewController: UIViewController {
         
         do {
             
-            let docRef = try await db.collection("chats").document(matchDetails.chatID).collection("messages").addDocument(data:
+            let docRef = try await db.collection("chats").document(matchDetails![0].chatID).collection("messages").addDocument(data:
                                                                                                                 [
                                                                                                                     "message" : message,
                                                                                                                     "ID" : firebaseID,

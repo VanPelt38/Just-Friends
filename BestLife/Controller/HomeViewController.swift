@@ -176,7 +176,45 @@ class HomeViewController: UIViewController {
             await loadExpiringRequests()
             await loadChats()
             await loadStatus()
+            await loadBlockedUsers()
         }
+    }
+    
+    func loadBlockedUsers() async {
+        
+        guard let realm = RealmManager.getRealm() else {return}
+        if let safeID = firebaseID {
+           
+            let pathway = db.collection("users").document(safeID).collection("blockedUsers")
+            
+            do {
+                
+                let querySnapshot = try await pathway.getDocuments()
+                
+                for doc in querySnapshot.documents {
+                    
+                    let data = doc.data()
+                    if let blockedUserID = data["blockedUserID"] as? String, let blockType = data["blockType"] as? String {
+                        
+                        try! realm.write {
+                            
+                            let newBlock = BlockedUser()
+                            newBlock.id = doc.documentID
+                            newBlock.blockID = blockedUserID
+                            newBlock.userID = safeID
+                            newBlock.blockType = blockType
+                            
+                            realm.add(newBlock, update: .all)
+                        }
+                    }
+                }
+                
+            } catch {
+                
+                print("error downloading blocked users: \(error)")
+            }
+        }
+
     }
     
     func loadStatus() async {

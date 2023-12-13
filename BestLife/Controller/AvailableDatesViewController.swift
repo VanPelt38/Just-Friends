@@ -298,6 +298,19 @@ class AvailableDatesViewController: UIViewController {
                                     
                             }
                             
+                            guard let realm = RealmManager.getRealm() else {return returnArray}
+                            
+                           let blockUsers = realm.objects(BlockedUser.self).filter("userID == %@", firebaseID)
+                            
+                            let blockedIDs = blockUsers.map { $0.blockID }
+                            
+                            for (index, status) in statusArray.enumerated() {
+                                if blockedIDs.contains(status.daterID) {
+                                    statusArray.remove(at: index)
+                                    returnArray.remove(at: index)
+                                }
+                            }
+                            
                             DispatchQueue.main.async {
                                 self.availableDatesTable.reloadData()
                             }

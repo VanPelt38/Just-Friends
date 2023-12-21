@@ -295,7 +295,7 @@ class MatchesViewController: UIViewController {
             destinationVC.firebaseID = firebaseID
             destinationVC.matchID = matchIDForChat
             destinationVC.ownMatch = ownMatch
-            
+            print("preparing for seg...")
         }
         
         if segue.identifier == "matchesMatchProfileSeg" {
@@ -491,6 +491,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                 
                 
                 let chatID = IDgenerator()
+                print("chatid just assigned: \(chatID)")
                 matchIDForChat = matchesArray![indexPath.row].id
                 let myFunctions = Functions.functions()
                 
@@ -523,6 +524,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             "accepted" : true,
                             "chatID" : chatID
                         ])
+                        print("chatId just assigned to my own match status copy: \(chatID)")
                         
                         guard let realm = RealmManager.getRealm() else {return}
                         try! realm.write {
@@ -530,7 +532,9 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             if let matchToUpdate = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchesArray![indexPath.row].id) {
                                 matchToUpdate.accepted = true
                                 matchToUpdate.chatID = chatID
+                                print("just updated chatID for my own match within realm: \(chatID)")
                             }
+                            
                         }
                         
                         let chatMatchName = matchesArray![indexPath.row].name
@@ -540,7 +544,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             "userNames" : [chatMatchName, ownMatch.name],
                             "userIDs" : [chatMatchID, firebaseID]
                         ])
-                        
+                        print("just used chatID to create a chat collection in firestore: \(chatID)")
                         
                         db.collection("users").document(matchesArray![indexPath.row].userID).collection("matchStatuses").document(firebaseID).setData([
                             "name" : ownMatch.name,
@@ -562,6 +566,7 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                                 print("doc written successfully.")
                             }
                         }
+                        print("just updated my match's match status copy inc chatid: \(chatID)")
                         
                         let daterID = matchesArray![indexPath.row].userID
                         
@@ -571,15 +576,16 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                         DispatchQueue.main.async { [self] in
                             try! realm.write {
                                 matchesArray![indexPath.row].accepted = true
+                                matchesArray![indexPath.row].chatID = chatID
                             }
+                            print("and just updated chatID for my match in the matches array: \(chatID)")
                             matchesTableView.reloadData()
+                            performSegue(withIdentifier: "matchesChatSeg", sender: self)
                         }
                     }    
                 }
                 
                 asyncHandler(alertAction)
-                
-                performSegue(withIdentifier: "matchesChatSeg", sender: self)
                 
             }
             

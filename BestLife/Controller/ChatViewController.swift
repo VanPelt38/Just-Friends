@@ -38,14 +38,21 @@ class ChatViewController: UIViewController {
         sortedCurrentMessages = []
         
         Task.init {
+            print("this is the matchid: \(matchID)")
             await loadMatchDetails(matchID)
+            print("this is matchd etails after loading them: \(matchDetails![0])")
             await loadChatMessages()
-
+            
             db.collection("chats").document(matchDetails![0].chatID).collection("messages").addSnapshotListener { [self] snapshot, error in
                 
                 guard let snapshot = snapshot else {
                     print("error fetching snapshot: \(error)")
                     return
+                }
+                print("we made it this far, and the chatid is: \(matchDetails![0].chatID)")
+                if let error = error {
+                    
+                    print("listener error: \(error.localizedDescription)")
                 }
                 
                 for change in snapshot.documentChanges {
@@ -53,7 +60,7 @@ class ChatViewController: UIViewController {
                     if change.type == .added {
                         
                         let documentData = change.document.data()
-                        
+                        print("but id ont htink we get here?")
                         if let time = documentData["timeStamp"] as? Timestamp, let userID = documentData["ID"] as? String, let message = documentData["message"] as? String {
                             
                             let messageTime = time.dateValue()
@@ -460,15 +467,18 @@ extension ChatViewController: UITableViewDataSource {
         } else {
             
             cell.textLabel?.text = sortedCurrentMessages[indexPath.row].message
+            cell.frame.size = CGSize(width: chatTableView.frame.width / 2, height: cell.frame.height)
+            cell.layer.cornerRadius = 10
+            cell.layer.masksToBounds = true
             
             if sortedCurrentMessages[indexPath.row].userID == firebaseID {
                 
                 cell.textLabel?.textAlignment = .right
-                cell.backgroundColor = .blue
+                cell.backgroundColor = UIColor(red: 205/255, green: 243/255, blue: 245/255, alpha: 1.0)
             } else {
                 
                 cell.textLabel?.textAlignment = .left
-                cell.backgroundColor = .green
+                cell.backgroundColor = UIColor(red: 182/255, green: 250/255, blue: 187/255, alpha: 1.0)
             }
             
             return cell

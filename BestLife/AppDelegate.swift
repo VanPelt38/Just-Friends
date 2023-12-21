@@ -25,7 +25,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let navAppearance = UINavigationBarAppearance()
-//        navAppearance.configureWithOpaqueBackground()
         navAppearance.backgroundColor = UIColor(red: 0.075, green: 0, blue: 0.557, alpha: 1.0)
         navAppearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.white,

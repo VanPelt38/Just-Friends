@@ -43,6 +43,16 @@ class MatchesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationItem.hidesBackButton = true
+        if let navController = navigationController {
+            if navController.viewControllers.first != self {
+                navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
+            }
+        }
+    }
+    
+    @objc func popVC() {
+        navigationController?.popViewController(animated: true)
     }
     
     func loadAllMatches() {
@@ -291,11 +301,12 @@ class MatchesViewController: UIViewController {
         
         if segue.identifier == "matchesChatSeg" {
             
-            let destinationVC = segue.destination as! ChatViewController
+            let destinationVC = segue.destination as! MessageViewController
             destinationVC.firebaseID = firebaseID
             destinationVC.matchID = matchIDForChat
             destinationVC.ownMatch = ownMatch
-            print("preparing for seg...")
+            destinationVC.sender = Sender(name: ownMatch.ID, id: ownMatch.name)
+            destinationVC.hidesBottomBarWhenPushed = true
         }
         
         if segue.identifier == "matchesMatchProfileSeg" {

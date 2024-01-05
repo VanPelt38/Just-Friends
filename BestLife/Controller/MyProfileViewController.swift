@@ -15,8 +15,9 @@ import FirebaseStorage
 
 class MyProfileViewController: UIViewController {
     
-    @IBOutlet weak var myProfileTableView: UITableView!
     @IBOutlet weak var profilePicture: UIImageView!
+    @IBOutlet weak var profileDetails: UILabel!
+    @IBOutlet weak var genderImage: UIImageView!
     
     var profileDetailsArray: [String] = []
     var firebaseID: String?
@@ -29,10 +30,6 @@ class MyProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        myProfileTableView.delegate = self
-        myProfileTableView.dataSource = self
-        myProfileTableView.backgroundColor = .clear
-        myProfileTableView.backgroundView = nil
         setUpUI()
         loadProfile()
     }
@@ -54,8 +51,14 @@ class MyProfileViewController: UIViewController {
         }
     }
     
+    @objc func popVC() {
+        navigationController?.popViewController(animated: true)
+    }
+    
     func setUpUI() {
         
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
         let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
         profilePicture.frame.size = size
         profilePicture.frame.origin.y = 0
@@ -136,13 +139,14 @@ class MyProfileViewController: UIViewController {
             self.profileDetailsArray.append(profile.gender)
             self.profilePicRef = profile.profilePicRef
             
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [self] in
                 
                 if let safeImage = profile.picture {
                     let image = UIImage(data: safeImage)
                     self.title = self.profileDetailsArray[0]
                     self.profilePicture.image = image
-                    self.myProfileTableView.reloadData()
+                    self.profileDetails.text = "\(profileDetailsArray[0]), \(profileDetailsArray[1])"
+                    self.genderImage.image = (self.profileDetailsArray[2] == "male") ? UIImage(named: "big male") : UIImage(named: "big female")
                 }
             }
         } else {
@@ -153,64 +157,6 @@ class MyProfileViewController: UIViewController {
     
 }
 
-extension MyProfileViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if profileDetailsArray.count == 0 {
-            
-            return 1
-        } else {
-            
-            return profileDetailsArray.count * 2
-        }
-    }
-    
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "profileCell", for: indexPath)
-        cell.backgroundColor = .clear
-        cell.contentView.backgroundColor = .clear
-        
-        if profileDetailsArray.count == 0 {
-            
-            cell.textLabel!.text = "Loading..."
-            
-        } else {
-            
-            switch indexPath.row {
-                
-            case 0:
-                cell.textLabel!.text = "Name:"
-            case 1:
-                cell.textLabel!.text = profileDetailsArray[0]
-            case 2:
-                cell.textLabel!.text = "Age:"
-            case 3:
-                cell.textLabel!.text = profileDetailsArray[1]
-            case 4:
-                cell.textLabel!.text = "Gender:"
-            case 5:
-                cell.textLabel!.text = profileDetailsArray[2]
-            default:
-                cell.textLabel!.text = "Loading..."
-            }
-            
-        }
-        
-        
-        return cell
-    }
-    
-    
-    
-}
-
-extension MyProfileViewController: UITableViewDelegate {
-    
-    
-}
 
 extension MyProfileViewController: UIImagePickerControllerDelegate {
     

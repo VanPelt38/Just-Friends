@@ -30,7 +30,8 @@ class DatePlanViewController: UIViewController {
         super.viewDidLoad()
         
        startLocationServices()
-        
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
         seeAvailableButton.layer.cornerRadius = seeAvailableButton.frame.height / 2
         
         if let currentUser = Auth.auth().currentUser {
@@ -44,6 +45,10 @@ class DatePlanViewController: UIViewController {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func popVC() {
+        navigationController?.popViewController(animated: true)
     }
     
     

@@ -14,7 +14,7 @@ class SettingsViewController: UIViewController {
     
     @IBOutlet weak var settingsTableView: UITableView!
     
-    var settingTitles = ["Distance Preferences", "Log Out", "Delete Account"]
+    var settingTitles = ["Distance Preferences", "Log Out", "Delete Account", "Contact Us"]
     var firebaseID = ""
     private let db = Firestore.firestore()
     
@@ -190,6 +190,8 @@ extension SettingsViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         if indexPath.row == 0 {
             performSegue(withIdentifier: "settingsDistanceSeg", sender: self)
         }
@@ -199,7 +201,9 @@ extension SettingsViewController: UITableViewDelegate {
         if indexPath.row == 2 {
             deleteAccount()
         }
-        
+        if indexPath.row == 3 {
+            performSegue(withIdentifier: "settingsContactSeg", sender: self)
+        }
     }
     
 }

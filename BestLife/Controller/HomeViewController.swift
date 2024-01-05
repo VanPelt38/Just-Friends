@@ -93,6 +93,8 @@ class HomeViewController: UIViewController {
         viewProfileButton.clipsToBounds = true
         viewProfileButton.layer.cornerRadius = viewProfileButton.frame.size.width / 2
         viewProfileButton.tintColor = .black
+        
+        navigationItem.hidesBackButton = true
     }
     
     func setDistancePreference() {

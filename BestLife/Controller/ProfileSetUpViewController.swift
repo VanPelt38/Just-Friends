@@ -19,6 +19,8 @@ class ProfileSetUpViewController: UIViewController {
     @IBOutlet weak var ageDatePicker: UIDatePicker!
     @IBOutlet weak var maleCheck: UIImageView!
     @IBOutlet weak var femaleCheck: UIImageView!
+    @IBOutlet weak var readyButton: UIButton!
+    @IBOutlet weak var cameraButton: UIButton!
     
     var isImageChosen = false
     var isAgeChosen = false
@@ -39,14 +41,24 @@ class ProfileSetUpViewController: UIViewController {
         }
         
        setUpDatePicker()
-        
-        maleCheck.isHidden = true
-        femaleCheck.isHidden = true
+        setUpUI()
 
         nameTextField.delegate = self
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         self.view.addGestureRecognizer(tapGesture)
+    }
+    
+    func setUpUI() {
+        
+        cameraButton.clipsToBounds = true
+        cameraButton.layer.cornerRadius = cameraButton.frame.size.width / 2
+        profileImage.clipsToBounds = true
+        profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
+        readyButton.clipsToBounds = true
+        readyButton.layer.cornerRadius = readyButton.frame.height / 2
+        femaleCheck.tintColor = .lightGray
+        maleCheck.tintColor = .lightGray
     }
     
     @IBAction func addProfilePhotoPressed(_ sender: UIButton) {
@@ -60,15 +72,15 @@ class ProfileSetUpViewController: UIViewController {
     
     @IBAction func maleButtonChecked(_ sender: UIButton) {
         
-        femaleCheck.isHidden = true
-        maleCheck.isHidden = false
+        femaleCheck.tintColor = .lightGray
+        maleCheck.tintColor = .blue
         gender = "male"
     }
     
     @IBAction func femaleButtonChecked(_ sender: UIButton) {
         
-        femaleCheck.isHidden = false
-        maleCheck.isHidden = true
+        femaleCheck.tintColor = .blue
+        maleCheck.tintColor = .lightGray
         gender = "female"
     }
     

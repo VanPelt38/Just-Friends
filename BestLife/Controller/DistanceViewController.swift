@@ -16,6 +16,9 @@ class DistanceViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
 
         if UserDefaults.standard.value(forKey: "distancePreference") != nil {
            
@@ -30,6 +33,9 @@ class DistanceViewController: UIViewController {
       
     }
     
+    @objc func popVC() {
+        navigationController?.popViewController(animated: true)
+    }
 
     @IBAction func distanceChanged(_ sender: UISlider) {
         

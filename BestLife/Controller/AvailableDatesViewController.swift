@@ -92,6 +92,9 @@ class AvailableDatesViewController: UIViewController {
         nooneAvailableMessage.isHidden = true
         loadUserProfile()
         
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
+        
         dataLoading()
 
         availableDatesTable.delegate = self
@@ -147,7 +150,7 @@ class AvailableDatesViewController: UIViewController {
                             
                             if notificationCount != 0 {
                                 
-                                matchesButton.subviews.forEach { $0.removeFromSuperview() }
+//                                matchesButton.subviews.forEach { $0.removeFromSuperview() }
                                 matchesButton.addSubview(badgeLabel)
                                 matchesButton.bringSubviewToFront(badgeLabel)
                                 
@@ -169,6 +172,9 @@ class AvailableDatesViewController: UIViewController {
          
     }
     
+    @objc func popVC() {
+        navigationController?.popViewController(animated: true)
+    }
 
     @IBAction func matchesPressed(_ sender: UIButton) {
         

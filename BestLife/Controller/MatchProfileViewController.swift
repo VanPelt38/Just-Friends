@@ -10,8 +10,9 @@ import Kingfisher
 
 class MatchProfileViewController: UIViewController {
     
-    @IBOutlet weak var matchProfileTableView: UITableView!
     @IBOutlet weak var matchProfilePicture: UIImageView!
+    @IBOutlet weak var profileDetails: UILabel!
+    @IBOutlet weak var genderImage: UIImageView!
     
     var matchProfile = ProfileModel()
     var profileDetailsArray: [String] = []
@@ -21,14 +22,16 @@ class MatchProfileViewController: UIViewController {
 
         setUpUI()
         setupProfile()
-        matchProfileTableView.dataSource = self
-        matchProfileTableView.delegate = self
-        matchProfileTableView.backgroundColor = .clear
-        matchProfileTableView.backgroundView = nil
+    }
+    
+    @objc func popVC() {
+        navigationController?.popViewController(animated: true)
     }
     
     func setUpUI() {
         
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
         let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
         matchProfilePicture.frame.size = size
         matchProfilePicture.frame.origin.y = 0
@@ -43,6 +46,8 @@ class MatchProfileViewController: UIViewController {
         DispatchQueue.main.async { [self] in
             
             self.navigationItem.title = self.profileDetailsArray[0]
+            self.profileDetails.text = "\(profileDetailsArray[0]), \(profileDetailsArray[1])"
+            self.genderImage.image = (self.profileDetailsArray[2] == "male") ? UIImage(named: "big male") : UIImage(named: "big female")
             
             if let url = URL(string: matchProfile.picture) {
                 
@@ -55,60 +60,9 @@ class MatchProfileViewController: UIViewController {
                     print("ERROR LOADING PROFILE IMAGE: \(error.localizedDescription)")
                 }
             }
-            self.matchProfileTableView.reloadData()
         }
-        self.matchProfileTableView.reloadData()
     }
   
 }
 
-extension MatchProfileViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if profileDetailsArray.count == 0 {
-            
-            return 1
-        } else {
-            
-            return profileDetailsArray.count * 2
-        }
-    }
-    
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "matchProfileCell", for: indexPath)
-        cell.backgroundColor = .clear
-        cell.contentView.backgroundColor = .clear
-        
-        if profileDetailsArray.count == 0 {
-            
-            cell.textLabel!.text = "Loading..."
-            
-        } else {
-            
-            switch indexPath.row {
-                
-            case 0:
-                cell.textLabel!.text = "Name:"
-            case 1:
-                cell.textLabel!.text = profileDetailsArray[0]
-            case 2:
-                cell.textLabel!.text = "Age:"
-            case 3:
-                cell.textLabel!.text = profileDetailsArray[1]
-            case 4:
-                cell.textLabel!.text = "Gender:"
-            case 5:
-                cell.textLabel!.text = profileDetailsArray[2]
-            default:
-                cell.textLabel!.text = "Loading..."
-            }
-        }
-        return cell
-    }
-}
 
-extension MatchProfileViewController: UITableViewDelegate {
-}

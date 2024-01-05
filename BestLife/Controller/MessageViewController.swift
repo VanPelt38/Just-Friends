@@ -1,21 +1,20 @@
 //
-//  ChatViewController.swift
+//  MessagesViewController.swift
 //  BestLife
 //
-//  Created by Jake Gordon on 15/12/2022.
+//  Created by Jake Gordon on 28/12/2023.
 //
 
 import UIKit
+import MessageKit
+import InputBarAccessoryView
 import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
-import IQKeyboardManagerSwift
 import RealmSwift
+import Kingfisher
 
-class ChatViewController: UIViewController {
-
-    @IBOutlet weak var chatTableView: UITableView!
-    @IBOutlet weak var chatTextField: UITextField!
+class MessageViewController: MessagesViewController {
     
     var firebaseID = ""
     var matchID = ""
@@ -23,24 +22,31 @@ class ChatViewController: UIViewController {
     var matchDetails: Results<RMatchModel>?
     var currentMessages: [RChatDoc] = []
     var sortedCurrentMessages: [RChatDoc] = []
-    var chatFieldOriginalY: CGFloat = 0.0
-    var tableViewOriginalY: CGFloat = 0.0
+    var finalMessages: [Message] = []
+    var sender = Sender(name: "none", id: "100")
     var ownMatch = MatchModel()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let currentTime = Date()
-
-        IQKeyboardManager.shared.disabledDistanceHandlingClasses.append(ChatViewController.self)
+        
+        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
+        
+        messageInputBar.delegate = self
+        messagesCollectionView.messagesDataSource = self
+        messagesCollectionView.messagesLayoutDelegate = self
+        messagesCollectionView.messagesDisplayDelegate = self
+        messagesCollectionView.register(CustomCommentCell.self)
+        messagesCollectionView.reloadData()
         
         currentMessages = []
         sortedCurrentMessages = []
         
         Task.init {
-            print("this is the matchid: \(matchID)")
+            
             await loadMatchDetails(matchID)
-            print("this is matchd etails after loading them: \(matchDetails![0])")
             await loadChatMessages()
             
             db.collection("chats").document(matchDetails![0].chatID).collection("messages").addSnapshotListener { [self] snapshot, error in
@@ -49,9 +55,8 @@ class ChatViewController: UIViewController {
                     print("error fetching snapshot: \(error)")
                     return
                 }
-                print("we made it this far, and the chatid is: \(matchDetails![0].chatID)")
+                
                 if let error = error {
-                    
                     print("listener error: \(error.localizedDescription)")
                 }
                 
@@ -60,7 +65,7 @@ class ChatViewController: UIViewController {
                     if change.type == .added {
                         
                         let documentData = change.document.data()
-                        print("but id ont htink we get here?")
+                        
                         if let time = documentData["timeStamp"] as? Timestamp, let userID = documentData["ID"] as? String, let message = documentData["message"] as? String {
                             
                             let messageTime = time.dateValue()
@@ -79,11 +84,12 @@ class ChatViewController: UIViewController {
                                     newMessage.chatID = matchDetails![0].chatID
                                     realm.add(newMessage)
                                     
-                                    currentMessages.append(newMessage)
-                                    sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
+                                    let newMess = Message(id: "1", date: messageTime, message: message, sender: Sender(name: matchDetails![0].name, id: userID))
+                                    finalMessages.append(newMess)
                                 }
-                                    chatTableView.reloadData()
-                                    scrollToBottom()
+                              
+                                   messagesCollectionView.reloadData()
+                                messagesCollectionView.scrollToLastItem()
                             }
                         }
                         
@@ -93,18 +99,90 @@ class ChatViewController: UIViewController {
             }
 
         }
+    }
+    
+    @objc func popVC() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    func loadMatchDetails(_ matchID: String) async {
         
-        chatTableView.delegate = self
-        chatTableView.dataSource = self
+        if let currentUser = Auth.auth().currentUser {
+            firebaseID = currentUser.uid
+        } else {
+            print("no user is currently signed in")
+        }
         
-        chatTextField.delegate = self
+        guard let realm = RealmManager.getRealm() else {return}
+
+        try! realm.write {
+            
+            self.matchDetails = realm.objects(RMatchModel.self).filter("id == %@", matchID)
+            self.navigationItem.title = matchDetails![0].name
+        }
+    }
+    
+    func loadChatMessages() async {
         
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
-        self.view.addGestureRecognizer(tapGesture)
+        self.currentMessages = []
+        self.sortedCurrentMessages = []
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-  
+        guard let realm = RealmManager.getRealm() else {return}
+        
+        try! realm.write {
+            
+            let chats = realm.objects(RChatDoc.self).filter("chatID == %@", matchDetails![0].chatID)
+            for chat in chats {
+                self.currentMessages.append(chat)
+            }
+           
+        }
+        sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
+        
+        for message in sortedCurrentMessages {
+            let newMessage = Message(id: "1", date: message.timeStamp!, message: message.message, sender: Sender(name: (message.userID == firebaseID) ? firebaseID : matchDetails![0].userID, id: (message.userID == firebaseID) ? self.sender.displayName : matchDetails![0].name))
+            finalMessages.append(newMessage)
+        }
+       
+        messagesCollectionView.reloadData()
+        messagesCollectionView.scrollToLastItem()
+                
+            }
+    
+    func saveChatToFirestore(_ message: String) async {
+        
+        let newMessage = RChatDoc()
+        newMessage.timeStamp = Date()
+        newMessage.userID = firebaseID
+        newMessage.message = message
+        newMessage.chatID = matchDetails![0].chatID
+        print("this is sender: \(ownMatch.name), and id: \(firebaseID)")
+        let newMess = Message(id: "1", date: Date(), message: message, sender: Sender(name: firebaseID, id: ownMatch.name))
+        finalMessages.append(newMess)
+        
+             messagesCollectionView.reloadData()
+          messagesCollectionView.scrollToLastItem()
+        
+        do {
+            
+            let docRef = try await db.collection("chats").document(matchDetails![0].chatID).collection("messages").addDocument(data:
+                                                                                                                [
+                                                                                                                    "message" : message,
+                                                                                                                    "ID" : firebaseID,
+                                                                                                                    "timeStamp" : Date()
+                                                                                                                ]
+            )
+            
+            guard let realm = RealmManager.getRealm() else {return}
+      
+            try! realm.write {
+                newMessage.id = docRef.documentID
+                realm.add(newMessage)
+            }
+            
+        } catch {
+                print(error)
+            }
     }
     
     @IBAction func flagButtonPressed(_ sender: UIBarButtonItem) {
@@ -265,14 +343,14 @@ class ChatViewController: UIViewController {
         } catch {
             print(error)
         }
-        print("and this is matchdeatils.id right before deletion: \(matchDetails![0].id)")
+      
         if let matchToDelete = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchDetails![0].id) {
                 try! realm.write {
                     realm.delete(matchToDelete)
                 }
             
         }
-        print("but we never get here")
+     
         let matchCopy = db.collection("users").document(matchUserID).collection("matchStatuses").document(firebaseID)
 
         do {
@@ -289,9 +367,6 @@ class ChatViewController: UIViewController {
             print("error deleting chat: \(error)")
         }
         
-        // what if they still chat to you after you've blocked them? would it still crash if we don't bother deleting chats?
-        // and if not, why is it that when you delete a match, and they still try and chat, it doesn't crash? or does it?
-        
         let realmChats = realm.objects(RChatDoc.self)
         print(realmChats.count)
         for chat in realmChats {
@@ -304,209 +379,49 @@ class ChatViewController: UIViewController {
         }
         }
     
-    @objc func keyboardWillShow(_ notification: Notification) {
-            
-            if let userInfo = notification.userInfo, let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-                
-                chatFieldOriginalY = chatTextField.frame.origin.y
-                let keyboardHeight = keyboardFrame.height
-                let screenHeight = UIScreen.main.bounds.height
-                
-                let chatTextFieldY = screenHeight - keyboardHeight - chatTextField.frame.height - 5
-                
-                self.chatTextField.frame.origin.y = chatTextFieldY
-                
-                if sortedCurrentMessages.count > 8 {
-                    
-                    tableViewOriginalY = chatTableView.frame.origin.y
-                    let distanceToMove = chatFieldOriginalY - chatTextField.frame.origin.y
-                    self.chatTableView.frame.origin.y -= distanceToMove
-                    scrollToBottom()
-                }
-            }
-    }
-    
-    @objc func keyboardWillHide(_ notification: Notification) {
-
-            chatTextField.frame.origin.y = chatFieldOriginalY
-        if sortedCurrentMessages.count > 8 {
-            chatTableView.frame.origin.y = tableViewOriginalY
-        }
-    }
-    
-    
-    @IBAction func sendPressed(_ sender: UIButton) {
-        
-        if chatTextField.text != "" {
-            
-            if let safeMessage = chatTextField.text {
-                
-                Task.init {
-                    
-                    await saveChatToFirestore(safeMessage)
-                }
-                
-            }
-            chatTextField.text = ""
-        }
-    }
-    
-    func loadMatchDetails(_ matchID: String) async {
-        
-        if let currentUser = Auth.auth().currentUser {
-            firebaseID = currentUser.uid
-        } else {
-            print("no user is currently signed in")
-        }
-        
-        guard let realm = RealmManager.getRealm() else {return}
-
-        try! realm.write {
-            
-            self.matchDetails = realm.objects(RMatchModel.self).filter("id == %@", matchID)
-        }
-    }
-    
-    func loadChatMessages() async {
-        
-        self.currentMessages = []
-        self.sortedCurrentMessages = []
-        
-        guard let realm = RealmManager.getRealm() else {return}
-        
-        try! realm.write {
-            
-            let chats = realm.objects(RChatDoc.self).filter("chatID == %@", matchDetails![0].chatID)
-            for chat in chats {
-                self.currentMessages.append(chat)
-            }
-           
-        }
-        sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
-       
-            chatTableView.reloadData()
-        scrollToBottom()
-                
-            }
-
-    
-    func saveChatToFirestore(_ message: String) async {
-        
-        let newMessage = RChatDoc()
-        newMessage.timeStamp = Date()
-        newMessage.userID = firebaseID
-        newMessage.message = message
-        newMessage.chatID = matchDetails![0].chatID
-        
-        currentMessages.append(newMessage)
-        sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
-        
-        chatTableView.reloadData()
-        scrollToBottom()
-        
-        do {
-            
-            let docRef = try await db.collection("chats").document(matchDetails![0].chatID).collection("messages").addDocument(data:
-                                                                                                                [
-                                                                                                                    "message" : message,
-                                                                                                                    "ID" : firebaseID,
-                                                                                                                    "timeStamp" : Date()
-                                                                                                                ]
-            )
-            
-            guard let realm = RealmManager.getRealm() else {return}
-      
-            try! realm.write {
-                newMessage.id = docRef.documentID
-                realm.add(newMessage)
-            }
-            
-        } catch {
-                print(error)
-            }
-    }
-
-    
-    func scrollToBottom() {
-        
-        if sortedCurrentMessages.count > 0 {
-            
-            let indexPath = IndexPath(row: sortedCurrentMessages.count - 1, section: 0)
-            chatTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
-    }
-    
-
 }
 
-extension ChatViewController: UITableViewDataSource {
+extension MessageViewController: MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate, InputBarAccessoryViewDelegate {
     
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if sortedCurrentMessages.count < 1 {
-            return 1
-        } else {
-            
-            return sortedCurrentMessages.count
-        }
-        
-        
+    var currentSender: MessageKit.SenderType {
+        return sender
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessageKit.MessagesCollectionView) -> MessageKit.MessageType {
+        return finalMessages[indexPath.section]
+    }
+    
+    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
         
-        let cell = chatTableView.dequeueReusableCell(withIdentifier: "messageCell", for: indexPath)
-        
-        
-        if sortedCurrentMessages.count < 1 {
-           
-            cell.textLabel?.text = "Don't be shy! Send a message"
-            
-            return cell
-        } else {
-            
-            cell.textLabel?.text = sortedCurrentMessages[indexPath.row].message
-            cell.frame.size = CGSize(width: chatTableView.frame.width / 2, height: cell.frame.height)
-            cell.layer.cornerRadius = 10
-            cell.layer.masksToBounds = true
-            
-            if sortedCurrentMessages[indexPath.row].userID == firebaseID {
-                
-                cell.textLabel?.textAlignment = .right
-                cell.backgroundColor = UIColor(red: 205/255, green: 243/255, blue: 245/255, alpha: 1.0)
+        if let matchImage = URL(string: matchDetails![0].imageURL), let myImage = URL(string: ownMatch.imageURL) {
+            if isFromCurrentSender(message: message) {
+                avatarView.kf.setImage(with: myImage)
             } else {
-                
-                cell.textLabel?.textAlignment = .left
-                cell.backgroundColor = UIColor(red: 182/255, green: 250/255, blue: 187/255, alpha: 1.0)
+                avatarView.kf.setImage(with: matchImage)
             }
-            
-            return cell
         }
         
     }
-}
-
-extension ChatViewController: UITableViewDelegate {
     
-    
-}
-
-
-extension ChatViewController: UITextFieldDelegate {
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    
-        chatTextField.endEditing(true)
-
-        return true
-        
-    }
-
-    @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
-        
-        chatTextField.resignFirstResponder()
-        chatTextField.endEditing(true)
+    func backgroundColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
+        if isFromCurrentSender(message: message) {
+            return UIColor(red: 135/255, green: 206/255, blue: 235/255, alpha: 1.0)
+        } else {
+            return UIColor(red: 218/255, green: 247/255, blue: 166/255, alpha: 1.0)
+        }
     }
     
+    func numberOfSections(in messagesCollectionView: MessageKit.MessagesCollectionView) -> Int {
+        return finalMessages.count
+    }
+    
+    
+    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
+            
+                Task.init {
+
+                    await saveChatToFirestore(text)
+                    inputBar.inputTextView.text = ""
+                }
+    }
 }

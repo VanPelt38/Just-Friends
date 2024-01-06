@@ -11,6 +11,7 @@ class DistanceViewController: UIViewController {
 
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var distanceSlider: UISlider!
+    @IBOutlet weak var updateButton: UIButton!
     
     var distanceChosen = 10000
     
@@ -19,6 +20,7 @@ class DistanceViewController: UIViewController {
         
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
+        updateButton.layer.cornerRadius = updateButton.frame.height / 2
 
         if UserDefaults.standard.value(forKey: "distancePreference") != nil {
            
@@ -54,8 +56,8 @@ class DistanceViewController: UIViewController {
         
         UserDefaults.standard.set(distanceChosen, forKey: "distancePreference")
         
-        let confirmDistanceChange = UIAlertController(title: "Nice!", message: "Your distance preferences have been saved!", preferredStyle: .alert)
-        let okayAction = UIAlertAction(title: "OK", style: .default)
+        let confirmDistanceChange = UIAlertController(title: "Nice", message: "Your distance preferences have been saved.", preferredStyle: .alert)
+        let okayAction = UIAlertAction(title: "Okay", style: .default)
         confirmDistanceChange.addAction(okayAction)
         present(confirmDistanceChange, animated: true)
 

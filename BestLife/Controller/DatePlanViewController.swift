@@ -116,14 +116,8 @@ class DatePlanViewController: UIViewController {
                                 } else {
                                     
                                     print("Successfully saved data.")
-                                    
                                 }
-                                
-                                
                             }
-                            
-                            
-                            
                         } else {
                             
                             let docname = docsArray[0].documentID
@@ -146,20 +140,16 @@ class DatePlanViewController: UIViewController {
                         }
                     }
                 }
-                
-                
-                
             }
             
             datePlanModel.dateActivity = activityTextField.text!
             datePlanModel.dateTime = timeChosen
             activityTextField.text = ""
             
-            
             performSegue(withIdentifier: "dateAvailableSeg", sender: self)
         } else {
             
-            showAlert(title: "Uh oh", message: "Please select a time and activity!")
+            showAlert(title: "Uh-oh", message: "Please select a time and activity.")
         }
         
     }

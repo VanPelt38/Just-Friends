@@ -25,7 +25,7 @@ class AvailableDatesViewController: UIViewController {
     var profilesArray: [ProfileModel] = []
     var dataLoadedArray: [Bool] = []
     var expiringMatchesArray: [RExpiringMatch] = []
-    var ownName = "Jake"
+    var ownName = "none"
     var dateActivity = "none"
     var dateTime = "none"
     var firebaseID = ""
@@ -150,7 +150,6 @@ class AvailableDatesViewController: UIViewController {
                             
                             if notificationCount != 0 {
                                 
-//                                matchesButton.subviews.forEach { $0.removeFromSuperview() }
                                 matchesButton.addSubview(badgeLabel)
                                 matchesButton.bringSubviewToFront(badgeLabel)
                                 
@@ -625,14 +624,14 @@ extension AvailableDatesViewController: UITableViewDelegate {
         
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let confirmMatchAlert = UIAlertController(title: "Great Stuff!", message: "Are you sure you want to connect with this person?", preferredStyle: .alert)
-        let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
+        let confirmMatchAlert = UIAlertController(title: "Great Stuff", message: "Are you sure you want to connect with this person?", preferredStyle: .alert)
+        let okayAction = UIAlertAction(title: "Yes", style: .default) { [self] alertAction in
             
             Task.init {
                 let alreadyMatched = await checkIfAlreadyMatched(indexPath: indexPath)
                 if alreadyMatched {
                     
-                    let alreadyMatchedAlert = UIAlertController(title: "Uh oh", message: "Looks like the two of you are already connected. Try sending them a message instead!", preferredStyle: .alert)
+                    let alreadyMatchedAlert = UIAlertController(title: "Uh-oh", message: "Looks like the two of you are already connected. Try sending them a message instead.", preferredStyle: .alert)
                     let okAction = UIAlertAction(title: "Okay", style: .default)
                     alreadyMatchedAlert.addAction(okAction)
                     present(alreadyMatchedAlert, animated: true)
@@ -643,7 +642,7 @@ extension AvailableDatesViewController: UITableViewDelegate {
             }
         }
         
-        let nopeAction = UIAlertAction(title: "Oops nope", style: .default)
+        let nopeAction = UIAlertAction(title: "No", style: .default)
         confirmMatchAlert.addAction(okayAction)
         confirmMatchAlert.addAction(nopeAction)
         present(confirmMatchAlert, animated: true)
@@ -667,6 +666,7 @@ extension AvailableDatesViewController: UITableViewDelegate {
         guard let realm = RealmManager.getRealm() else {return}
         
         let daterID = statusArray[indexPath.row - 1].daterID
+        let dateName = userProfileArray[0].name
         let dateFirebaseDocID = statusArray[indexPath.row - 1].firebaseDocID
 
         db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
@@ -745,7 +745,8 @@ extension AvailableDatesViewController: UITableViewDelegate {
             
             let data: [String: Any] = [
                 "tapperID": field,
-                "tappedID": passedID!
+                "tappedID": passedID!,
+                "tapperName": dateName
             ]
 
            

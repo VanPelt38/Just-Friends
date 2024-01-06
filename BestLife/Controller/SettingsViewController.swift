@@ -65,8 +65,8 @@ class SettingsViewController: UIViewController {
                             if let loginVC = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") {
                                 loginVC.modalPresentationStyle = .fullScreen
                                 self.present(loginVC, animated: false, completion: nil)
-                                let confirmDeleteAlert = UIAlertController(title: "Success!", message: "Your account has been deleted.", preferredStyle: .alert)
-                                let okayAction = UIAlertAction(title: "OK", style: .default)
+                                let confirmDeleteAlert = UIAlertController(title: "Success", message: "Your account has been deleted.", preferredStyle: .alert)
+                                let okayAction = UIAlertAction(title: "Okay", style: .default)
                                 confirmDeleteAlert.addAction(okayAction)
                                 loginVC.present(confirmDeleteAlert, animated: true)
                             }

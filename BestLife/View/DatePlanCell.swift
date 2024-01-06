@@ -67,6 +67,11 @@ class DatePlanCell: UITableViewCell {
         viewProfileButton.clipsToBounds = true
         viewProfileButton.layer.cornerRadius = viewProfileButton.frame.size.width / 2
         viewProfileButton.tintColor = .black
+        
+        acceptedButton.clipsToBounds = true
+        acceptedButton.layer.cornerRadius = acceptedButton.frame.height / 2
+        rejectedButton.clipsToBounds = true
+        rejectedButton.layer.cornerRadius = rejectedButton.frame.height / 2
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

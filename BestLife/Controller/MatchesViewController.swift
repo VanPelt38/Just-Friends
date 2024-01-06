@@ -386,8 +386,8 @@ extension MatchesViewController: UITableViewDataSource {
         
         if editingStyle == .delete {
             
-            let confirmDeleteAlert = UIAlertController(title: "Sure?", message: "", preferredStyle: .alert)
-            let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
+            let confirmDeleteAlert = UIAlertController(title: "Are you sure?", message: "", preferredStyle: .alert)
+            let okayAction = UIAlertAction(title: "Yes", style: .default) { [self] alertAction in
                     
                     Task.init {
 
@@ -442,8 +442,8 @@ extension MatchesViewController: CustomTableViewCellDelegate {
         if buttonName == "rejectedButton" {
             
             
-            let confirmRejectAlert = UIAlertController(title: "Sure?", message: "", preferredStyle: .alert)
-            let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
+            let confirmRejectAlert = UIAlertController(title: "Are you sure?", message: "", preferredStyle: .alert)
+            let okayAction = UIAlertAction(title: "Yes", style: .default) { [self] alertAction in
                 
                 let asyncHandler: @convention(block) (UIAlertAction) -> Void = { [self] _ in
                     
@@ -497,18 +497,19 @@ extension MatchesViewController: CustomTableViewCellDelegate {
         } else if buttonName == "acceptedButton" {
             
             
-            let confirmAcceptAlert = UIAlertController(title: "Sure?", message: "", preferredStyle: .alert)
-            let okayAction = UIAlertAction(title: "Yes!", style: .default) { [self] alertAction in
+            let confirmAcceptAlert = UIAlertController(title: "Are you sure?", message: "", preferredStyle: .alert)
+            let okayAction = UIAlertAction(title: "Yes", style: .default) { [self] alertAction in
                 
                 
                 let chatID = IDgenerator()
-                print("chatid just assigned: \(chatID)")
+                
                 matchIDForChat = matchesArray![indexPath.row].id
                 let myFunctions = Functions.functions()
                 
                 let data: [String: Any] = [
                     "suitor": matchesArray![indexPath.row].fcmToken,
-                    "suitee": self.firebaseID
+                    "suitee": self.firebaseID,
+                    "suiteeName": ownMatch.name
                 ]
    
                
@@ -535,15 +536,13 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             "accepted" : true,
                             "chatID" : chatID
                         ])
-                        print("chatId just assigned to my own match status copy: \(chatID)")
-                        
+                      
                         guard let realm = RealmManager.getRealm() else {return}
                         try! realm.write {
  
                             if let matchToUpdate = realm.object(ofType: RMatchModel.self, forPrimaryKey: matchesArray![indexPath.row].id) {
                                 matchToUpdate.accepted = true
                                 matchToUpdate.chatID = chatID
-                                print("just updated chatID for my own match within realm: \(chatID)")
                             }
                             
                         }
@@ -555,7 +554,6 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             "userNames" : [chatMatchName, ownMatch.name],
                             "userIDs" : [chatMatchID, firebaseID]
                         ])
-                        print("just used chatID to create a chat collection in firestore: \(chatID)")
                         
                         db.collection("users").document(matchesArray![indexPath.row].userID).collection("matchStatuses").document(firebaseID).setData([
                             "name" : ownMatch.name,
@@ -577,7 +575,6 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                                 print("doc written successfully.")
                             }
                         }
-                        print("just updated my match's match status copy inc chatid: \(chatID)")
                         
                         let daterID = matchesArray![indexPath.row].userID
                         
@@ -589,7 +586,6 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                                 matchesArray![indexPath.row].accepted = true
                                 matchesArray![indexPath.row].chatID = chatID
                             }
-                            print("and just updated chatID for my match in the matches array: \(chatID)")
                             matchesTableView.reloadData()
                             performSegue(withIdentifier: "matchesChatSeg", sender: self)
                         }

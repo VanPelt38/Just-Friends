@@ -110,7 +110,7 @@ class ProfileSetUpViewController: UIViewController {
                 }
         } else {
             
-            let alert = UIAlertController(title: "Profile Incomplete!", message: "Please fill out everything before proceeding.", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Profile Incomplete", message: "Please enter all your details before proceeding.", preferredStyle: .alert)
             let okayAction = UIAlertAction(title: "Okay", style: .default)
             alert.addAction(okayAction)
             present(alert, animated: true, completion: nil)

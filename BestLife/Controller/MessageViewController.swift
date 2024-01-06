@@ -156,7 +156,6 @@ class MessageViewController: MessagesViewController {
         newMessage.userID = firebaseID
         newMessage.message = message
         newMessage.chatID = matchDetails![0].chatID
-        print("this is sender: \(ownMatch.name), and id: \(firebaseID)")
         let newMess = Message(id: "1", date: Date(), message: message, sender: Sender(name: firebaseID, id: ownMatch.name))
         finalMessages.append(newMess)
         
@@ -208,7 +207,7 @@ class MessageViewController: MessagesViewController {
                             
                             Task.init {
                                 await addUserReport(userID: firebaseID, userName: ownMatch.name, abuserID: matchDetails![0].userID, abuserName: matchDetails![0].name, reportType: option)
-                                let reportSentAlert = UIAlertController(title: "Report Sent Successfully", message: "Thanks for letting us know - our report team will investigate your concern thoroughly.", preferredStyle: .alert)
+                                let reportSentAlert = UIAlertController(title: "Report Sent Successfully", message: "Thanks for letting us know - our team will investigate your concern thoroughly and take any appropriate actions.", preferredStyle: .alert)
                                 let okayAction2 = UIAlertAction(title: "Okay", style: .default)
                                 reportSentAlert.addAction(okayAction2)
                                 self.present(reportSentAlert, animated: true)
@@ -228,7 +227,7 @@ class MessageViewController: MessagesViewController {
         let blockUserAction = UIAlertAction(title: "Block User", style: .default) { action in
             
             
-            let areYouSureAlert = UIAlertController(title: "Are you sure you'd like to block this user?", message: "They will no longer appear in your friends lists, and will be unable to see you either.", preferredStyle: .alert)
+            let areYouSureAlert = UIAlertController(title: "Are you sure you'd like to block this user?", message: "They will no longer be able to contact you, and you will be hidden from each other's 'Available' feeds.", preferredStyle: .alert)
             let okayAction = UIAlertAction(title: "Yes", style: .default) { [self] action in
                 
                 Task.init {
@@ -249,7 +248,7 @@ class MessageViewController: MessagesViewController {
                     
                     await self.wipeBlockedUserData()
                     
-                    let blockSuccessfulAlert = UIAlertController(title: "Success", message: "You will no longer be able to interact with this user.", preferredStyle: .alert)
+                    let blockSuccessfulAlert = UIAlertController(title: "Success", message: "This user will no longer be able to see or interact with you.", preferredStyle: .alert)
                     let okayAction2 = UIAlertAction(title: "Okay", style: .default) { action in
                         navigationController?.popViewController(animated: true)
                     }
@@ -370,7 +369,6 @@ class MessageViewController: MessagesViewController {
         let realmChats = realm.objects(RChatDoc.self)
         print(realmChats.count)
         for chat in realmChats {
-            print("deleting one: \(chat.chatID)")
             if chat.chatID == userChatID {
                 try! realm.write {
                     realm.delete(chat)

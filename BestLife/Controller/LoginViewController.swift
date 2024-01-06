@@ -71,7 +71,7 @@ class LoginViewController: UIViewController {
                 
                 if let e = error {
                     DispatchQueue.main.async { [self] in
-                        showAlert(title: "Uh Oh", message: "There was an error registering: \(e.localizedDescription)")
+                        showAlert(title: "Uh-oh", message: "There was an error registering: \(e.localizedDescription)")
                     }
                 } else {
                     Task.init {
@@ -156,7 +156,7 @@ class LoginViewController: UIViewController {
                     }
         } catch {
             DispatchQueue.main.async {
-                self.showAlert(title: "Uh Oh", message: "There was an error signing in: \(error.localizedDescription)")
+                self.showAlert(title: "Uh-oh", message: "There was an error signing in: \(error.localizedDescription)")
             }
         }
     }

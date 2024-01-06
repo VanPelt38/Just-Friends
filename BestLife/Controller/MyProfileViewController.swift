@@ -17,6 +17,7 @@ class MyProfileViewController: UIViewController {
     
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var profileDetails: UILabel!
+    @IBOutlet weak var cameraImage: UIButton!
     @IBOutlet weak var genderImage: UIImageView!
     
     var profileDetailsArray: [String] = []
@@ -62,6 +63,8 @@ class MyProfileViewController: UIViewController {
         let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
         profilePicture.frame.size = size
         profilePicture.frame.origin.y = 0
+       cameraImage.clipsToBounds = true
+        cameraImage.layer.cornerRadius = cameraImage.frame.size.width / 2
     }
     
     func saveImageToFireStore(imageURL: String) async {

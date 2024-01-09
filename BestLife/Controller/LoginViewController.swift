@@ -18,6 +18,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var signInButton: UIButton!
     
     private let db = Firestore.firestore()
+    let gradientLayer = CAGradientLayer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,9 +34,14 @@ class LoginViewController: UIViewController {
 
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        gradientLayer.frame = self.view.bounds
+    }
+    
     func setUpViewColour() {
         
-        let gradientLayer = CAGradientLayer()
         gradientLayer.frame = self.view.bounds
         gradientLayer.colors = [UIColor(red: 0.075, green: 0, blue: 0.557, alpha: 1).cgColor, UIColor(red: 0.510, green: 0.482, blue: 1, alpha: 1).cgColor]
         self.view.layer.insertSublayer(gradientLayer, at: 0)

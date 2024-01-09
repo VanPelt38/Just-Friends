@@ -17,10 +17,10 @@ class ProfileSetUpViewController: UIViewController {
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var ageDatePicker: UIDatePicker!
-    @IBOutlet weak var maleCheck: UIImageView!
-    @IBOutlet weak var femaleCheck: UIImageView!
     @IBOutlet weak var readyButton: UIButton!
     @IBOutlet weak var cameraButton: UIButton!
+    @IBOutlet weak var maleButton: UIButton!
+    @IBOutlet weak var femaleButton: UIButton!
     
     var isImageChosen = false
     var isAgeChosen = false
@@ -51,14 +51,24 @@ class ProfileSetUpViewController: UIViewController {
     
     func setUpUI() {
         
-        cameraButton.clipsToBounds = true
-        cameraButton.layer.cornerRadius = cameraButton.frame.size.width / 2
         profileImage.clipsToBounds = true
         profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
+        profileImage.tintColor = UIColor(red: 0.075, green: 0, blue: 0.557, alpha: 1.0)
         readyButton.clipsToBounds = true
         readyButton.layer.cornerRadius = readyButton.frame.height / 2
-        femaleCheck.tintColor = .lightGray
-        maleCheck.tintColor = .lightGray
+        let constraint = NSLayoutConstraint(item: cameraButton, attribute: .centerY, relatedBy: .equal, toItem: profileImage, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+        self.view.addConstraint(constraint)
+        cameraButton.clipsToBounds = true
+        cameraButton.setContentHuggingPriority(.defaultLow, for: .vertical)
+        cameraButton.layer.cornerRadius = cameraButton.frame.size.width / 2
+        
+        let image = UIImage(systemName: "checkmark")?.withTintColor(.systemBlue, renderingMode: .alwaysOriginal)
+        let unselectedImage = UIImage(systemName: "checkmark")?.withTintColor(.systemGray, renderingMode: .alwaysOriginal)
+      
+        femaleButton.setImage(image, for: .selected)
+        maleButton.setImage(unselectedImage, for: .normal)
+        femaleButton.setImage(unselectedImage, for: .normal)
+        maleButton.setImage(image, for: .selected)
     }
     
     @IBAction func addProfilePhotoPressed(_ sender: UIButton) {
@@ -71,16 +81,14 @@ class ProfileSetUpViewController: UIViewController {
     }
     
     @IBAction func maleButtonChecked(_ sender: UIButton) {
-        
-        femaleCheck.tintColor = .lightGray
-        maleCheck.tintColor = .blue
+        maleButton.isSelected = true
+        femaleButton.isSelected = false
         gender = "male"
     }
     
     @IBAction func femaleButtonChecked(_ sender: UIButton) {
-        
-        femaleCheck.tintColor = .blue
-        maleCheck.tintColor = .lightGray
+        femaleButton.isSelected = true
+        maleButton.isSelected = false
         gender = "female"
     }
     

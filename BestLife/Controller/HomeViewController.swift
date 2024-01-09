@@ -15,6 +15,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var makeFriendButton: UIButton!
     
+    @IBOutlet weak var buttonToProfileConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewProfileButton: UIButton!
     private let db = Firestore.firestore()
     var chatIDs: [String] = []
@@ -85,16 +86,43 @@ class HomeViewController: UIViewController {
     func setUpUI() {
         
         makeFriendButton.layer.cornerRadius = makeFriendButton.frame.height / 2
-        
-        let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
-        profilePicture.frame.size = size
-        profilePicture.frame.origin.y = 0
-        
+        profilePicSize()
         viewProfileButton.clipsToBounds = true
         viewProfileButton.layer.cornerRadius = viewProfileButton.frame.size.width / 2
         viewProfileButton.tintColor = .black
+        let constraint = NSLayoutConstraint(item: viewProfileButton, attribute: .centerY, relatedBy: .equal, toItem: profilePicture, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+        self.view.addConstraint(constraint)
         
         navigationItem.hidesBackButton = true
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        profilePicSize()
+    }
+    
+    func profilePicSize() {
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            
+            let size = CGSize(width: self.view.frame.width / 3, height: self.view.frame.width / 3)
+            profilePicture.frame.size = size
+            profilePicture.frame.origin.x = (self.view.frame.width / 2) - profilePicture.frame.size.width / 2
+            profilePicture.frame.origin.y = (self.view.frame.height / 2) - profilePicture.frame.size.height / 2
+            profilePicture.clipsToBounds = true
+            profilePicture.layer.cornerRadius = profilePicture.frame.size.width / 2
+            
+            let constraint = NSLayoutConstraint(item: makeFriendButton, attribute: .top, relatedBy: .equal, toItem: viewProfileButton, attribute: .bottom, multiplier: 1.0, constant: 30.0)
+            self.view.addConstraint(constraint)
+            
+        } else {
+            
+            let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
+            profilePicture.frame.size = size
+            profilePicture.frame.origin.y = 0
+            profilePicture.frame.origin.x = 0
+        }
     }
     
     func setDistancePreference() {

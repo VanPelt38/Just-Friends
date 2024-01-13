@@ -90,6 +90,39 @@ class AvailableDatesViewController: UIViewController {
         super.viewDidLoad()
 
         nooneAvailableMessage.isHidden = true
+        nooneAvailableMessage.translatesAutoresizingMaskIntoConstraints = false
+        let centerXConstraint = NSLayoutConstraint(item: nooneAvailableMessage,
+                                                   attribute: .centerX,
+                                                   relatedBy: .equal,
+                                                   toItem: view,
+                                                   attribute: .centerX,
+                                                   multiplier: 1.0,
+                                                   constant: 0.0)
+        let centerYConstraint = NSLayoutConstraint(item: nooneAvailableMessage,
+                                                   attribute: .centerY,
+                                                   relatedBy: .equal,
+                                                   toItem: view,
+                                                   attribute: .centerY,
+                                                   multiplier: 1.0,
+                                                   constant: 0.0)
+        let widthConstraint = NSLayoutConstraint(item: nooneAvailableMessage,
+                                                 attribute: .width,
+                                                 relatedBy: .equal,
+                                                 toItem: nil,
+                                                 attribute: .notAnAttribute,
+                                                 multiplier: 1.0,
+                                                 constant: 330.0)  // Adjust as needed
+
+        let heightConstraint = NSLayoutConstraint(item: nooneAvailableMessage,
+                                                  attribute: .height,
+                                                  relatedBy: .equal,
+                                                  toItem: nil,
+                                                  attribute: .notAnAttribute,
+                                                  multiplier: 1.0,
+                                                  constant: 170.0)
+        
+        view.addConstraints([centerXConstraint, centerYConstraint, widthConstraint, heightConstraint])
+        
         loadUserProfile()
         
         navigationItem.hidesBackButton = true

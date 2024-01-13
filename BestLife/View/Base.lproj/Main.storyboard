@@ -233,7 +233,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KFx-OW-OJe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5478.6259541984728" y="779.57746478873241"/>
+            <point key="canvasLocation" x="5059" y="793"/>
         </scene>
         <!--Settings-->
         <scene sceneID="skN-V1-aGQ">
@@ -382,7 +382,7 @@
             <objects>
                 <viewController id="fVY-ud-XHM" customClass="MatchProfileViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NIR-m0-uFI">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="808"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="786"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="person.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="L0o-mn-lyM">
@@ -424,41 +424,53 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="786"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="I want to" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OEs-Xh-e16">
-                                <rect key="frame" x="43" y="182" width="67" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="18"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="What would you like to do?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LBf-a6-U3n">
+                                <rect key="frame" x="21.666666666666657" y="35.000000000000007" width="350" height="69.666666666666686"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="350" id="i8l-CI-oSg"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="And when?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mvf-TO-92d">
-                                <rect key="frame" x="0.0" y="227" width="232" height="87"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="24"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="47" translatesAutoresizingMaskIntoConstraints="NO" id="6hw-6c-Dqp" userLabel="ActivityStack">
+                                <rect key="frame" x="14.666666666666657" y="150" width="364" height="39"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I want to" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OEs-Xh-e16">
+                                        <rect key="frame" x="0.0" y="0.0" width="92" height="39"/>
+                                        <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="25"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="e.g. ...go to the cinema" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lnT-8O-j42">
+                                        <rect key="frame" x="139" y="0.0" width="225" height="39"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="225" id="J7M-6w-Lyl"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="25"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                </subviews>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="And when?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mvf-TO-92d">
+                                <rect key="frame" x="114.00000000000001" y="240" width="165.33333333333337" height="35"/>
+                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <pickerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="THu-7R-xjQ">
-                                <rect key="frame" x="29" y="312" width="322" height="162"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="THu-7R-xjQ">
+                                <rect key="frame" x="36.666666666666657" y="295" width="320" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="Q8Q-6f-qeH"/>
+                                </constraints>
                             </pickerView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="What would you like to do?" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LBf-a6-U3n">
-                                <rect key="frame" x="25" y="50" width="344" height="104"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="24"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="e.g. ...go to the cinema" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lnT-8O-j42">
-                                <rect key="frame" x="132" y="175" width="226" height="34"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JJN-bb-zYN">
-                                <rect key="frame" x="24" y="572" width="344" height="95"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JJN-bb-zYN">
+                                <rect key="frame" x="21.666666666666657" y="520" width="350" height="90"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="90" id="1gI-vg-Osa"/>
+                                    <constraint firstAttribute="width" constant="350" id="hR0-nb-aVb"/>
+                                </constraints>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="see who's available" titleAlignment="center">
@@ -472,6 +484,18 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xM2-Tc-beS"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Mvf-TO-92d" firstAttribute="top" secondItem="6hw-6c-Dqp" secondAttribute="bottom" constant="51" id="EQj-Lr-JSP"/>
+                            <constraint firstItem="LBf-a6-U3n" firstAttribute="top" secondItem="xM2-Tc-beS" secondAttribute="top" constant="35" id="Xht-Oo-4Ql"/>
+                            <constraint firstItem="LBf-a6-U3n" firstAttribute="centerX" secondItem="cCC-2Z-Fl7" secondAttribute="centerX" id="ZO4-In-b9g"/>
+                            <constraint firstItem="THu-7R-xjQ" firstAttribute="centerX" secondItem="cCC-2Z-Fl7" secondAttribute="centerX" id="an0-ib-w2H"/>
+                            <constraint firstItem="Mvf-TO-92d" firstAttribute="centerX" secondItem="cCC-2Z-Fl7" secondAttribute="centerX" id="cST-OJ-vd6"/>
+                            <constraint firstItem="THu-7R-xjQ" firstAttribute="top" secondItem="Mvf-TO-92d" secondAttribute="bottom" constant="20" id="exx-xc-hsL"/>
+                            <constraint firstItem="JJN-bb-zYN" firstAttribute="centerX" secondItem="cCC-2Z-Fl7" secondAttribute="centerX" id="gJR-fy-hHm"/>
+                            <constraint firstItem="6hw-6c-Dqp" firstAttribute="centerX" secondItem="cCC-2Z-Fl7" secondAttribute="centerX" id="ght-e2-HW9"/>
+                            <constraint firstItem="JJN-bb-zYN" firstAttribute="top" secondItem="THu-7R-xjQ" secondAttribute="bottom" constant="25" id="ifS-yw-0a2"/>
+                            <constraint firstItem="6hw-6c-Dqp" firstAttribute="top" secondItem="LBf-a6-U3n" secondAttribute="bottom" constant="45.329999999999998" id="tUQ-eq-hj3"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Planner" id="XH8-6I-Xdh"/>
                     <connections>
@@ -508,9 +532,9 @@
                                 </prototypes>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorry - it doesn't seem like anyone's available around you. Expand your distance settings or try again later!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qlp-fM-kTo">
-                                <rect key="frame" x="54" y="291" width="285" height="168"/>
+                                <rect key="frame" x="0.0" y="308" width="330" height="169"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="17"/>
+                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="25"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -887,9 +911,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="iFG-Mg-rEf"/>
+        <segue reference="e0l-9B-xxr"/>
         <segue reference="wrL-sU-fes"/>
-        <segue reference="4b1-lw-4C2"/>
+        <segue reference="Nq8-3A-8oR"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="big male" width="100" height="100"/>

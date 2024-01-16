@@ -49,40 +49,12 @@
                                     </imageView>
                                 </subviews>
                             </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gDv-Vm-kwC">
-                                <rect key="frame" x="303" y="92" width="82" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="no thanks">
-                                    <fontDescription key="titleFontDescription" name="GillSans" family="Gill Sans" pointSize="8"/>
-                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="rejectedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7fF-sN-FZQ"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="*NAME* wants to X Y" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UxF-E8-G0U">
                                 <rect key="frame" x="25" y="19" width="343" height="17.666666666666671"/>
                                 <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XfZ-CO-e1k">
-                                <rect key="frame" x="225" y="74.666666666666671" width="70" height="23.333333333333329"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="accept">
-                                    <fontDescription key="titleFontDescription" name="GillSans" family="Gill Sans" pointSize="8"/>
-                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="acceptedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OtS-5V-FXd"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -106,15 +78,54 @@
                             <action selector="viewProfilePressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ut7-mF-9BI"/>
                         </connections>
                     </button>
+                    <stackView opaque="NO" contentMode="scaleToFill" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="jvy-It-vP3" userLabel="buttonsStack">
+                        <rect key="frame" x="396.66666666666669" y="60.666666666666657" width="158.33333333333331" height="30"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XfZ-CO-e1k">
+                                <rect key="frame" x="0.0" y="0.0" width="71.666666666666671" height="30"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="EHS-mQ-lQ1"/>
+                                </constraints>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="accept">
+                                    <fontDescription key="titleFontDescription" name="GillSans" family="Gill Sans" pointSize="12"/>
+                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="acceptedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="OtS-5V-FXd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gDv-Vm-kwC">
+                                <rect key="frame" x="86.666666666666629" y="0.0" width="71.666666666666686" height="30"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="n6E-LW-2rF"/>
+                                </constraints>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="no thanks">
+                                    <fontDescription key="titleFontDescription" name="GillSans" family="Gill Sans" pointSize="12"/>
+                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="rejectedPressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="7fF-sN-FZQ"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </stackView>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="UDq-4K-nZI" secondAttribute="trailing" constant="12" id="8wn-Tr-f42"/>
+                    <constraint firstAttribute="trailing" secondItem="jvy-It-vP3" secondAttribute="trailing" constant="15" id="CET-it-ezG"/>
                     <constraint firstAttribute="bottom" secondItem="UDq-4K-nZI" secondAttribute="bottom" constant="9" id="EsG-42-NmW"/>
                     <constraint firstItem="UDq-4K-nZI" firstAttribute="leading" secondItem="1uN-ta-svb" secondAttribute="trailing" constant="18" id="J4A-I3-WZO"/>
                     <constraint firstAttribute="bottom" secondItem="1uN-ta-svb" secondAttribute="bottom" constant="0.67000000000000004" id="ccx-xk-oud"/>
                     <constraint firstItem="1uN-ta-svb" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="11" id="nFR-ac-Pcl"/>
                     <constraint firstItem="1uN-ta-svb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="1" id="okm-kp-Bzz"/>
                     <constraint firstItem="UDq-4K-nZI" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="vml-TF-2aF"/>
+                    <constraint firstAttribute="bottom" secondItem="jvy-It-vP3" secondAttribute="bottom" constant="10" id="yIe-kZ-RXY"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>

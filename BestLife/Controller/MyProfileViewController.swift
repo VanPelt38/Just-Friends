@@ -76,7 +76,7 @@ class MyProfileViewController: UIViewController {
     }
     
     func profilePicSize() {
-        print("called once")
+        
         if UIDevice.current.userInterfaceIdiom == .pad {
             
             let size = CGSize(width: self.view.frame.width / 3, height: self.view.frame.width / 3)

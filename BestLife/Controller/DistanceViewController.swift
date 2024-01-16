@@ -14,6 +14,7 @@ class DistanceViewController: UIViewController {
     @IBOutlet weak var updateButton: UIButton!
     
     var distanceChosen = 10000
+    var firstViewLoad = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,12 +29,56 @@ class DistanceViewController: UIViewController {
             let modifiedUserDistance = userDistance / 1000
             distanceLabel.text = "\(modifiedUserDistance)km"
             distanceSlider.value = Float(modifiedUserDistance) / 100
-            let trackRect = distanceSlider.trackRect(forBounds: distanceSlider.frame)
-                let thumbRect = distanceSlider.thumbRect(forBounds: distanceSlider.bounds, trackRect: trackRect, value: distanceSlider.value)
-                self.distanceLabel.center = CGPoint(x: thumbRect.midX, y: self.distanceLabel.center.y)
                     }
       
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let orientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation
+        let currentDevice = UIDevice.current.userInterfaceIdiom
+        
+        if currentDevice == .pad {
+
+            switch orientation {
+            case .landscapeLeft, .landscapeRight:
+                
+                let trackRect = distanceSlider.trackRect(forBounds: distanceSlider.frame)
+                    let thumbRect = distanceSlider.thumbRect(forBounds: distanceSlider.bounds, trackRect: trackRect, value: distanceSlider.value)
+                if firstViewLoad {
+                  
+                    self.distanceLabel.center = CGPoint(x: thumbRect.midX, y: self.distanceLabel.center.y + 15)
+                } else {
+                    self.distanceLabel.center = CGPoint(x: thumbRect.midX, y: self.distanceLabel.center.y)
+                   
+                }
+                
+            case .portrait, .portraitUpsideDown:
+                
+                let trackRect = distanceSlider.trackRect(forBounds: distanceSlider.frame)
+                    let thumbRect = distanceSlider.thumbRect(forBounds: distanceSlider.bounds, trackRect: trackRect, value: distanceSlider.value)
+                if !firstViewLoad {
+                    self.distanceLabel.center = CGPoint(x: thumbRect.midX, y: self.distanceLabel.center.y)
+                   
+                } else {
+                
+                    self.distanceLabel.center = CGPoint(x: thumbRect.midX, y: self.distanceLabel.center.y + 200)
+                }
+                
+            default:
+                break
+            }
+
+        } else {
+            
+            let trackRect = distanceSlider.trackRect(forBounds: distanceSlider.frame)
+                let thumbRect = distanceSlider.thumbRect(forBounds: distanceSlider.bounds, trackRect: trackRect, value: distanceSlider.value)
+                self.distanceLabel.center = CGPoint(x: thumbRect.midX, y: self.distanceLabel.center.y + 10)
+        }
+        firstViewLoad = false
+    }
+
     
     @objc func popVC() {
         navigationController?.popViewController(animated: true)

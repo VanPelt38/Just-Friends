@@ -18,4 +18,5 @@ struct DatePlanModel {
     var fcmToken = "none"
     var latitude: Double = 0.0
     var longitude: Double = 0.0
+    var timeStamp: Date?
 }

@@ -262,27 +262,51 @@ class HomeViewController: UIViewController {
                     
                     let data = doc.data()
                     
-                    if let dateActivity = data["activity"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let time = data["time"] as? String {
+                    if let dateActivity = data["activity"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let time = data["time"] as? String, let timeStamp = data["timeStamp"] as? Timestamp {
                         
-                        try! realm.write {
+                        let currentTime = Date()
+                        let expiryTime = timeStamp.dateValue().addingTimeInterval(12 * 60 * 60)
+                        
+                        if currentTime >= expiryTime {
                             
-                            let realmStatus = RStatus()
-                            realmStatus.id = safeID
-                            realmStatus.dateActivity = dateActivity
-                            realmStatus.dateTime = time
-                            realmStatus.latitude = latitude
-                            realmStatus.longitued = longitude
-                            if let fcmToken = data["fcmToken"] as? String {
-                                realmStatus.fcmToken = fcmToken
+                            try! realm.write {
+                                if let existingStatus = realm.object(ofType: RStatus.self, forPrimaryKey: safeID) {
+                                    realm.delete(existingStatus)
+                                }
                             }
-                            if let suitorID = data["suitorID"] as? String {
-                                realmStatus.suitorID = suitorID
+                            
+                            let docID = doc.documentID
+                            let docReff = pathway.document(docID)
+                        
+                            do {
+                                try await docReff.delete()
+                            } catch {
+                                print("error deleting expired match: \(error)")
                             }
-                            if let suitorName = data["suitorName"] as? String {
-                                realmStatus.suitorName = suitorName
+                            
+                        } else {
+                            
+                            try! realm.write {
+                                
+                                let realmStatus = RStatus()
+                                realmStatus.id = safeID
+                                realmStatus.dateActivity = dateActivity
+                                realmStatus.dateTime = time
+                                realmStatus.latitude = latitude
+                                realmStatus.longitued = longitude
+                                if let fcmToken = data["fcmToken"] as? String {
+                                    realmStatus.fcmToken = fcmToken
+                                }
+                                if let suitorID = data["suitorID"] as? String {
+                                    realmStatus.suitorID = suitorID
+                                }
+                                if let suitorName = data["suitorName"] as? String {
+                                    realmStatus.suitorName = suitorName
+                                }
+                                realmStatus.firebaseDocID = doc.documentID
+                                realmStatus.timeStamp = timeStamp.dateValue()
+                                realm.add(realmStatus, update: .all)
                             }
-                            realmStatus.firebaseDocID = doc.documentID
-                            realm.add(realmStatus, update: .all)
                         }
                     }
                     

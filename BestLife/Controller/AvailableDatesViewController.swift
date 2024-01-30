@@ -309,13 +309,15 @@ class AvailableDatesViewController: UIViewController {
             for doc in querySnapshot.documents {
                         
                         let data = doc.data()
-                        if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double {
-                            let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken, latitude: latitude, longitude: longitude)
+                        if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let timeStamp = data["timeStamp"] as? Timestamp {
+                            
+                            let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken, latitude: latitude, longitude: longitude, timeStamp: timeStamp.dateValue())
                             self.statusArray.append(newStatus)
                             returnArray.append(newStatus)
                             
                             
                             self.statusArray = filterMatchLocations()
+                            self.statusArray = filterExpiredStatuses()
                             returnArray = self.statusArray
                             
                             
@@ -555,6 +557,23 @@ class AvailableDatesViewController: UIViewController {
         return filteredArray
     }
     
+    func filterExpiredStatuses() -> [DatePlanModel] {
+        
+    var filteredArray: [DatePlanModel] = []
+        
+        let currentTime = Date()
+        
+        for matchStatus in self.statusArray {
+            
+            let expiryTime = matchStatus.timeStamp?.addingTimeInterval(12 * 60 * 60)
+            
+            if currentTime <= expiryTime! {
+                filteredArray.append(matchStatus)
+            }
+        }
+        return filteredArray
+    }
+    
     
 }
 
@@ -696,109 +715,123 @@ extension AvailableDatesViewController: UITableViewDelegate {
     
     func matchWithUser(indexPath: IndexPath) {
         
+        
         guard let realm = RealmManager.getRealm() else {return}
         
         let daterID = statusArray[indexPath.row - 1].daterID
         let dateName = userProfileArray[0].name
         let dateFirebaseDocID = statusArray[indexPath.row - 1].firebaseDocID
-
-        db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
-            "timeStamp": Date(),
-            "userID": daterID,
-            "ownUserID": firebaseID
-        ]) { [self] err in
-            
-            if let err = err {
-                print("error writing doc: \(err)")
-            } else {
-
-                let id = db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).documentID
-                
-                try! realm.write {
-                    let realmExpiringMatch = RExpiringMatch()
-                    realmExpiringMatch.id = id
-                    realmExpiringMatch.userID = daterID
-                    realmExpiringMatch.timeStamp = Date()
-                    realmExpiringMatch.ownUserID = firebaseID
-                    realm.add(realmExpiringMatch, update: .all)
-                }
-            }
-        }
         
-        db.collection("users").document(daterID).collection("matchStatuses").document(firebaseID).setData([
-            "name" : self.userProfileArray[0].name,
-            "imageURL" : self.userProfileArray[0].picture,
-                "activity" : dateActivity,
-                "time" : dateTime,
-                "ID" : firebaseID,
-                "age" : self.userProfileArray[0].age,
-                "gender" : self.userProfileArray[0].gender,
-            "accepted" : false,
-            "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
-            "realmID" : UUID().uuidString,
-            "ownUserID" : daterID,
-            "chatID" : "none"
-        ]) { err in
-            if let err = err {
-                print("error writing doc: \(err)")
-            } else {
-                print("doc written successfully.")
-            }
-        }
-        
-        Task.init {
-            await addNotification(daterID: daterID, firebaseID: firebaseID)
-        }
-
         let docRef1 = db.collection("statuses").document(dateFirebaseDocID)
-        
-        let tappedPersonID = daterID
-        let docRef = db.collection("statuses").document(dateFirebaseDocID)
-        docRef.updateData(["suitorID" : firebaseID]) { err in
-            if let err = err {
-                print("error updating field: \(err)")
-            } else {
-                print("success")
-            }
+        docRef1.getDocument { [self] querySnap, error in
             
-        }
-
-        docRef1.addSnapshotListener { documentSnapshot, error in
-            guard let document = documentSnapshot else {
-                print("Error fetching document: \(error!)")
-                return
-            }
-            guard let field = document.data()?["suitorID"] as? String else {
-                print("Field does not exist")
-                return
-            }
-            
-            let myFunctions = Functions.functions()
-            let passedID = document.data()?["fcmToken"] as? String
-            
-            let data: [String: Any] = [
-                "tapperID": field,
-                "tappedID": passedID!,
-                "tapperName": dateName
-            ]
-
-           
-            myFunctions.httpsCallable("notifyUser").call(data) { result, error in
+            if let gotDoc = querySnap, gotDoc.exists {
                 
-                    if let error = error {
-                        print("Error calling function: \(error.localizedDescription)")
-                    } else if let result = result {
-                        print("Function result: \(result.data)")
+                db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
+                    "timeStamp": Date(),
+                    "userID": daterID,
+                    "ownUserID": firebaseID
+                ]) { [self] err in
+                    
+                    if let err = err {
+                        print("error writing doc: \(err)")
+                    } else {
+
+                        let id = db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).documentID
+                        
+                        try! realm.write {
+                            let realmExpiringMatch = RExpiringMatch()
+                            realmExpiringMatch.id = id
+                            realmExpiringMatch.userID = daterID
+                            realmExpiringMatch.timeStamp = Date()
+                            realmExpiringMatch.ownUserID = firebaseID
+                            realm.add(realmExpiringMatch, update: .all)
+                        }
                     }
                 }
-            
-            
-        
+                
+                db.collection("users").document(daterID).collection("matchStatuses").document(firebaseID).setData([
+                    "name" : self.userProfileArray[0].name,
+                    "imageURL" : self.userProfileArray[0].picture,
+                        "activity" : dateActivity,
+                        "time" : dateTime,
+                        "ID" : firebaseID,
+                        "age" : self.userProfileArray[0].age,
+                        "gender" : self.userProfileArray[0].gender,
+                    "accepted" : false,
+                    "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
+                    "realmID" : UUID().uuidString,
+                    "ownUserID" : daterID,
+                    "chatID" : "none"
+                ]) { err in
+                    if let err = err {
+                        print("error writing doc: \(err)")
+                    } else {
+                        print("doc written successfully.")
+                    }
+                }
+                
+                Task.init {
+                    await addNotification(daterID: daterID, firebaseID: firebaseID)
+                }
+                
+                let tappedPersonID = daterID
+                let docRef = db.collection("statuses").document(dateFirebaseDocID)
+                docRef.updateData(["suitorID" : firebaseID]) { err in
+                    if let err = err {
+                        print("error updating field: \(err)")
+                    } else {
+                        print("success")
+                    }
+                    
+                }
+
+                docRef1.addSnapshotListener { documentSnapshot, error in
+                    guard let document = documentSnapshot else {
+                        print("Error fetching document: \(error!)")
+                        return
+                    }
+                    guard let field = document.data()?["suitorID"] as? String else {
+                        print("Field does not exist")
+                        return
+                    }
+                    
+                    let myFunctions = Functions.functions()
+                    let passedID = document.data()?["fcmToken"] as? String
+                    
+                    let data: [String: Any] = [
+                        "tapperID": field,
+                        "tappedID": passedID!,
+                        "tapperName": dateName
+                    ]
+
+                   
+                    myFunctions.httpsCallable("notifyUser").call(data) { result, error in
+                        
+                            if let error = error {
+                                print("Error calling function: \(error.localizedDescription)")
+                            } else if let result = result {
+                                print("Function result: \(result.data)")
+                            }
+                        }
+                }
+                
+                self.statusArray.remove(at: indexPath.row - 1)
+                self.profilesArray.remove(at: indexPath.row - 1)
+                self.availableDatesTable.reloadData()
+                
+                
+            } else if let e = error {
+                print("error matching`: \(e)")
+            } else {
+                
+                let userDoesNotExistAlert = UIAlertController(title: "Uh-oh", message: "Unfortunately this user is no longer available.", preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "Okay", style: .default)
+                userDoesNotExistAlert.addAction(okayAction)
+                present(userDoesNotExistAlert, animated: true)
+                
+            }
         }
-        
-        self.statusArray.remove(at: indexPath.row - 1)
-        self.profilesArray.remove(at: indexPath.row - 1)
-        self.availableDatesTable.reloadData()
     }
 }
 

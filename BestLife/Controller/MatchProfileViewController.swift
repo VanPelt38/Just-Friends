@@ -81,9 +81,6 @@ class MatchProfileViewController: UIViewController {
         
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
-//        let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
-//        matchProfilePicture.frame.size = size
-//        matchProfilePicture.frame.origin.y = 0
         profilePicSize()
     }
     

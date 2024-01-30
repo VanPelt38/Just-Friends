@@ -20,4 +20,5 @@ class RStatus: Object {
     @Persisted var fcmToken = "none"
     @Persisted var latitude: Double = 0.0
     @Persisted var longitued: Double = 0.0
+    @Persisted var timeStamp: Date?
 }

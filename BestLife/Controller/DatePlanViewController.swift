@@ -96,11 +96,11 @@ class DatePlanViewController: UIViewController {
                             realmStatus.fcmToken = UserDefaults.standard.object(forKey: "fcmToken") as! String
                             realmStatus.latitude = locationManager.location?.coordinate.latitude ?? 0.0
                             realmStatus.longitued = locationManager.location?.coordinate.longitude ?? 0.0
+                            realmStatus.timeStamp = Date()
                             realm.add(realmStatus, update: .all)
                         }
                         
                         if docsArray.count == 0 {
-                            
                             
                             db.collection("statuses").addDocument(data: [
                                 "activity": safeActivity,
@@ -108,7 +108,8 @@ class DatePlanViewController: UIViewController {
                                 "userID": firebaseID,
                                 "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
                                 "latitude": locationManager.location?.coordinate.latitude,
-                                "longitude": locationManager.location?.coordinate.longitude
+                                "longitude": locationManager.location?.coordinate.longitude,
+                                "timeStamp": Date()
                             ]) { (error) in
                                 
                                 if let e = error {
@@ -119,7 +120,7 @@ class DatePlanViewController: UIViewController {
                                 }
                             }
                         } else {
-                            
+
                             let docname = docsArray[0].documentID
                             db.collection("statuses").document(docname).setData([
                                 "activity": safeActivity,
@@ -127,7 +128,8 @@ class DatePlanViewController: UIViewController {
                                 "userID": firebaseID,
                                 "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
                                 "latitude": locationManager.location?.coordinate.latitude,
-                                "longitude": locationManager.location?.coordinate.longitude
+                                "longitude": locationManager.location?.coordinate.longitude,
+                                "timeStamp": Date()
                             ]) { err in
                                 
                                 if let err = err {

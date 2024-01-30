@@ -13,7 +13,7 @@ class RealmManager {
     class func getRealm() -> Realm? {
         
         let config = Realm.Configuration(
-            schemaVersion: 5) { migration, oldSchemaVersion in
+            schemaVersion: 6) { migration, oldSchemaVersion in
                 if oldSchemaVersion < 2 {
                     migration.enumerateObjects(ofType: RMatchModel.className()) { oldObject, newObject in
                         newObject?["ownUserID"] = ""
@@ -35,7 +35,11 @@ class RealmManager {
                         newObject?["profilePicURL"] = ""
                     }
                 }
-
+                if oldSchemaVersion < 6 {
+                    migration.enumerateObjects(ofType: RStatus.className()) { oldObject, newObject in
+                        newObject?["timeStamp"] = nil
+                    }
+                }
             }
         
         do {

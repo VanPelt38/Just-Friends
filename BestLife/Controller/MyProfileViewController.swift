@@ -216,26 +216,40 @@ extension MyProfileViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let pickedImage = info[.originalImage] as? UIImage {
-            newPicHasBeenChosen = true
-            profilePicture.image = pickedImage
             
-            let photoPath = info[UIImagePickerController.InfoKey.referenceURL] as! NSURL
-            if let path = photoPath.absoluteString {
-                if path.hasSuffix("JPG") {
-                    print("jpg")
-                    imageExtension = "jpg"
-                } else if path.hasSuffix("PNG") {
-                    print("png")
-                    imageExtension = "png"
-                } else if path.hasSuffix("JPEG") {
-                    print("jpeg")
-                    imageExtension = "jpeg"
-                } else {
-                    print("unsupported image type")
-                }
+            if convertImageToData(image: pickedImage).count < 16000000 {
+                print(convertImageToData(image: pickedImage).count)
+                newPicHasBeenChosen = true
+                profilePicture.image = pickedImage
+                
+                let photoPath = info[UIImagePickerController.InfoKey.referenceURL] as! NSURL
+                if let path = photoPath.absoluteString {
+                    if path.hasSuffix("JPG") {
+                        print("jpg")
+                        imageExtension = "jpg"
+                    } else if path.hasSuffix("PNG") {
+                        print("png")
+                        imageExtension = "png"
+                    } else if path.hasSuffix("JPEG") {
+                        print("jpeg")
+                        imageExtension = "jpeg"
+                    } else {
+                        print("unsupported image type")
                     }
+                        }
+                picker.dismiss(animated: true, completion: nil)
+            } else {
+                print("should present")
+                let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "Okay", style: .default)
+                imageTooBigAlert.addAction(okayAction)
+                picker.dismiss(animated: true, completion: {
+                    self.present(imageTooBigAlert, animated: true, completion: nil)
+                })
+            }
+        } else {
+            picker.dismiss(animated: true, completion: nil)
         }
-        picker.dismiss(animated: true, completion: nil)
     }
     
     

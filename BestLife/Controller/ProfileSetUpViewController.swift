@@ -100,20 +100,30 @@ class ProfileSetUpViewController: UIViewController {
             if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
  
                     Task.init {
-                        imageString = await uploadImageToFireStorage(picture: image)
                         
-                        let realmProfile = RProfile()
-                        realmProfile.age = calculatedAge(date: ageDatePicker.date)
-                        realmProfile.gender = userGender
-                        realmProfile.name = userName
-                        realmProfile.picture = convertImageToData(image: image)
-                        realmProfile.profilePicURL = imageString ?? "none"
-                        realmProfile.userID = id
-                        persistProfileLocally(realmProfile: realmProfile)
-                        
-                        await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
-                        await flagProfileSetUp(id: id)
-                        self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
+                        let dataPic = convertImageToData(image: image)
+                        if dataPic.count < 16000000 {
+                            
+                            imageString = await uploadImageToFireStorage(picture: image)
+                            
+                            let realmProfile = RProfile()
+                            realmProfile.age = calculatedAge(date: ageDatePicker.date)
+                            realmProfile.gender = userGender
+                            realmProfile.name = userName
+                            realmProfile.picture = dataPic
+                            realmProfile.profilePicURL = imageString ?? "none"
+                            realmProfile.userID = id
+                            persistProfileLocally(realmProfile: realmProfile)
+                            
+                            await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
+                            await flagProfileSetUp(id: id)
+                            self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
+                        } else {
+                            let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)
+                            let okayAction = UIAlertAction(title: "Okay", style: .default)
+                            imageTooBigAlert.addAction(okayAction)
+                            present(imageTooBigAlert, animated: true, completion: nil)
+                        }
                     }
                 }
         } else {
@@ -127,9 +137,9 @@ class ProfileSetUpViewController: UIViewController {
     
     func convertImageToData(image: UIImage) -> Data {
         
-        if imageExtension == "jpg" || imageExtension == "jpeg" {
+        if imageExtension.lowercased() == "jpg" || imageExtension.lowercased() == "jpeg" {
             return image.jpegData(compressionQuality: 0.8)!
-        } else if imageExtension == "png" {
+        } else if imageExtension.lowercased() == "png" {
             return image.pngData()!
         } else {
             print("unsupported image type")

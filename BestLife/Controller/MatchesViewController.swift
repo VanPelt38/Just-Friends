@@ -102,14 +102,16 @@ class MatchesViewController: UIViewController {
     func removeDeletedMatches() async {
  
         guard let realm = RealmManager.getRealm() else {return}
-        for match in matchesArray! {
-            
+        print("these are all the matches existing in firestore: \(matchIDsForDeletion)")
+        for (index, match) in matchesArray!.enumerated() {
+            print("this is a match existing in realm: \(match.userID)")
             if !matchIDsForDeletion.contains(match.userID) {
-               
+                print("so we should be about to delete this: \(match.userID)")
+//                matchesArray?.first?.remove(at: index)
                 try! realm.write {
                     if let missingMatch = realm.object(ofType: RMatchModel.self, forPrimaryKey: match.id) {
                         realm.delete(missingMatch)
-                        
+                        print("and deleted")
                     }
                 }
             }
@@ -133,6 +135,7 @@ class MatchesViewController: UIViewController {
         for match in matchesArray! {
             currentMatchIDs.append(match.userID)
         }
+        matchIDsForDeletion.removeAll()
         let query = db.collection("users").document(firebaseID).collection("matchStatuses")
         guard let realm = RealmManager.getRealm() else {return}
         do {
@@ -184,11 +187,12 @@ class MatchesViewController: UIViewController {
         }
                 
                 guard let realm = RealmManager.getRealm() else {return}
-                
+                print("calling load deatils")
         if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first, let realmStatus = realm.object(ofType: RStatus.self, forPrimaryKey: firebaseID) {
                         
                 let myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: realmProfile.profilePicURL, dateActivity: realmStatus.dateActivity, dateTime: realmStatus.dateTime, ID: realmProfile.userID, accepted: false, fcmToken: realmStatus.fcmToken, chatID: "")
                         ownMatch = myProfile
+            print("own match now: \(ownMatch)")
                 }
     }
     

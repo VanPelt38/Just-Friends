@@ -78,8 +78,8 @@
                             <action selector="viewProfilePressed:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ut7-mF-9BI"/>
                         </connections>
                     </button>
-                    <stackView opaque="NO" contentMode="scaleToFill" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="jvy-It-vP3" userLabel="buttonsStack">
-                        <rect key="frame" x="396.66666666666669" y="60.666666666666657" width="158.33333333333331" height="30"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="jvy-It-vP3" userLabel="buttonsStack">
+                        <rect key="frame" x="411.66666666666669" y="60.666666666666657" width="153.33333333333331" height="30"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XfZ-CO-e1k">
                                 <rect key="frame" x="0.0" y="0.0" width="71.666666666666671" height="30"/>
@@ -98,7 +98,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gDv-Vm-kwC">
-                                <rect key="frame" x="86.666666666666629" y="0.0" width="71.666666666666686" height="30"/>
+                                <rect key="frame" x="81.666666666666629" y="0.0" width="71.666666666666686" height="30"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="n6E-LW-2rF"/>
@@ -118,7 +118,7 @@
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="UDq-4K-nZI" secondAttribute="trailing" constant="12" id="8wn-Tr-f42"/>
-                    <constraint firstAttribute="trailing" secondItem="jvy-It-vP3" secondAttribute="trailing" constant="15" id="CET-it-ezG"/>
+                    <constraint firstAttribute="trailing" secondItem="jvy-It-vP3" secondAttribute="trailing" constant="5" id="CET-it-ezG"/>
                     <constraint firstAttribute="bottom" secondItem="UDq-4K-nZI" secondAttribute="bottom" constant="9" id="EsG-42-NmW"/>
                     <constraint firstItem="UDq-4K-nZI" firstAttribute="leading" secondItem="1uN-ta-svb" secondAttribute="trailing" constant="18" id="J4A-I3-WZO"/>
                     <constraint firstAttribute="bottom" secondItem="1uN-ta-svb" secondAttribute="bottom" constant="0.67000000000000004" id="ccx-xk-oud"/>

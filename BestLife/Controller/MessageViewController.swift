@@ -140,7 +140,9 @@ class MessageViewController: MessagesViewController {
         sortedCurrentMessages = currentMessages.sorted { $0.timeStamp! < $1.timeStamp! }
         
         for message in sortedCurrentMessages {
+            print("this is the message from realm: \(message)")
             let newMessage = Message(id: "1", date: message.timeStamp!, message: message.message, sender: Sender(name: (message.userID == firebaseID) ? firebaseID : matchDetails![0].userID, id: (message.userID == firebaseID) ? self.sender.displayName : matchDetails![0].name))
+            print("and this is the new message object: \(newMessage.message), \(newMessage.sender.displayName), \(newMessage.sender.senderId)")
             finalMessages.append(newMessage)
         }
        

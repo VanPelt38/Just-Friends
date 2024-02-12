@@ -264,27 +264,27 @@ class HomeViewController: UIViewController {
                     
                     if let dateActivity = data["activity"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let time = data["time"] as? String, let timeStamp = data["timeStamp"] as? Timestamp {
                         
-                        let currentTime = Date()
-                        let expiryTime = timeStamp.dateValue().addingTimeInterval(12 * 60 * 60)
-                        
-                        if currentTime >= expiryTime {
-                            
-                            try! realm.write {
-                                if let existingStatus = realm.object(ofType: RStatus.self, forPrimaryKey: safeID) {
-                                    realm.delete(existingStatus)
-                                }
-                            }
-                            
-                            let docID = doc.documentID
-                            let docReff = pathway.document(docID)
-                        
-                            do {
-                                try await docReff.delete()
-                            } catch {
-                                print("error deleting expired match: \(error)")
-                            }
-                            
-                        } else {
+//                        let currentTime = Date()
+//                        let expiryTime = timeStamp.dateValue().addingTimeInterval(12 * 60 * 60)
+//
+//                        if currentTime >= expiryTime {
+//
+//                            try! realm.write {
+//                                if let existingStatus = realm.object(ofType: RStatus.self, forPrimaryKey: safeID) {
+//                                    realm.delete(existingStatus)
+//                                }
+//                            }
+//
+//                            let docID = doc.documentID
+//                            let docReff = pathway.document(docID)
+//                        
+//                            do {
+//                                try await docReff.delete()
+//                            } catch {
+//                                print("error deleting expired match: \(error)")
+//                            }
+//
+//                        } else {
                             
                             try! realm.write {
                                 
@@ -307,7 +307,7 @@ class HomeViewController: UIViewController {
                                 realmStatus.timeStamp = timeStamp.dateValue()
                                 realm.add(realmStatus, update: .all)
                             }
-                        }
+//                        }
                     }
                     
                 }

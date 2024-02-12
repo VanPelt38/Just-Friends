@@ -83,6 +83,20 @@ class DistanceViewController: UIViewController {
     @objc func popVC() {
         navigationController?.popViewController(animated: true)
     }
+    
+    func dismissViewAfterUpdate() {
+        if let navCont = navigationController {
+            CATransaction.begin()
+            CATransaction.setCompletionBlock {
+                let confirmDistanceChange = UIAlertController(title: "Nice", message: "Your distance preferences have been saved.", preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "Okay", style: .default)
+                confirmDistanceChange.addAction(okayAction)
+                self.present(confirmDistanceChange, animated: true)
+            }
+            navigationController?.popViewController(animated: true)
+            CATransaction.commit()
+        }
+    }
 
     @IBAction func distanceChanged(_ sender: UISlider) {
         
@@ -98,17 +112,7 @@ class DistanceViewController: UIViewController {
     }
     
     @IBAction func updateDistancePressed(_ sender: UIButton) {
-        
         UserDefaults.standard.set(distanceChosen, forKey: "distancePreference")
-        
-        let confirmDistanceChange = UIAlertController(title: "Nice", message: "Your distance preferences have been saved.", preferredStyle: .alert)
-        let okayAction = UIAlertAction(title: "Okay", style: .default)
-        confirmDistanceChange.addAction(okayAction)
-        present(confirmDistanceChange, animated: true)
-
+        dismissViewAfterUpdate()
     }
-    
-    
- 
-
 }

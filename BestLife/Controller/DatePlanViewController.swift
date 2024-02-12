@@ -60,95 +60,100 @@ class DatePlanViewController: UIViewController {
         
         if activityTextField.text != "" && timeChosen != "none" {
             
-            var docsArray: [QueryDocumentSnapshot] = []
-            let userID = UserDefaults.standard.object(forKey: "uniqueID")
-            
-            let activity = activityTextField.text
-            
-            
-            DispatchQueue.main.async { [self] in
+            if checkLocationAuthorisation() == "OK" {
                 
-                let currentCollection = db.collection("statuses")
-                let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
+                var docsArray: [QueryDocumentSnapshot] = []
+                let userID = UserDefaults.standard.object(forKey: "uniqueID")
                 
-                query.getDocuments { [self] querySnapshot, err in
+                let activity = activityTextField.text
+                
+                
+                DispatchQueue.main.async { [self] in
                     
-                    if let err = err {
-                        print("Error getting docs: \(err)")
-                    } else {
-                        
-                        for doc in querySnapshot!.documents {
-                            
-                            docsArray.append(doc)
-                            
-                        }
-                    }
+                    let currentCollection = db.collection("statuses")
+                    let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
                     
-                    if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
+                    query.getDocuments { [self] querySnapshot, err in
                         
-                        guard let realm = RealmManager.getRealm() else {return}
-                        
-                        try! realm.write {
-                            let realmStatus = RStatus()
-                            realmStatus.id = firebaseID
-                            realmStatus.dateActivity = safeActivity
-                            realmStatus.dateTime = timeChosen
-                            realmStatus.fcmToken = UserDefaults.standard.object(forKey: "fcmToken") as! String
-                            realmStatus.latitude = locationManager.location?.coordinate.latitude ?? 0.0
-                            realmStatus.longitued = locationManager.location?.coordinate.longitude ?? 0.0
-                            realmStatus.timeStamp = Date()
-                            realm.add(realmStatus, update: .all)
-                        }
-                        
-                        if docsArray.count == 0 {
-                            
-                            db.collection("statuses").addDocument(data: [
-                                "activity": safeActivity,
-                                "time": timeChosen,
-                                "userID": firebaseID,
-                                "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
-                                "latitude": locationManager.location?.coordinate.latitude,
-                                "longitude": locationManager.location?.coordinate.longitude,
-                                "timeStamp": Date()
-                            ]) { (error) in
-                                
-                                if let e = error {
-                                    print("There was an issue saving data to firestore, \(e)")
-                                } else {
-                                    
-                                    print("Successfully saved data.")
-                                }
-                            }
+                        if let err = err {
+                            print("Error getting docs: \(err)")
                         } else {
-
-                            let docname = docsArray[0].documentID
-                            db.collection("statuses").document(docname).setData([
-                                "activity": safeActivity,
-                                "time": timeChosen,
-                                "userID": firebaseID,
-                                "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
-                                "latitude": locationManager.location?.coordinate.latitude,
-                                "longitude": locationManager.location?.coordinate.longitude,
-                                "timeStamp": Date()
-                            ]) { err in
+                            
+                            for doc in querySnapshot!.documents {
                                 
-                                if let err = err {
-                                    print("error writing doc: \(err)")
-                                } else {
-                                    print("doc written successfully.")
-                                }
+                                docsArray.append(doc)
+                                
+                            }
+                        }
+                        
+                        if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
+                            
+                            guard let realm = RealmManager.getRealm() else {return}
+                            
+                            try! realm.write {
+                                let realmStatus = RStatus()
+                                realmStatus.id = firebaseID
+                                realmStatus.dateActivity = safeActivity
+                                realmStatus.dateTime = timeChosen
+                                realmStatus.fcmToken = UserDefaults.standard.object(forKey: "fcmToken") as! String
+                                realmStatus.latitude = locationManager.location?.coordinate.latitude ?? 0.0
+                                realmStatus.longitued = locationManager.location?.coordinate.longitude ?? 0.0
+                                realmStatus.timeStamp = Date()
+                                realm.add(realmStatus, update: .all)
                             }
                             
+                            if docsArray.count == 0 {
+                                
+                                db.collection("statuses").addDocument(data: [
+                                    "activity": safeActivity,
+                                    "time": timeChosen,
+                                    "userID": firebaseID,
+                                    "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
+                                    "latitude": locationManager.location?.coordinate.latitude,
+                                    "longitude": locationManager.location?.coordinate.longitude,
+                                    "timeStamp": Date()
+                                ]) { (error) in
+                                    
+                                    if let e = error {
+                                        print("There was an issue saving data to firestore, \(e)")
+                                    } else {
+                                        
+                                        print("Successfully saved data.")
+                                    }
+                                }
+                            } else {
+                                
+                                let docname = docsArray[0].documentID
+                                db.collection("statuses").document(docname).setData([
+                                    "activity": safeActivity,
+                                    "time": timeChosen,
+                                    "userID": firebaseID,
+                                    "fcmToken": UserDefaults.standard.object(forKey: "fcmToken"),
+                                    "latitude": locationManager.location?.coordinate.latitude,
+                                    "longitude": locationManager.location?.coordinate.longitude,
+                                    "timeStamp": Date()
+                                ]) { err in
+                                    
+                                    if let err = err {
+                                        print("error writing doc: \(err)")
+                                    } else {
+                                        print("doc written successfully.")
+                                    }
+                                }
+                                
+                            }
                         }
                     }
                 }
+                
+                datePlanModel.dateActivity = activityTextField.text!
+                datePlanModel.dateTime = timeChosen
+                activityTextField.text = ""
+                
+                performSegue(withIdentifier: "dateAvailableSeg", sender: self)
+            } else {
+                showAlert(title: "Uh-oh", message: "It seems you haven't given Just Friends permission to access your location. Please go to 'Settings', 'Just Friends', and then 'Location', in order to do so.")
             }
-            
-            datePlanModel.dateActivity = activityTextField.text!
-            datePlanModel.dateTime = timeChosen
-            activityTextField.text = ""
-            
-            performSegue(withIdentifier: "dateAvailableSeg", sender: self)
         } else {
             
             showAlert(title: "Uh-oh", message: "Please select a time and activity.")
@@ -177,6 +182,19 @@ class DatePlanViewController: UIViewController {
         let okayAction = UIAlertAction(title: "Okay", style: .default)
         enterValidDetailsAlert.addAction(okayAction)
         self.present(enterValidDetailsAlert, animated: true)
+    }
+    
+    func checkLocationAuthorisation() -> String {
+        let locationManager = CLLocationManager()
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .authorizedAlways, .authorizedWhenInUse, .authorized:
+            return "OK"
+        case .notDetermined, .denied, .restricted:
+            return "not OK"
+        default:
+            return "OK"
+        }
     }
    
 }

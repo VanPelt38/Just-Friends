@@ -477,25 +477,25 @@ class AvailableDatesViewController: UIViewController {
                 
                 returnArray.append(expiringMatch)
             } else {
-                if let safeRealm = realm {
-                    if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
-                        try! safeRealm.write {
-                          
-                            safeRealm.delete(expiringRequestToDelete)
-                        }
-                    }
-                }
                 
                 let deleteMatchRef = db.collection("users").document(firebaseID).collection("expiringRequests").document(expiringMatch.userID)
-            
                 do {
                     try await deleteMatchRef.delete()
+
+                        
+                                        if let safeRealm = realm {
+                                            if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
+                                                try! safeRealm.write {
+                        
+                                                    safeRealm.delete(expiringRequestToDelete)
+                                                }
+                                            }
+                                        }
                 } catch {
                     print("error deleting expired match: \(error)")
                 }
             }
         }
-        
         return returnArray
     }
    

@@ -310,14 +310,16 @@ class AvailableDatesViewController: UIViewController {
                         
                         let data = doc.data()
                         if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let timeStamp = data["timeStamp"] as? Timestamp {
-                            
+                            print("got one new status: \(dateActivity)")
                             let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken, latitude: latitude, longitude: longitude, timeStamp: timeStamp.dateValue())
                             self.statusArray.append(newStatus)
                             returnArray.append(newStatus)
                             
-                            
+                            print("statuses before filtering match locations: \(self.statusArray)")
                             self.statusArray = filterMatchLocations()
+                            print("statuses after filtering match locations: \(self.statusArray)")
                             self.statusArray = filterExpiredStatuses()
+                            print("statuses after filtering expired statusess: \(self.statusArray)")
                             returnArray = self.statusArray
                             
                             
@@ -337,7 +339,7 @@ class AvailableDatesViewController: UIViewController {
                                 }
                                     
                             }
-                            
+                            print("statuses before blocked userss: \(self.statusArray)")
                             guard let realm = RealmManager.getRealm() else {return returnArray}
                             
                            let blockUsers = realm.objects(BlockedUser.self).filter("userID == %@", firebaseID)
@@ -350,7 +352,7 @@ class AvailableDatesViewController: UIViewController {
                                     returnArray.remove(at: index)
                                 }
                             }
-                            
+                            print("final statuses: \(self.statusArray)")
                             DispatchQueue.main.async {
                                 self.availableDatesTable.reloadData()
                             }
@@ -474,19 +476,19 @@ class AvailableDatesViewController: UIViewController {
 
             
             if matchTimeStamp > currentTime {
-                
+                print("or actually we got it")
                 returnArray.append(expiringMatch)
             } else {
                 
                 let deleteMatchRef = db.collection("users").document(firebaseID).collection("expiringRequests").document(expiringMatch.userID)
                 do {
                     try await deleteMatchRef.delete()
-
+print("should have deleted the match now")
                         
                                         if let safeRealm = realm {
                                             if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
                                                 try! safeRealm.write {
-                        
+                        print("and deleted realm match")
                                                     safeRealm.delete(expiringRequestToDelete)
                                                 }
                                             }

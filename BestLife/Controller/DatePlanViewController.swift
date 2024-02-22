@@ -59,9 +59,9 @@ class DatePlanViewController: UIViewController {
         }
         
         if activityTextField.text != "" && timeChosen != "none" {
-            
+          
             if checkLocationAuthorisation() == "OK" {
-                
+              
                 var docsArray: [QueryDocumentSnapshot] = []
                 let userID = UserDefaults.standard.object(forKey: "uniqueID")
                 
@@ -74,7 +74,7 @@ class DatePlanViewController: UIViewController {
                     let query = currentCollection.whereField("userID", isEqualTo: firebaseID)
                     
                     query.getDocuments { [self] querySnapshot, err in
-                        
+                
                         if let err = err {
                             print("Error getting docs: \(err)")
                         } else {
@@ -87,7 +87,7 @@ class DatePlanViewController: UIViewController {
                         }
                         
                         if let safeActivity = activity, let user = Auth.auth().currentUser?.email {
-                            
+                         
                             guard let realm = RealmManager.getRealm() else {return}
                             
                             try! realm.write {
@@ -103,7 +103,7 @@ class DatePlanViewController: UIViewController {
                             }
                             
                             if docsArray.count == 0 {
-                                
+        
                                 db.collection("statuses").addDocument(data: [
                                     "activity": safeActivity,
                                     "time": timeChosen,
@@ -122,7 +122,6 @@ class DatePlanViewController: UIViewController {
                                     }
                                 }
                             } else {
-                                
                                 let docname = docsArray[0].documentID
                                 db.collection("statuses").document(docname).setData([
                                     "activity": safeActivity,
@@ -145,7 +144,6 @@ class DatePlanViewController: UIViewController {
                         }
                     }
                 }
-                
                 datePlanModel.dateActivity = activityTextField.text!
                 datePlanModel.dateTime = timeChosen
                 activityTextField.text = ""

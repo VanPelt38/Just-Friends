@@ -319,7 +319,7 @@ class HomeViewController: UIViewController {
     }
     
     func loadExpiringRequests() async {
-        
+        print("should be loading expiring matches")
         guard let realm = RealmManager.getRealm() else {return}
         if let safeID = firebaseID {
            
@@ -330,10 +330,10 @@ class HomeViewController: UIViewController {
                 let querySnapshot = try await pathway.getDocuments()
                 
                 for doc in querySnapshot.documents {
-                    
+                    print("got one")
                     let data = doc.data()
-                    if let timeStamp = data["timeStamp"] as? Timestamp, let userID = data["ID"] as? String, let ownUserID = data["ownUserID"] as? String {
-                        
+                    if let timeStamp = data["timeStamp"] as? Timestamp, let userID = data["userID"] as? String, let ownUserID = data["ownUserID"] as? String {
+                       
                         try! realm.write {
                             
                             let realmExpiringMatch = RExpiringMatch()

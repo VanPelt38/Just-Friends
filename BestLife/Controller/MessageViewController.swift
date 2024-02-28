@@ -295,6 +295,12 @@ class MessageViewController: MessagesViewController {
                     }
                 }
                 safetyAlertController.dismiss(animated: true)
+                if let presenter = reportAlertController.popoverPresentationController {
+                    if let view = sender.value(forKey: "view") as? UIView {
+                        presenter.sourceView = view
+                        presenter.sourceRect = view.bounds
+                    }
+                }
                 self.present(reportAlertController, animated: true)
             }
             let blockUserAction = UIAlertAction(title: "Block User", style: .default) { action in
@@ -341,6 +347,13 @@ class MessageViewController: MessagesViewController {
             safetyAlertController.addAction(reportUserAction)
             safetyAlertController.addAction(blockUserAction)
             safetyAlertController.addAction(cancelAction)
+            if let presenter = safetyAlertController.popoverPresentationController {
+                if let view = sender.value(forKey: "view") as? UIView {
+                    presenter.sourceView = view
+                    presenter.sourceRect = view.bounds
+                }
+            }
+            
             self.present(safetyAlertController, animated: true)
         }
         

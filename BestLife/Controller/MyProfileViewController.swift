@@ -43,11 +43,25 @@ class MyProfileViewController: UIViewController {
             if let safeImage = profilePicture.image {
                 
                 let realmImage = convertImageToData(image: safeImage)
-                persistPictureLocally(realmPicture: realmImage)
-                
-                Task.init {
-                    imageString = await uploadImageToFireStorage(picture: safeImage)
-                    await saveImageToFireStore(imageURL: imageString ?? "none")
+                if realmImage.count < 16000000 {
+                    if imageExtension != "unsupported" {
+                        persistPictureLocally(realmPicture: realmImage)
+                        
+                        Task.init {
+                            imageString = await uploadImageToFireStorage(picture: safeImage)
+                            await saveImageToFireStore(imageURL: imageString ?? "none")
+                        }
+                    } else {
+                        let badImageAlert = UIAlertController(title: "Uh-oh", message: "We're sorry but the image file you chose was unsupported - please try again with the following extensions: heic, jpeg, jpg, png.", preferredStyle: .alert)
+                        let okayAction = UIAlertAction(title: "Okay", style: .default)
+                        badImageAlert.addAction(okayAction)
+                        present(badImageAlert, animated: true, completion: nil)
+                    }
+                } else {
+                    let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you chose was too big and could not be saved - please try again with a file size under 16Mb.", preferredStyle: .alert)
+                    let okayAction = UIAlertAction(title: "Okay", style: .default)
+                    imageTooBigAlert.addAction(okayAction)
+                    self.present(imageTooBigAlert, animated: true, completion: nil)
                 }
             }
         }
@@ -135,7 +149,7 @@ class MyProfileViewController: UIViewController {
     }
     
     func persistPictureLocally(realmPicture: Data) {
-        
+
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
         } else {
@@ -152,16 +166,30 @@ class MyProfileViewController: UIViewController {
     
     func convertImageToData(image: UIImage) -> Data {
         
-        if imageExtension == "jpg" || imageExtension == "jpeg" {
+        if imageExtension.lowercased() == "jpg" || imageExtension.lowercased() == "jpeg" || imageExtension.lowercased() == "png" {
+            print("got \(imageExtension.lowercased())")
             return image.jpegData(compressionQuality: 0.8)!
-        } else if imageExtension == "png" {
-            return image.pngData()!
+        } else if imageExtension.lowercased() == "heic" {
+            print("got heic")
+            let options: [CFString: Any] = [
+                kCGImageDestinationLossyCompressionQuality: 0.8
+            ]
+            let mutableData = NSMutableData()
+            guard let imageDestination = CGImageDestinationCreateWithData(mutableData, kUTTypeJPEG, 1, nil) else {
+                print("failed to finalise image destination.")
+                return Data()
+            }
+            CGImageDestinationAddImage(imageDestination, image.cgImage!, options as CFDictionary)
+            guard CGImageDestinationFinalize(imageDestination) else {
+                print("failed to finalise image destination")
+                return Data()
+            }
+            return mutableData as Data
         } else {
             print("unsupported image type")
-            return image.pngData()!
+            return image.jpegData(compressionQuality: 0.8)!
         }
     }
-
     
     @IBAction func newPhotoPressed(_ sender: UIButton) {
         
@@ -216,30 +244,33 @@ extension MyProfileViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let pickedImage = info[.originalImage] as? UIImage {
-            
+
             if convertImageToData(image: pickedImage).count < 16000000 {
-                print(convertImageToData(image: pickedImage).count)
+
                 newPicHasBeenChosen = true
                 profilePicture.image = pickedImage
                 
                 let photoPath = info[UIImagePickerController.InfoKey.referenceURL] as! NSURL
                 if let path = photoPath.absoluteString {
-                    if path.hasSuffix("JPG") {
+                    if path.hasSuffix("JPG") || path.hasSuffix("jpg") {
                         print("jpg")
                         imageExtension = "jpg"
-                    } else if path.hasSuffix("PNG") {
+                    } else if path.hasSuffix("PNG") || path.hasSuffix("png") {
                         print("png")
                         imageExtension = "png"
-                    } else if path.hasSuffix("JPEG") {
+                    } else if path.hasSuffix("JPEG") || path.hasSuffix("jpeg") {
                         print("jpeg")
                         imageExtension = "jpeg"
+                    } else if path.hasSuffix("HEIC") || path.hasSuffix("heic") {
+                        print("heic")
+                        imageExtension = "heic"
                     } else {
                         print("unsupported image type")
+                        imageExtension = "unsupported"
                     }
                         }
                 picker.dismiss(animated: true, completion: nil)
             } else {
-                print("should present")
                 let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)
                 let okayAction = UIAlertAction(title: "Okay", style: .default)
                 imageTooBigAlert.addAction(okayAction)

@@ -278,6 +278,7 @@ class AvailableDatesViewController: UIViewController {
                 try await loadProfiles(statuses: statuses)
                 self.dataLoadedArray.append(true)
                 self.availableDatesTable.reloadData()
+                self.showShareAlert()
             } catch {
                 print(error)
             }
@@ -576,7 +577,48 @@ print("should have deleted the match now")
         return filteredArray
     }
     
+    func showShareAlert() {
+        
+        if timeHasElapsed() {
+            
+            let shareAlert = UIAlertController(title: "Share with friends!", message: "Spread the word about our app and start building a community.", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "Share", style: .default) { _ in
+                self.shareApp()
+            }
+            let noAction = UIAlertAction(title: "Not right now", style: .default)
+            shareAlert.addAction(okAction)
+            shareAlert.addAction(noAction)
+            self.present(shareAlert, animated: true)
+        }
+    }
     
+    func timeHasElapsed() -> Bool {
+        
+        if let lastShareDate = UserDefaults.standard.object(forKey: "lastShareDate") as? Date {
+            
+            let timeInterval = Date().timeIntervalSince(lastShareDate)
+            if timeInterval > TimeInterval(2 * 60) {
+                UserDefaults.standard.set(Date(), forKey: "lastShareDate")
+                return true
+            } else {
+                return false
+            }
+        } else {
+            UserDefaults.standard.set(Date(), forKey: "lastShareDate")
+            return true
+        }
+    }
+    
+    func shareApp() {
+        
+        let activityVC = UIActivityViewController(activityItems: ["Join me on Just Friends!", URL(string: "https://apps.apple.com/us/app/just-friends/id6462937691")], applicationActivities: nil)
+        if let popoverController = activityVC.popoverPresentationController {
+            popoverController.sourceView = view
+            popoverController.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        present(activityVC, animated: true)
+    }
 }
 
 //MARK: - TableView Data Source Methods

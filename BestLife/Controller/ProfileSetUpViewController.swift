@@ -96,36 +96,42 @@ class ProfileSetUpViewController: UIViewController {
     @IBAction func profileCompletePressed(_ sender: UIButton) {
         
         if isImageChosen == true && nameTextField.text != "" && isAgeChosen == true && gender != nil {
-
-            if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
- 
-                    Task.init {
+            if imageExtension != "unsupported" {
+                if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
+                
+                Task.init {
+                    
+                    let dataPic = convertImageToData(image: image)
+                    if dataPic.count < 16000000 {
                         
-                        let dataPic = convertImageToData(image: image)
-                        if dataPic.count < 16000000 {
-                            
-                            imageString = await uploadImageToFireStorage(picture: image)
-                            
-                            let realmProfile = RProfile()
-                            realmProfile.age = calculatedAge(date: ageDatePicker.date)
-                            realmProfile.gender = userGender
-                            realmProfile.name = userName
-                            realmProfile.picture = dataPic
-                            realmProfile.profilePicURL = imageString ?? "none"
-                            realmProfile.userID = id
-                            persistProfileLocally(realmProfile: realmProfile)
-                            
-                            await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
-                            await flagProfileSetUp(id: id)
-                            self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
-                        } else {
-                            let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)
-                            let okayAction = UIAlertAction(title: "Okay", style: .default)
-                            imageTooBigAlert.addAction(okayAction)
-                            present(imageTooBigAlert, animated: true, completion: nil)
-                        }
+                        imageString = await uploadImageToFireStorage(picture: image)
+                        
+                        let realmProfile = RProfile()
+                        realmProfile.age = calculatedAge(date: ageDatePicker.date)
+                        realmProfile.gender = userGender
+                        realmProfile.name = userName
+                        realmProfile.picture = dataPic
+                        realmProfile.profilePicURL = imageString ?? "none"
+                        realmProfile.userID = id
+                        persistProfileLocally(realmProfile: realmProfile)
+                        
+                        await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
+                        await flagProfileSetUp(id: id)
+                        self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
+                    } else {
+                        let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)
+                        let okayAction = UIAlertAction(title: "Okay", style: .default)
+                        imageTooBigAlert.addAction(okayAction)
+                        present(imageTooBigAlert, animated: true, completion: nil)
                     }
                 }
+            }
+            } else {
+                let badImageAlert = UIAlertController(title: "Uh-oh", message: "We're sorry but the image file you've chosen is unsupported - please use images with the following extensions: heic, jpeg, jpg, png.", preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "Okay", style: .default)
+                badImageAlert.addAction(okayAction)
+                present(badImageAlert, animated: true, completion: nil)
+            }
         } else {
             
             let alert = UIAlertController(title: "Profile Incomplete", message: "Please enter all your details before proceeding.", preferredStyle: .alert)
@@ -137,13 +143,28 @@ class ProfileSetUpViewController: UIViewController {
     
     func convertImageToData(image: UIImage) -> Data {
         
-        if imageExtension.lowercased() == "jpg" || imageExtension.lowercased() == "jpeg" {
+        if imageExtension.lowercased() == "jpg" || imageExtension.lowercased() == "jpeg" || imageExtension.lowercased() == "png" {
+            print("got \(imageExtension.lowercased())")
             return image.jpegData(compressionQuality: 0.8)!
-        } else if imageExtension.lowercased() == "png" {
-            return image.pngData()!
+        } else if imageExtension.lowercased() == "heic" {
+            print("got heic")
+            let options: [CFString: Any] = [
+                kCGImageDestinationLossyCompressionQuality: 0.8
+            ]
+            let mutableData = NSMutableData()
+            guard let imageDestination = CGImageDestinationCreateWithData(mutableData, kUTTypeJPEG, 1, nil) else {
+                print("failed to finalise image destination.")
+                return Data()
+            }
+            CGImageDestinationAddImage(imageDestination, image.cgImage!, options as CFDictionary)
+            guard CGImageDestinationFinalize(imageDestination) else {
+                print("failed to finalise image destination")
+                return Data()
+            }
+            return mutableData as Data
         } else {
             print("unsupported image type")
-            return image.pngData()!
+            return image.jpegData(compressionQuality: 0.8)!
         }
     }
     
@@ -245,17 +266,21 @@ extension ProfileSetUpViewController: UIImagePickerControllerDelegate {
             
             let photoPath = info[UIImagePickerController.InfoKey.referenceURL] as! NSURL
             if let path = photoPath.absoluteString {
-                if path.hasSuffix("JPG") {
+                if path.hasSuffix("JPG") || path.hasSuffix("jpg") {
                     print("jpg")
                     imageExtension = "jpg"
-                } else if path.hasSuffix("PNG") {
+                } else if path.hasSuffix("PNG") || path.hasSuffix("png") {
                     print("png")
                     imageExtension = "png"
-                } else if path.hasSuffix("JPEG") {
+                } else if path.hasSuffix("JPEG") || path.hasSuffix("jpeg") {
                     print("jpeg")
                     imageExtension = "jpeg"
+                } else if path.hasSuffix("HEIC") || path.hasSuffix("heic") {
+                    print("heic")
+                    imageExtension = "heic"
                 } else {
                     print("unsupported image type")
+                    imageExtension = "unsupported"
                 }
                     }
             

@@ -36,6 +36,7 @@ class SettingsViewController: UIViewController {
                 print("Error signing out: \(signOutError)")
             }
             if let loginVC = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") {
+                UserDefaults.standard.set(false, forKey: "loggedInHome")
                 loginVC.modalPresentationStyle = .overFullScreen
                 self.present(loginVC, animated: false, completion: nil)
             }
@@ -63,6 +64,11 @@ class SettingsViewController: UIViewController {
                         } else {
                             
                             if let loginVC = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") {
+                                
+                                UserDefaults.standard.set(false, forKey: "loggedInHome")
+                                UserDefaults.standard.set(false, forKey: "loggedInProfile")
+                                UserDefaults.standard.removeObject(forKey: "password")
+                                UserDefaults.standard.removeObject(forKey: "email")
                                 loginVC.modalPresentationStyle = .fullScreen
                                 self.present(loginVC, animated: false, completion: nil)
                                 let confirmDeleteAlert = UIAlertController(title: "Success", message: "Your account has been deleted.", preferredStyle: .alert)

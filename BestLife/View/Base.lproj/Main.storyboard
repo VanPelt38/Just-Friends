@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="KWB-0T-Y7f">
-    <device id="retina6_12" orientation="portrait" appearance="dark"/>
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
@@ -35,7 +35,7 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" spacing="29" translatesAutoresizingMaskIntoConstraints="NO" id="QkA-9i-piy" userLabel="LoginStack">
-                                <rect key="frame" x="76.666666666666686" y="524" width="240" height="236.33333333333337"/>
+                                <rect key="frame" x="76.666666666666686" y="466" width="240" height="294.33333333333326"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="KTv-7o-Rtd">
                                         <rect key="frame" x="0.0" y="0.0" width="240" height="34"/>
@@ -74,6 +74,20 @@
                                             <action selector="registerButton:" destination="KWB-0T-Y7f" eventType="touchUpInside" id="Yid-hG-yUO"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Da-0m-cFR">
+                                        <rect key="frame" x="0.0" y="265.33333333333337" width="240" height="29"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="240" id="VEt-aJ-JZg"/>
+                                        </constraints>
+                                        <color key="tintColor" red="0.11349857369999999" green="0.089741075109999999" blue="0.42181581439999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="forgotten your password?">
+                                            <fontDescription key="titleFontDescription" name="GillSans" family="Gill Sans" pointSize="13"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="resetPaswword:" destination="KWB-0T-Y7f" eventType="touchUpInside" id="RT1-0S-dwS"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -93,16 +107,95 @@
                         <outlet property="signUpButton" destination="KUe-8u-2Fp" id="k7s-il-Bfe"/>
                         <segue destination="gEc-RU-qaM" kind="show" identifier="loginProfileSeg" id="0Fb-pA-85M"/>
                         <segue destination="mlt-q5-9ie" kind="showDetail" identifier="loginHomeSeg" id="iFG-Mg-rEf"/>
+                        <segue destination="qN7-Zc-q5m" kind="presentation" identifier="loginForgotPasswordSeg" id="WXk-tb-0dn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rai-Df-6lk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2136.6412213740459" y="-736.61971830985919"/>
         </scene>
+        <!--Forgot Password View Controller-->
+        <scene sceneID="nvV-Q0-14O">
+            <objects>
+                <viewController id="qN7-Zc-q5m" customClass="ForgotPasswordViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="tuk-Xh-2Ih">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter your email address and we'll send you a link to reset your password." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2tT-dk-RKs">
+                                <rect key="frame" x="37" y="100" width="319" height="177"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="319" id="VSb-V5-TG4"/>
+                                    <constraint firstAttribute="height" constant="177" id="h4n-DX-pE2"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="25"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hKZ-0y-Ypb">
+                                <rect key="frame" x="76.666666666666686" y="307" width="240" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="5db-77-EoI"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ICB-3I-MIK">
+                                <rect key="frame" x="76.666666666666686" y="401" width="240" height="40"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="Rwi-8O-MoJ"/>
+                                    <constraint firstAttribute="height" constant="40" id="WEb-Xp-qBC"/>
+                                </constraints>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="send link">
+                                    <fontDescription key="titleFontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="23"/>
+                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="createDatePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="yPP-xz-Z3b"/>
+                                    <action selector="sendPasswordLink:" destination="qN7-Zc-q5m" eventType="touchUpInside" id="6g3-kY-FrS"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Send link error message" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XWv-fC-O75">
+                                <rect key="frame" x="37" y="471" width="319" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="YxI-aq-3YC"/>
+                                    <constraint firstAttribute="width" constant="319" id="k3h-m1-37f"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="14"/>
+                                <color key="textColor" systemColor="systemRedColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="rPF-YD-ufF"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ICB-3I-MIK" firstAttribute="centerX" secondItem="tuk-Xh-2Ih" secondAttribute="centerX" id="2Ex-zQ-bem"/>
+                            <constraint firstItem="hKZ-0y-Ypb" firstAttribute="centerX" secondItem="tuk-Xh-2Ih" secondAttribute="centerX" id="63A-7o-1Mb"/>
+                            <constraint firstItem="XWv-fC-O75" firstAttribute="top" secondItem="ICB-3I-MIK" secondAttribute="bottom" constant="30" id="HFY-7b-ptq"/>
+                            <constraint firstItem="hKZ-0y-Ypb" firstAttribute="top" secondItem="2tT-dk-RKs" secondAttribute="bottom" constant="30" id="NZ5-YE-XxM"/>
+                            <constraint firstItem="XWv-fC-O75" firstAttribute="centerX" secondItem="tuk-Xh-2Ih" secondAttribute="centerX" id="QWp-q8-RCJ"/>
+                            <constraint firstItem="2tT-dk-RKs" firstAttribute="centerX" secondItem="tuk-Xh-2Ih" secondAttribute="centerX" id="WDG-7p-0Nu"/>
+                            <constraint firstItem="ICB-3I-MIK" firstAttribute="centerY" secondItem="tuk-Xh-2Ih" secondAttribute="centerY" id="hrD-Ou-Swu"/>
+                            <constraint firstItem="ICB-3I-MIK" firstAttribute="top" secondItem="hKZ-0y-Ypb" secondAttribute="bottom" constant="60" id="sDV-oN-VI1"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="emailTextField" destination="hKZ-0y-Ypb" id="HGB-vr-1zG"/>
+                        <outlet property="sendLinkButton" destination="ICB-3I-MIK" id="eMU-Fl-AQP"/>
+                        <outlet property="sendLinkErrorMessage" destination="XWv-fC-O75" id="Avx-cC-alZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LSD-FC-td6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2136.6412213740459" y="-1474.6478873239437"/>
+        </scene>
         <!--Home-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController modalTransitionStyle="flipHorizontal" id="BYZ-38-t0r" customClass="HomeViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="HomeViewController" modalTransitionStyle="flipHorizontal" id="BYZ-38-t0r" customClass="HomeViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="786"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -692,7 +785,7 @@
         <!--Profile Set Up View Controller-->
         <scene sceneID="aer-K1-OdW">
             <objects>
-                <viewController modalPresentationStyle="fullScreen" id="gEc-RU-qaM" customClass="ProfileSetUpViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ProfileSetUpViewController" modalPresentationStyle="fullScreen" id="gEc-RU-qaM" customClass="ProfileSetUpViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zbl-bD-3Un">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -930,7 +1023,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="1ao-wY-jMv">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" id="mlt-q5-9ie" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="TabBarController" automaticallyAdjustsScrollViewInsets="NO" modalPresentationStyle="fullScreen" id="mlt-q5-9ie" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="GmI-Aw-z65"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="C27-YZ-6fa">
@@ -970,6 +1063,9 @@
         </systemColor>
         <systemColor name="systemGray3Color">
             <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

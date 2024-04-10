@@ -24,7 +24,17 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
 
         emailTextField.delegate = self
+        emailTextField.textContentType = .username
+        emailTextField.keyboardType = .emailAddress
         passwordTextField.delegate = self
+        passwordTextField.textContentType = .password
+        
+        if let email = UserDefaults.standard.value(forKey: "email") as? String {
+            emailTextField.text = email
+        }
+        if let password = UserDefaults.standard.value(forKey: "password") as? String {
+            passwordTextField.text = password
+        }
         
         setupButtons()
         setUpViewColour()
@@ -72,6 +82,9 @@ class LoginViewController: UIViewController {
         
         if let email = emailTextField.text, let password = passwordTextField.text {
             
+            UserDefaults.standard.set(email, forKey: "email")
+            UserDefaults.standard.set(password, forKey: "password")
+            
             Auth.auth().createUser(withEmail: email, password: password) { [self]
                 authResult, error in
                 
@@ -95,6 +108,19 @@ class LoginViewController: UIViewController {
         
     }
     
+    @IBAction func resetPaswword(_ sender: UIButton) {
+        performSegue(withIdentifier: "loginForgotPasswordSeg", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "loginForgotPasswordSeg" {
+
+                let destinationVC = segue.destination as! ForgotPasswordViewController
+                destinationVC.delegate = self
+        }
+    }
+    
+    
     func showAlert(title: String, message: String) {
         
         let enterValidDetailsAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -105,6 +131,7 @@ class LoginViewController: UIViewController {
     
     func login(email: String, password: String) async {
         
+        let defaults = UserDefaults.standard
         do {
             try await Auth.auth().signIn(withEmail: email, password: password)
                     
@@ -112,13 +139,18 @@ class LoginViewController: UIViewController {
                     
             if let safeID = userID {
                 
+                defaults.set(email, forKey: "email")
+                defaults.set(password, forKey: "password")
+                
                 guard let realm = RealmManager.getRealm() else {return}
                 
                 if let existingRealmRegistration = realm.object(ofType: RRegistration.self, forPrimaryKey: safeID) {
                     
                     if existingRealmRegistration.profileSetUp {
+                        defaults.set(true, forKey: "loggedInHome")
                         performSegue(withIdentifier: "loginHomeSeg", sender: self)
                     } else {
+                        defaults.set(true, forKey: "loggedInProfile")
                         performSegue(withIdentifier: "loginProfileSeg", sender: self)
                     }
                 } else {
@@ -130,8 +162,10 @@ class LoginViewController: UIViewController {
                             let data = userDocument.data()
                             if let safeData = data {
                                 if safeData["profileSetUp"] as? Bool ?? false {
+                                    defaults.set(true, forKey: "loggedInHome")
                                     performSegue(withIdentifier: "loginHomeSeg", sender: self)
                                 } else {
+                                    defaults.set(true, forKey: "loggedInProfile")
                                     performSegue(withIdentifier: "loginProfileSeg", sender: self)
                                 }
                             }
@@ -149,7 +183,7 @@ class LoginViewController: UIViewController {
                                     realmRegistration.profileSetUp = false
                                     realm.add(realmRegistration, update: .all)
                                 }
-                                
+                                defaults.set(true, forKey: "loggedInProfile")
                                 performSegue(withIdentifier: "loginProfileSeg", sender: self)
                             } catch {
                                 print("error setting userID")
@@ -188,4 +222,11 @@ extension LoginViewController: UITextFieldDelegate {
         passwordTextField.endEditing(true)
     }
 
+}
+
+extension LoginViewController: ForgotPasswordDelegate {
+    
+    func showSuccessAlert() {
+        showAlert(title: "Success", message: "Your reset password link has been sent - please check your inbox.")
+    }
 }

@@ -117,6 +117,7 @@ class ProfileSetUpViewController: UIViewController {
                         
                         await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
                         await flagProfileSetUp(id: id)
+                        UserDefaults.standard.set(true, forKey: "loggedInHome")
                         self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
                     } else {
                         let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)

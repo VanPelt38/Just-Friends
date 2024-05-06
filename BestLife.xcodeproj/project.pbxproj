@@ -31,6 +31,7 @@
 		2381078E2B3D908500F4746D /* CustomCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2381078D2B3D908500F4746D /* CustomCommentCell.swift */; };
 		238625192A5A11170086DAE6 /* MatchProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238625182A5A11170086DAE6 /* MatchProfileViewController.swift */; };
 		2397DDB12BD71A9C00DDCFB0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2397DDB02BD71A9C00DDCFB0 /* GoogleService-Info.plist */; };
+		2397DDB62BE5B2AF00DDCFB0 /* Eureka in Frameworks */ = {isa = PBXBuildFile; productRef = 2397DDB52BE5B2AF00DDCFB0 /* Eureka */; };
 		239A19B0296BB5F1005B6294 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 239A19AF296BB5F1005B6294 /* FirebaseAnalytics */; };
 		239A19B2296BB5F1005B6294 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 239A19B1296BB5F1005B6294 /* FirebaseAuth */; };
 		23AB196E2ADF3F11007E64AA /* RRegistration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23AB196D2ADF3F11007E64AA /* RRegistration.swift */; };
@@ -119,6 +120,7 @@
 				23E30A0829810EC90091202E /* FirebaseFirestore in Frameworks */,
 				23DE216A2AC0D60A005A31CF /* RealmSwift in Frameworks */,
 				237A4B9B2A02FE7C0065EF6B /* FirebaseStorage in Frameworks */,
+				2397DDB62BE5B2AF00DDCFB0 /* Eureka in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +259,7 @@
 				23DE21672AC0D60A005A31CF /* Realm */,
 				23DE21692AC0D60A005A31CF /* RealmSwift */,
 				238107852B3D86CF00F4746D /* MessageKit */,
+				2397DDB52BE5B2AF00DDCFB0 /* Eureka */,
 			);
 			productName = BestLife;
 			productReference = 23D2AAE4293EA5100083BA22 /* BestLife.app */;
@@ -292,6 +295,7 @@
 				236ED1A52A9E7AA20085F616 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				23DE21662AC0D60A005A31CF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				238107842B3D86CF00F4746D /* XCRemoteSwiftPackageReference "MessageKit" */,
+				2397DDB42BE5B2AF00DDCFB0 /* XCRemoteSwiftPackageReference "Eureka" */,
 			);
 			productRefGroup = 23D2AAE5293EA5100083BA22 /* Products */;
 			projectDirPath = "";
@@ -607,6 +611,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		2397DDB42BE5B2AF00DDCFB0 /* XCRemoteSwiftPackageReference "Eureka" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/xmartlabs/Eureka.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.4.0;
+			};
+		};
 		239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -658,6 +670,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 238107842B3D86CF00F4746D /* XCRemoteSwiftPackageReference "MessageKit" */;
 			productName = MessageKit;
+		};
+		2397DDB52BE5B2AF00DDCFB0 /* Eureka */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2397DDB42BE5B2AF00DDCFB0 /* XCRemoteSwiftPackageReference "Eureka" */;
+			productName = Eureka;
 		};
 		239A19AF296BB5F1005B6294 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -12,14 +12,12 @@ import FirebaseFirestore
 import MobileCoreServices
 import UniformTypeIdentifiers
 import FirebaseStorage
+import Eureka
 
-class MyProfileViewController: UIViewController {
+class MyProfileViewController: FormViewController {
     
     @IBOutlet weak var profilePicture: UIImageView!
-    @IBOutlet weak var profileDetails: UILabel!
     @IBOutlet weak var cameraImage: UIButton!
-    @IBOutlet weak var profileDetailsStack: UIStackView!
-    @IBOutlet weak var genderImage: UIImageView!
     
     var profileDetailsArray: [String] = []
     var firebaseID: String?
@@ -34,6 +32,7 @@ class MyProfileViewController: UIViewController {
 
         setUpUI()
         loadProfile()
+        createProfileDetailsForm()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -71,6 +70,63 @@ class MyProfileViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    func createProfileDetailsForm() {
+        
+        tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
+        tableView.separatorStyle = .none
+        let section = Section("Hi there")
+        form +++ section
+        let headerView = UIView(frame: CGRect(x: tableView.bounds.origin.x, y: tableView.bounds.origin.y, width: tableView.bounds.width, height: 44))
+        let curvePath = UIBezierPath(roundedRect: headerView.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: 10, height: 10))
+        let curveLayer = CAShapeLayer()
+        curveLayer.path = curvePath.cgPath
+        headerView.layer.mask = curveLayer
+        let titleLabel = UILabel(frame: CGRect(x: headerView.bounds.origin.x, y: headerView.bounds.origin.y, width: headerView.bounds.width, height: 44))
+        headerView.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+        titleLabel.text = "\(profileDetailsArray[0]) \(profileDetailsArray[1])"
+        titleLabel.textAlignment = .center // Set the alignment here
+        let separator = UIView()
+        separator.backgroundColor = .lightGray
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(separator)
+        separator.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 8).isActive = true
+        separator.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -8).isActive = true
+        separator.bottomAnchor.constraint(equalTo: headerView.bottomAnchor).isActive = true
+                separator.heightAnchor.constraint(equalToConstant: 1.0).isActive = true
+        headerView.addSubview(titleLabel)
+        
+        // Assign the custom view to the section header
+        let head = HeaderFooterView<UIView>(.callback({
+            return headerView
+        }))
+        section.header = head
+        section <<< LabelRow() { row in
+            row.title = "A bit about me.."
+            row.cell.height = { 35 }
+            row.cell.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+        }
+        section <<< TextAreaRow() { row in
+            row.placeholder = ""
+            row.cell.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+            row.cell.textView.backgroundColor = .white
+            row.cell.textView.layer.cornerRadius = 10
+            row.cell.textView.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        }
+        section <<< LabelRow() { row in
+            
+            row.title = "My interests.."
+            row.cell.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+            row.cell.height = { 35 }
+        }
+        section <<< TextAreaRow() { row in
+            row.placeholder = ""
+            row.cell.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+            row.cell.textView.backgroundColor = .white
+            row.cell.textView.layer.cornerRadius = 10
+        }
+
+    }
+    
     func setUpUI() {
         
         navigationItem.hidesBackButton = true
@@ -100,23 +156,23 @@ class MyProfileViewController: UIViewController {
             profilePicture.clipsToBounds = true
             profilePicture.layer.cornerRadius = profilePicture.frame.size.width / 2
             
-            let constraint = NSLayoutConstraint(item: profileDetailsStack, attribute: .top, relatedBy: .equal, toItem: cameraImage, attribute: .bottom, multiplier: 1.0, constant: 10.0)
-            self.view.addConstraint(constraint)
-            
- 
-            let centerXConstraint = NSLayoutConstraint(item: profileDetailsStack,
-                                                       attribute: .centerX,
-                                                       relatedBy: .equal,
-                                                       toItem: view,
-                                                       attribute: .centerX,
-                                                       multiplier: 1.0,
-                                                       constant: 0.0)
+//            let constraint = NSLayoutConstraint(item: profileDetailsStack, attribute: .top, relatedBy: .equal, toItem: cameraImage, attribute: .bottom, multiplier: 1.0, constant: 10.0)
+//            self.view.addConstraint(constraint)
+//            
+// 
+//            let centerXConstraint = NSLayoutConstraint(item: profileDetailsStack,
+//                                                       attribute: .centerX,
+//                                                       relatedBy: .equal,
+//                                                       toItem: view,
+//                                                       attribute: .centerX,
+//                                                       multiplier: 1.0,
+//                                                       constant: 0.0)
 
  
 
             // Add constraints to the superview
             
-            view.addConstraints([centerXConstraint, constraint])
+//            view.addConstraints([centerXConstraint, constraint])
             
         } else {
             
@@ -124,10 +180,10 @@ class MyProfileViewController: UIViewController {
             profilePicture.frame.size = size
             profilePicture.frame.origin.y = 0
             profilePicture.frame.origin.x = 0
-            let constraint = NSLayoutConstraint(item: profileDetailsStack, attribute: .top, relatedBy: .equal, toItem: cameraImage, attribute: .bottom, multiplier: 1.0, constant: -10.0)
-            let constraint2 = NSLayoutConstraint(item: profileDetailsStack, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1.0, constant: 30.0)
-                        self.view.addConstraint(constraint)
-                        self.view.addConstraint(constraint2)
+//            let constraint = NSLayoutConstraint(item: profileDetailsStack, attribute: .top, relatedBy: .equal, toItem: cameraImage, attribute: .bottom, multiplier: 1.0, constant: -10.0)
+//            let constraint2 = NSLayoutConstraint(item: profileDetailsStack, attribute: .leading, relatedBy: .equal, toItem: self.view, attribute: .leading, multiplier: 1.0, constant: 30.0)
+//                        self.view.addConstraint(constraint)
+//                        self.view.addConstraint(constraint2)
         }
     }
     
@@ -226,8 +282,8 @@ class MyProfileViewController: UIViewController {
                     let image = UIImage(data: safeImage)
                     self.title = self.profileDetailsArray[0]
                     self.profilePicture.image = image
-                    self.profileDetails.text = "\(profileDetailsArray[0]), \(profileDetailsArray[1])"
-                    self.genderImage.image = (self.profileDetailsArray[2] == "male") ? UIImage(named: "big male") : UIImage(named: "big female")
+//                    self.profileDetails.text = "\(profileDetailsArray[0]), \(profileDetailsArray[1])"
+//                    self.genderImage.image = (self.profileDetailsArray[2] == "male") ? UIImage(named: "big male") : UIImage(named: "big female")
                 }
             }
         } else {

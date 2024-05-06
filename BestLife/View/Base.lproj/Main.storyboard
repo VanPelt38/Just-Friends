@@ -311,11 +311,28 @@
                         <outlet property="cameraImage" destination="0ln-9I-7xz" id="nDr-pV-0eO"/>
                         <outlet property="profilePicture" destination="zEt-3M-CbF" id="cdq-TJ-99C"/>
                         <outlet property="tableView" destination="MtR-sZ-EQh" id="wrE-4T-v0v"/>
+                        <segue destination="3gs-Z7-5Y1" kind="show" identifier="myProfileEditProfileSeg" id="5ew-Rx-eCq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="KFx-OW-OJe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5658.7786259541981" y="779.57746478873241"/>
+            <point key="canvasLocation" x="6392" y="1461"/>
+        </scene>
+        <!--Edit Profile-->
+        <scene sceneID="4qc-xy-exK">
+            <objects>
+                <viewController title="Edit Profile" id="3gs-Z7-5Y1" customClass="EditProfileViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="tPJ-nN-BAD">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="786"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="nRX-PC-quM"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Edit Profile" id="Rry-iB-efd"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="T6p-2G-9C4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7404" y="1461"/>
         </scene>
         <!--Settings-->
         <scene sceneID="skN-V1-aGQ">

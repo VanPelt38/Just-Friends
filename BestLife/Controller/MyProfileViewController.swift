@@ -70,29 +70,51 @@ class MyProfileViewController: FormViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    @objc func editProfile() {
+        performSegue(withIdentifier: "myProfileEditProfileSeg", sender: self)
+    }
+    
     func createProfileDetailsForm() {
         
         tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
         tableView.separatorStyle = .none
+        
         let section = Section("Hi there")
         form +++ section
+        
         let headerView = UIView(frame: CGRect(x: tableView.bounds.origin.x, y: tableView.bounds.origin.y, width: tableView.bounds.width, height: 44))
         let curvePath = UIBezierPath(roundedRect: headerView.bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: 10, height: 10))
         let curveLayer = CAShapeLayer()
         curveLayer.path = curvePath.cgPath
         headerView.layer.mask = curveLayer
-        let titleLabel = UILabel(frame: CGRect(x: headerView.bounds.origin.x, y: headerView.bounds.origin.y, width: headerView.bounds.width, height: 44))
         headerView.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+        
+        let titleLabel = UILabel(frame: CGRect(x: headerView.bounds.origin.x, y: headerView.bounds.origin.y, width: headerView.bounds.width, height: 44))
         titleLabel.text = "\(profileDetailsArray[0]) \(profileDetailsArray[1])"
         titleLabel.textAlignment = .center // Set the alignment here
+        
+        let editButton = UIButton(type: .custom)
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        editButton.setImage(UIImage(named: "pencil"), for: .normal)
+        editButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
+        editButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        editButton.addTarget(self, action: #selector(editProfile), for: .touchUpInside)
+        
         let separator = UIView()
         separator.backgroundColor = .lightGray
         separator.translatesAutoresizingMaskIntoConstraints = false
+        
         headerView.addSubview(separator)
+        headerView.addSubview(editButton)
+        
+        editButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -8).isActive = true
+        editButton.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -8).isActive = true
+        
         separator.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 8).isActive = true
         separator.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -8).isActive = true
         separator.bottomAnchor.constraint(equalTo: headerView.bottomAnchor).isActive = true
                 separator.heightAnchor.constraint(equalToConstant: 1.0).isActive = true
+        
         headerView.addSubview(titleLabel)
         
         // Assign the custom view to the section header

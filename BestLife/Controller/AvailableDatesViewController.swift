@@ -236,8 +236,8 @@ class AvailableDatesViewController: UIViewController {
         if segue.identifier == "availableMatchProfileSeg" {
             
             let destinationVC = segue.destination as! MatchProfileViewController
-            
-            destinationVC.matchProfile = self.passedMatchProfile
+            print("this is the userID: \(passedMatchProfile.userID)")
+            destinationVC.matchID = passedMatchProfile.userID
         }
     }
     
@@ -340,7 +340,6 @@ class AvailableDatesViewController: UIViewController {
                                 }
                                     
                             }
-                            print("statuses before blocked userss: \(self.statusArray)")
                             guard let realm = RealmManager.getRealm() else {return returnArray}
                             
                            let blockUsers = realm.objects(BlockedUser.self).filter("userID == %@", firebaseID)
@@ -891,6 +890,7 @@ extension AvailableDatesViewController: CustomTableViewCellDelegate {
             passedMatchProfile.name = profilesArray[indexPath.row - 1].name
             passedMatchProfile.gender = profilesArray[indexPath.row - 1].gender
             passedMatchProfile.picture = profilesArray[indexPath.row - 1].picture
+            passedMatchProfile.userID = profilesArray[indexPath.row - 1].userID
             
             performSegue(withIdentifier: "availableMatchProfileSeg", sender: self)
         }

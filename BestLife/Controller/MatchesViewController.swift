@@ -25,7 +25,7 @@ class MatchesViewController: UIViewController {
     let db = Firestore.firestore()
     var ownMatch = MatchModel()
     var matchIDForChat = ""
-    var passedMatchProfile = ProfileModel()
+    var passedMatchID: String?
     var matchIDsForDeletion: [String] = []
     
     override func viewWillAppear(_ animated: Bool) {
@@ -344,7 +344,7 @@ class MatchesViewController: UIViewController {
             
             let destinationVC = segue.destination as! MatchProfileViewController
             
-            destinationVC.matchProfile = self.passedMatchProfile
+            destinationVC.matchID = self.passedMatchID
         }
 
     }
@@ -633,12 +633,8 @@ extension MatchesViewController: CustomTableViewCellDelegate {
             present(confirmAcceptAlert, animated: true)
             
         } else if buttonName == "viewProfileButton" {
-            
-            passedMatchProfile.age = matchesArray![indexPath.row].age
-            passedMatchProfile.name = matchesArray![indexPath.row].name
-            passedMatchProfile.gender = matchesArray![indexPath.row].gender
-            passedMatchProfile.picture = matchesArray![indexPath.row].imageURL
-            
+
+            passedMatchID = matchesArray![indexPath.row].userID
             performSegue(withIdentifier: "matchesMatchProfileSeg", sender: self)
         }
         

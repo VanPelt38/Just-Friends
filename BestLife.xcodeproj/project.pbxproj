@@ -10,12 +10,14 @@
 		230209C12A2D47AD00600B48 /* MatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230209C02A2D47AD00600B48 /* MatchModel.swift */; };
 		230284382A0852FD009EBDFC /* DatePlanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230284362A0852FD009EBDFC /* DatePlanCell.swift */; };
 		230284392A0852FD009EBDFC /* DatePlanCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 230284372A0852FD009EBDFC /* DatePlanCell.xib */; };
+		23080D822C17AFF700F28726 /* EurekaTable.xib in Resources */ = {isa = PBXBuildFile; fileRef = 23080D812C17AFF600F28726 /* EurekaTable.xib */; };
 		2318081A2A530ACF0051012B /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231808192A530ACF0051012B /* SettingsViewController.swift */; };
 		2318081C2A5311D30051012B /* DistanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081B2A5311D30051012B /* DistanceViewController.swift */; };
 		2318081E2A53152C0051012B /* MyProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081D2A53152C0051012B /* MyProfileViewController.swift */; };
 		23361C3229DCC4F7006D2410 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 23361C3129DCC4F7006D2410 /* FirebaseFunctions */; };
 		2350108729B474E0007A3BBA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 2350108629B474E0007A3BBA /* FirebaseMessaging */; };
 		2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */; };
+		23541A092C22276700870335 /* CustomMultipleSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23541A082C22276700870335 /* CustomMultipleSelectorViewController.swift */; };
 		2364116F2AD4995300EAEB92 /* RExpiringMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */; };
 		236411712AD4B10200EAEB92 /* RChatDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236411702AD4B10200EAEB92 /* RChatDoc.swift */; };
 		236ED1A72A9E7AA20085F616 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 236ED1A62A9E7AA20085F616 /* IQKeyboardManagerSwift */; };
@@ -64,10 +66,12 @@
 		230209C02A2D47AD00600B48 /* MatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchModel.swift; sourceTree = "<group>"; };
 		230284362A0852FD009EBDFC /* DatePlanCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePlanCell.swift; sourceTree = "<group>"; };
 		230284372A0852FD009EBDFC /* DatePlanCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DatePlanCell.xib; sourceTree = "<group>"; };
+		23080D812C17AFF600F28726 /* EurekaTable.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EurekaTable.xib; sourceTree = "<group>"; };
 		231808192A530ACF0051012B /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2318081B2A5311D30051012B /* DistanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceViewController.swift; sourceTree = "<group>"; };
 		2318081D2A53152C0051012B /* MyProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProfileViewController.swift; sourceTree = "<group>"; };
 		2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
+		23541A082C22276700870335 /* CustomMultipleSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMultipleSelectorViewController.swift; sourceTree = "<group>"; };
 		2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RExpiringMatch.swift; sourceTree = "<group>"; };
 		236411702AD4B10200EAEB92 /* RChatDoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RChatDoc.swift; sourceTree = "<group>"; };
 		237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetUpViewController.swift; sourceTree = "<group>"; };
@@ -191,6 +195,7 @@
 				238107892B3D8A9500F4746D /* Message.swift */,
 				2381078B2B3D8A9D00F4746D /* Sender.swift */,
 				2381078D2B3D908500F4746D /* CustomCommentCell.swift */,
+				23541A082C22276700870335 /* CustomMultipleSelectorViewController.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -201,6 +206,7 @@
 				23D2AAED293EA5100083BA22 /* Main.storyboard */,
 				230284362A0852FD009EBDFC /* DatePlanCell.swift */,
 				230284372A0852FD009EBDFC /* DatePlanCell.xib */,
+				23080D812C17AFF600F28726 /* EurekaTable.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -317,6 +323,7 @@
 				23D2AAF7293EA5120083BA22 /* LaunchScreen.storyboard in Resources */,
 				23D2AAF4293EA5120083BA22 /* Assets.xcassets in Resources */,
 				230284392A0852FD009EBDFC /* DatePlanCell.xib in Resources */,
+				23080D822C17AFF700F28726 /* EurekaTable.xib in Resources */,
 				23D2AAEF293EA5100083BA22 /* Main.storyboard in Resources */,
 				2397DDB12BD71A9C00DDCFB0 /* GoogleService-Info.plist in Resources */,
 			);
@@ -342,6 +349,7 @@
 				2397DDB82BE9353C00DDCFB0 /* EditProfileViewController.swift in Sources */,
 				23D2AB06294B7EFC0083BA22 /* AvailableDatesViewController.swift in Sources */,
 				23D2AAEC293EA5100083BA22 /* HomeViewController.swift in Sources */,
+				23541A092C22276700870335 /* CustomMultipleSelectorViewController.swift in Sources */,
 				23BE85F02B2110F200228638 /* RBlockedUser.swift in Sources */,
 				23B4F730294B845E00C9DFB5 /* DatePlanModel.swift in Sources */,
 				23D2AB04294B7E970083BA22 /* DatePlanViewController.swift in Sources */,
@@ -523,7 +531,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -559,7 +567,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -9,6 +9,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 import Kingfisher
+import RealmSwift
 
 class HomeViewController: UIViewController {
 
@@ -319,7 +320,7 @@ class HomeViewController: UIViewController {
     }
     
     func loadExpiringRequests() async {
-        print("should be loading expiring matches")
+  
         guard let realm = RealmManager.getRealm() else {return}
         if let safeID = firebaseID {
            
@@ -411,17 +412,32 @@ class HomeViewController: UIViewController {
                             if let url = URL(string: picture) {
 
                                 do {
-                                    let data = try Data(contentsOf: url)
-                                    let image = UIImage(data: data)
+                                    let imageData = try Data(contentsOf: url)
+                                    let image = UIImage(data: imageData)
                                     try! realm.write {
                                         let realmProfile = RProfile()
                                     realmProfile.age = age
                                     realmProfile.gender = gender
                                     realmProfile.name = name
                                     realmProfile.userID = userID
-                                    realmProfile.picture = data
+                                    realmProfile.picture = imageData
                                         realmProfile.profilePicURL = picture
                                         realmProfile.profilePicRef = profilePicRef
+                                        if let town = data["town"] as? String {
+                                            realmProfile.town = town
+                                        }
+                                        if let profession = data["occupation"] as? String {
+                                            realmProfile.occupation = profession
+                                        }
+                                        if let summary = data["summary"] as? String {
+                                            realmProfile.summary = summary
+                                        }
+                                        if let interests = data["interests"] as? [String] {
+                                            print("got interests")
+                                            let interestsList = List<String>()
+                                            interests.forEach { interestsList.append($0) }
+                                            realmProfile.interests = interestsList
+                                        }
                                         realm.add(realmProfile, update: .all)
                                     }
                                     self.profilePicture.image = image
@@ -467,6 +483,20 @@ class HomeViewController: UIViewController {
                             realmMatch.chatID = chatID
                             realmMatch.id = realmID
                             realmMatch.ownUserID = ownUserID
+                            if let town = data["town"] as? String {
+                                realmMatch.town = town
+                            }
+                            if let profession = data["occupation"] as? String {
+                                realmMatch.occupation = profession
+                            }
+                            if let summary = data["summary"] as? String {
+                                realmMatch.summary = summary
+                            }
+                            if let interests = data["interests"] as? [String] {
+                                let interestsList = List<String>()
+                                interests.forEach { interestsList.append($0) }
+                                realmMatch.interests = interestsList
+                            }
                             realm.add(realmMatch, update: .all)
                         }
                         

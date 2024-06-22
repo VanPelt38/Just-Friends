@@ -289,28 +289,17 @@
                                     <action selector="newPhotoPressed:" destination="2oR-UP-5bH" eventType="touchUpInside" id="NNz-fo-wpT"/>
                                 </connections>
                             </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="MtR-sZ-EQh">
-                                <rect key="frame" x="10" y="517" width="373" height="230"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="230" id="0pg-qz-8py"/>
-                                </constraints>
-                            </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="EEh-NH-VG3"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="0ln-9I-7xz" firstAttribute="centerX" secondItem="iT6-CP-Wvq" secondAttribute="centerX" id="auI-vs-c0z"/>
-                            <constraint firstItem="MtR-sZ-EQh" firstAttribute="leading" secondItem="EEh-NH-VG3" secondAttribute="leading" constant="10" id="r3Y-Ev-tZQ"/>
-                            <constraint firstItem="EEh-NH-VG3" firstAttribute="trailing" secondItem="MtR-sZ-EQh" secondAttribute="trailing" constant="10" id="rF6-bu-cVR"/>
-                            <constraint firstItem="MtR-sZ-EQh" firstAttribute="bottom" secondItem="EEh-NH-VG3" secondAttribute="bottom" id="wqt-f0-vPd"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Z2v-bT-BDr"/>
                     <connections>
                         <outlet property="cameraImage" destination="0ln-9I-7xz" id="nDr-pV-0eO"/>
                         <outlet property="profilePicture" destination="zEt-3M-CbF" id="cdq-TJ-99C"/>
-                        <outlet property="tableView" destination="MtR-sZ-EQh" id="wrE-4T-v0v"/>
                         <segue destination="3gs-Z7-5Y1" kind="show" identifier="myProfileEditProfileSeg" id="5ew-Rx-eCq"/>
                     </connections>
                 </viewController>
@@ -520,34 +509,13 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </imageView>
-                            <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="dbc-R8-gy1" userLabel="ProfileDetailsStack">
-                                <rect key="frame" x="55" y="457" width="138.66666666666666" height="20"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4jT-hF-HuF">
-                                        <rect key="frame" x="0.0" y="0.0" width="109.66666666666667" height="20"/>
-                                        <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="20"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="big male" translatesAutoresizingMaskIntoConstraints="NO" id="T1W-Nl-phz">
-                                        <rect key="frame" x="118.66666666666669" y="0.0" width="20" height="20"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="20" id="BSF-lg-BcB"/>
-                                            <constraint firstAttribute="height" constant="20" id="zVU-HQ-ri2"/>
-                                        </constraints>
-                                    </imageView>
-                                </subviews>
-                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KLM-5q-TES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" id="aWu-hA-z1n"/>
                     <connections>
-                        <outlet property="genderImage" destination="T1W-Nl-phz" id="psW-sq-G1t"/>
                         <outlet property="matchProfilePicture" destination="L0o-mn-lyM" id="5YQ-eh-fdx"/>
-                        <outlet property="profileDetails" destination="4jT-hF-HuF" id="7Uu-HZ-mWN"/>
-                        <outlet property="profileDetailsStack" destination="dbc-R8-gy1" id="PbF-Ry-qSz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DIG-8i-NCS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1054,7 +1022,6 @@
         <segue reference="4b1-lw-4C2"/>
     </inferredMetricsTieBreakers>
     <resources>
-        <image name="big male" width="100" height="100"/>
         <image name="camera" catalog="system" width="128" height="93"/>
         <image name="camera.fill" catalog="system" width="128" height="93"/>
         <image name="flag" catalog="system" width="128" height="121"/>

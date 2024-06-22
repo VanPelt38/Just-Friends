@@ -22,4 +22,8 @@ class RMatchModel: Object {
     @Persisted var fcmToken = "none"
     @Persisted var chatID = "none"
     @Persisted var ownUserID = "none"
+    @Persisted var town: String?
+    @Persisted var occupation: String?
+    @Persisted var summary: String?
+    @Persisted var interests: List<String>
 }

@@ -17,6 +17,10 @@ class RProfile: Object {
     @Persisted var userID = ""
     @Persisted var profilePicRef = ""
     @Persisted var profilePicURL = ""
+    @Persisted var town: String?
+    @Persisted var occupation: String?
+    @Persisted var summary: String?
+    @Persisted var interests: List<String>
     
     override static func primaryKey() -> String? {
         return "userID"

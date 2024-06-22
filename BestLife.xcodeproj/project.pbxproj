@@ -10,12 +10,14 @@
 		230209C12A2D47AD00600B48 /* MatchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230209C02A2D47AD00600B48 /* MatchModel.swift */; };
 		230284382A0852FD009EBDFC /* DatePlanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230284362A0852FD009EBDFC /* DatePlanCell.swift */; };
 		230284392A0852FD009EBDFC /* DatePlanCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 230284372A0852FD009EBDFC /* DatePlanCell.xib */; };
+		23080D822C17AFF700F28726 /* EurekaTable.xib in Resources */ = {isa = PBXBuildFile; fileRef = 23080D812C17AFF600F28726 /* EurekaTable.xib */; };
 		2318081A2A530ACF0051012B /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231808192A530ACF0051012B /* SettingsViewController.swift */; };
 		2318081C2A5311D30051012B /* DistanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081B2A5311D30051012B /* DistanceViewController.swift */; };
 		2318081E2A53152C0051012B /* MyProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081D2A53152C0051012B /* MyProfileViewController.swift */; };
 		23361C3229DCC4F7006D2410 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 23361C3129DCC4F7006D2410 /* FirebaseFunctions */; };
 		2350108729B474E0007A3BBA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 2350108629B474E0007A3BBA /* FirebaseMessaging */; };
 		2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */; };
+		23541A092C22276700870335 /* CustomMultipleSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23541A082C22276700870335 /* CustomMultipleSelectorViewController.swift */; };
 		2364116F2AD4995300EAEB92 /* RExpiringMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */; };
 		236411712AD4B10200EAEB92 /* RChatDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 236411702AD4B10200EAEB92 /* RChatDoc.swift */; };
 		236ED1A72A9E7AA20085F616 /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 236ED1A62A9E7AA20085F616 /* IQKeyboardManagerSwift */; };
@@ -31,6 +33,8 @@
 		2381078E2B3D908500F4746D /* CustomCommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2381078D2B3D908500F4746D /* CustomCommentCell.swift */; };
 		238625192A5A11170086DAE6 /* MatchProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238625182A5A11170086DAE6 /* MatchProfileViewController.swift */; };
 		2397DDB12BD71A9C00DDCFB0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2397DDB02BD71A9C00DDCFB0 /* GoogleService-Info.plist */; };
+		2397DDB62BE5B2AF00DDCFB0 /* Eureka in Frameworks */ = {isa = PBXBuildFile; productRef = 2397DDB52BE5B2AF00DDCFB0 /* Eureka */; };
+		2397DDB82BE9353C00DDCFB0 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2397DDB72BE9353C00DDCFB0 /* EditProfileViewController.swift */; };
 		239A19B0296BB5F1005B6294 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 239A19AF296BB5F1005B6294 /* FirebaseAnalytics */; };
 		239A19B2296BB5F1005B6294 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 239A19B1296BB5F1005B6294 /* FirebaseAuth */; };
 		23AB196E2ADF3F11007E64AA /* RRegistration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23AB196D2ADF3F11007E64AA /* RRegistration.swift */; };
@@ -62,10 +66,12 @@
 		230209C02A2D47AD00600B48 /* MatchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchModel.swift; sourceTree = "<group>"; };
 		230284362A0852FD009EBDFC /* DatePlanCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePlanCell.swift; sourceTree = "<group>"; };
 		230284372A0852FD009EBDFC /* DatePlanCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DatePlanCell.xib; sourceTree = "<group>"; };
+		23080D812C17AFF600F28726 /* EurekaTable.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EurekaTable.xib; sourceTree = "<group>"; };
 		231808192A530ACF0051012B /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2318081B2A5311D30051012B /* DistanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceViewController.swift; sourceTree = "<group>"; };
 		2318081D2A53152C0051012B /* MyProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProfileViewController.swift; sourceTree = "<group>"; };
 		2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
+		23541A082C22276700870335 /* CustomMultipleSelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMultipleSelectorViewController.swift; sourceTree = "<group>"; };
 		2364116E2AD4995300EAEB92 /* RExpiringMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RExpiringMatch.swift; sourceTree = "<group>"; };
 		236411702AD4B10200EAEB92 /* RChatDoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RChatDoc.swift; sourceTree = "<group>"; };
 		237A4B962A01ACA40065EF6B /* ProfileSetUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetUpViewController.swift; sourceTree = "<group>"; };
@@ -79,6 +85,7 @@
 		238625182A5A11170086DAE6 /* MatchProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchProfileViewController.swift; sourceTree = "<group>"; };
 		2388E18D29E618D6000C83E9 /* BestLifeDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BestLifeDebug.entitlements; sourceTree = "<group>"; };
 		2397DDB02BD71A9C00DDCFB0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
+		2397DDB72BE9353C00DDCFB0 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
 		239D21E32B86AF90002D0AE2 /* BestLife.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BestLife.entitlements; sourceTree = "<group>"; };
 		23AB196D2ADF3F11007E64AA /* RRegistration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RRegistration.swift; sourceTree = "<group>"; };
 		23AB196F2AE1CC27007E64AA /* RStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RStatus.swift; sourceTree = "<group>"; };
@@ -119,6 +126,7 @@
 				23E30A0829810EC90091202E /* FirebaseFirestore in Frameworks */,
 				23DE216A2AC0D60A005A31CF /* RealmSwift in Frameworks */,
 				237A4B9B2A02FE7C0065EF6B /* FirebaseStorage in Frameworks */,
+				2397DDB62BE5B2AF00DDCFB0 /* Eureka in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,6 +195,7 @@
 				238107892B3D8A9500F4746D /* Message.swift */,
 				2381078B2B3D8A9D00F4746D /* Sender.swift */,
 				2381078D2B3D908500F4746D /* CustomCommentCell.swift */,
+				23541A082C22276700870335 /* CustomMultipleSelectorViewController.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -197,6 +206,7 @@
 				23D2AAED293EA5100083BA22 /* Main.storyboard */,
 				230284362A0852FD009EBDFC /* DatePlanCell.swift */,
 				230284372A0852FD009EBDFC /* DatePlanCell.xib */,
+				23080D812C17AFF600F28726 /* EurekaTable.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -218,6 +228,7 @@
 				238107872B3D874200F4746D /* MessageViewController.swift */,
 				237E7E832BC5B1830077499C /* ForgotPasswordViewController.swift */,
 				237E7E852BC6F5800077499C /* ForgotPasswordModule.swift */,
+				2397DDB72BE9353C00DDCFB0 /* EditProfileViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -257,6 +268,7 @@
 				23DE21672AC0D60A005A31CF /* Realm */,
 				23DE21692AC0D60A005A31CF /* RealmSwift */,
 				238107852B3D86CF00F4746D /* MessageKit */,
+				2397DDB52BE5B2AF00DDCFB0 /* Eureka */,
 			);
 			productName = BestLife;
 			productReference = 23D2AAE4293EA5100083BA22 /* BestLife.app */;
@@ -292,6 +304,7 @@
 				236ED1A52A9E7AA20085F616 /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 				23DE21662AC0D60A005A31CF /* XCRemoteSwiftPackageReference "realm-swift" */,
 				238107842B3D86CF00F4746D /* XCRemoteSwiftPackageReference "MessageKit" */,
+				2397DDB42BE5B2AF00DDCFB0 /* XCRemoteSwiftPackageReference "Eureka" */,
 			);
 			productRefGroup = 23D2AAE5293EA5100083BA22 /* Products */;
 			projectDirPath = "";
@@ -310,6 +323,7 @@
 				23D2AAF7293EA5120083BA22 /* LaunchScreen.storyboard in Resources */,
 				23D2AAF4293EA5120083BA22 /* Assets.xcassets in Resources */,
 				230284392A0852FD009EBDFC /* DatePlanCell.xib in Resources */,
+				23080D822C17AFF700F28726 /* EurekaTable.xib in Resources */,
 				23D2AAEF293EA5100083BA22 /* Main.storyboard in Resources */,
 				2397DDB12BD71A9C00DDCFB0 /* GoogleService-Info.plist in Resources */,
 			);
@@ -332,8 +346,10 @@
 				23DE21702AC61092005A31CF /* RMatchModel.swift in Sources */,
 				2364116F2AD4995300EAEB92 /* RExpiringMatch.swift in Sources */,
 				23AB196E2ADF3F11007E64AA /* RRegistration.swift in Sources */,
+				2397DDB82BE9353C00DDCFB0 /* EditProfileViewController.swift in Sources */,
 				23D2AB06294B7EFC0083BA22 /* AvailableDatesViewController.swift in Sources */,
 				23D2AAEC293EA5100083BA22 /* HomeViewController.swift in Sources */,
+				23541A092C22276700870335 /* CustomMultipleSelectorViewController.swift in Sources */,
 				23BE85F02B2110F200228638 /* RBlockedUser.swift in Sources */,
 				23B4F730294B845E00C9DFB5 /* DatePlanModel.swift in Sources */,
 				23D2AB04294B7E970083BA22 /* DatePlanViewController.swift in Sources */,
@@ -515,7 +531,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -551,7 +567,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -607,6 +623,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		2397DDB42BE5B2AF00DDCFB0 /* XCRemoteSwiftPackageReference "Eureka" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/xmartlabs/Eureka.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.4.0;
+			};
+		};
 		239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -658,6 +682,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 238107842B3D86CF00F4746D /* XCRemoteSwiftPackageReference "MessageKit" */;
 			productName = MessageKit;
+		};
+		2397DDB52BE5B2AF00DDCFB0 /* Eureka */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2397DDB42BE5B2AF00DDCFB0 /* XCRemoteSwiftPackageReference "Eureka" */;
+			productName = Eureka;
 		};
 		239A19AF296BB5F1005B6294 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

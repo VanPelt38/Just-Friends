@@ -234,11 +234,31 @@
                                     <segue destination="wep-Kr-fNa" kind="show" id="B4h-52-7iW"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gGN-jv-SVq">
+                                <rect key="frame" x="46.666666666666657" y="635" width="300" height="91"/>
+                                <color key="backgroundColor" systemColor="systemTealColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="90" id="6Ms-Je-iu9"/>
+                                    <constraint firstAttribute="width" constant="300" id="umS-nu-Cbh"/>
+                                </constraints>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="most compatible">
+                                    <fontDescription key="titleFontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="30"/>
+                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="createDatePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Rt7-0M-Xhb"/>
+                                    <action selector="mostCompatiblePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xYa-2t-PuA"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="gGN-jv-SVq" firstAttribute="top" secondItem="FRo-nq-GfP" secondAttribute="bottom" constant="20" id="IiV-wQ-gNI"/>
                             <constraint firstItem="FRo-nq-GfP" firstAttribute="top" secondItem="SJX-NE-dvl" secondAttribute="bottom" constant="75" id="Llx-Ve-XEY"/>
+                            <constraint firstItem="gGN-jv-SVq" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Rus-7W-l8f"/>
                             <constraint firstItem="FRo-nq-GfP" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="WxC-ec-qZ0"/>
                             <constraint firstItem="SJX-NE-dvl" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="wCy-ph-6bt"/>
                         </constraints>
@@ -247,9 +267,11 @@
                     <connections>
                         <outlet property="buttonToProfileConstraint" destination="Llx-Ve-XEY" id="woz-6v-Mmm"/>
                         <outlet property="makeFriendButton" destination="FRo-nq-GfP" id="VtB-3U-9sc"/>
+                        <outlet property="mostCompatibleButton" destination="gGN-jv-SVq" id="Pch-7S-Zwn"/>
                         <outlet property="profilePicture" destination="q9W-oO-tE8" id="PkQ-el-60E"/>
                         <outlet property="viewProfileButton" destination="SJX-NE-dvl" id="hlS-os-98q"/>
                         <segue destination="2oR-UP-5bH" kind="show" identifier="homeProfileSeg" id="orY-yv-Vgb"/>
+                        <segue destination="qAQ-5k-F77" kind="show" identifier="homeCompatibleSeg" id="Dv0-dg-jmJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -501,7 +523,7 @@
             <objects>
                 <viewController id="fVY-ud-XHM" customClass="MatchProfileViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="NIR-m0-uFI">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="808"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="786"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="person.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="L0o-mn-lyM">
@@ -931,7 +953,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AD0-kc-Yby" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3667.9389312977096" y="-760.56338028169023"/>
+            <point key="canvasLocation" x="3648" y="-761"/>
         </scene>
         <!--Title-->
         <scene sceneID="6Lf-N4-6it">
@@ -1015,11 +1037,98 @@
             </objects>
             <point key="canvasLocation" x="1912.2137404580151" y="3.5211267605633805"/>
         </scene>
+        <!--Most Compatible-->
+        <scene sceneID="csc-fr-hIr">
+            <objects>
+                <viewController id="qAQ-5k-F77" customClass="MostCompatibleViewController" customModule="BestLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="wnH-Kz-hfM">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="786"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="feE-PH-gil" userLabel="Most Compatible Table">
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="747"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="dateCell" id="uFm-1d-oYi">
+                                        <rect key="frame" x="0.0" y="50" width="393" height="47.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="uFm-1d-oYi" id="lUb-JB-JBR">
+                                            <rect key="frame" x="0.0" y="0.0" width="393" height="47.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap below to make friends with people with common interests! Your most compatible list will update every 24 hours" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Fin-QP-nmK">
+                                <rect key="frame" x="0.0" y="308" width="330" height="169"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="25"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="aLD-FK-Eyv">
+                                <rect key="frame" x="0.0" y="347" width="393" height="91"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemTealColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="90" id="Bzf-yd-57G"/>
+                                    <constraint firstAttribute="width" constant="300" id="pNt-BZ-R0u"/>
+                                </constraints>
+                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="find friends">
+                                    <fontDescription key="titleFontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="30"/>
+                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="calculatePressed:" destination="qAQ-5k-F77" eventType="touchUpInside" id="BN4-T7-eQ3"/>
+                                    <action selector="createDatePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Tfw-4o-dnx"/>
+                                    <action selector="mostCompatiblePressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="avD-Ac-RBd"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Zl7-49-QRk"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Zl7-49-QRk" firstAttribute="bottom" secondItem="feE-PH-gil" secondAttribute="bottom" id="8wR-XE-B1j"/>
+                            <constraint firstItem="feE-PH-gil" firstAttribute="leading" secondItem="Zl7-49-QRk" secondAttribute="leading" id="OJs-PV-KlB"/>
+                            <constraint firstItem="feE-PH-gil" firstAttribute="top" secondItem="Zl7-49-QRk" secondAttribute="top" id="bh5-NF-aTT"/>
+                            <constraint firstItem="feE-PH-gil" firstAttribute="trailing" secondItem="Zl7-49-QRk" secondAttribute="trailing" id="nr7-kN-NSs"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Most Compatible" id="vyA-Lt-rus">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="Yf5-kJ-kLv">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="qZA-6R-OJX" userLabel="Matches Button">
+                                <rect key="frame" x="317.66666666666669" y="6" width="59.333333333333314" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="person.2" catalog="system"/>
+                                <connections>
+                                    <action selector="matchesPressed:" destination="qAQ-5k-F77" eventType="touchUpInside" id="20n-zP-rVi"/>
+                                </connections>
+                            </button>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="calculateButton" destination="aLD-FK-Eyv" id="yWZ-hs-TRD"/>
+                        <outlet property="matchesButton" destination="qZA-6R-OJX" id="pIK-Bo-rDF"/>
+                        <outlet property="mostCompatibleLabel" destination="Fin-QP-nmK" id="cvm-r7-sAg"/>
+                        <outlet property="mostCompatibleTable" destination="feE-PH-gil" id="2qc-an-HVL"/>
+                        <segue destination="fVY-ud-XHM" kind="show" identifier="compatibleMatchProfileSeg" id="T7C-jN-DJe"/>
+                        <segue destination="jEv-vw-ndJ" kind="show" identifier="compatibleFriendsSeg" id="LuK-Pe-Qio"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pBs-Ip-CLI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4630" y="-761"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="iFG-Mg-rEf"/>
-        <segue reference="sSb-aV-hjh"/>
-        <segue reference="4b1-lw-4C2"/>
+        <segue reference="e0l-9B-xxr"/>
+        <segue reference="LuK-Pe-Qio"/>
+        <segue reference="T7C-jN-DJe"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="camera" catalog="system" width="128" height="93"/>
@@ -1039,6 +1148,9 @@
         </systemColor>
         <systemColor name="systemRedColor">
             <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemTealColor">
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -55,6 +56,16 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recently online" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qLE-mR-R9j">
+                                <rect key="frame" x="86" y="49.666666666666671" width="100" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="Dsg-Tr-5A8"/>
+                                    <constraint firstAttribute="width" constant="100" id="afs-qq-lOV"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="GillSans-Bold" family="Gill Sans" pointSize="12"/>
+                                <color key="textColor" systemColor="systemGreenColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -62,6 +73,8 @@
                             <constraint firstItem="k3O-O9-QgS" firstAttribute="top" secondItem="UxF-E8-G0U" secondAttribute="bottom" constant="65.329999999999998" id="Bt4-oF-H64"/>
                             <constraint firstAttribute="bottom" secondItem="UxF-E8-G0U" secondAttribute="bottom" constant="40" id="LRD-lA-nKw"/>
                             <constraint firstItem="UxF-E8-G0U" firstAttribute="top" secondItem="UDq-4K-nZI" secondAttribute="top" constant="19" id="NcL-bh-RgT"/>
+                            <constraint firstAttribute="bottom" secondItem="qLE-mR-R9j" secondAttribute="bottom" constant="7" id="S5F-rB-LPW"/>
+                            <constraint firstItem="qLE-mR-R9j" firstAttribute="leading" secondItem="k3O-O9-QgS" secondAttribute="leading" constant="70" id="SCh-RH-toF"/>
                             <constraint firstItem="k3O-O9-QgS" firstAttribute="leading" secondItem="UDq-4K-nZI" secondAttribute="leading" constant="16" id="Vqy-dh-RLC"/>
                             <constraint firstItem="UxF-E8-G0U" firstAttribute="leading" secondItem="UDq-4K-nZI" secondAttribute="leading" constant="25" id="eAY-sV-uCo"/>
                             <constraint firstItem="UxF-E8-G0U" firstAttribute="centerX" secondItem="UDq-4K-nZI" secondAttribute="centerX" id="kVs-Pe-BDf"/>
@@ -135,6 +148,7 @@
                 <outlet property="datePlanLabel" destination="UxF-E8-G0U" id="RVc-YT-8y0"/>
                 <outlet property="genderLabel" destination="nOW-Ub-ZZc" id="D2l-hE-dqs"/>
                 <outlet property="profilePicture" destination="1uN-ta-svb" id="UhL-eU-r3X"/>
+                <outlet property="recentlyOnlineLabel" destination="qLE-mR-R9j" id="3fG-qz-IqQ"/>
                 <outlet property="rejectedButton" destination="gDv-Vm-kwC" id="n0y-uu-iL5"/>
                 <outlet property="viewProfileButton" destination="vfv-7a-DN8" id="DKC-Ns-Ria"/>
             </connections>
@@ -145,5 +159,8 @@
         <image name="big male" width="100" height="100"/>
         <image name="person.circle" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
+        <systemColor name="systemGreenColor">
+            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>

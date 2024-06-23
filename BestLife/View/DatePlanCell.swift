@@ -30,6 +30,7 @@ class DatePlanCell: UITableViewCell {
     
     @IBOutlet weak var rejectedButton: UIButton!
     
+    @IBOutlet weak var recentlyOnlineLabel: UILabel!
     @IBAction func acceptedPressed(_ sender: UIButton) {
         
         if let indexPath = indexPath {

@@ -441,7 +441,6 @@ class HomeViewController: UIViewController {
                                             realmProfile.summary = summary
                                         }
                                         if let interests = data["interests"] as? [String] {
-                                            print("got interests")
                                             let interestsList = List<String>()
                                             interests.forEach { interestsList.append($0) }
                                             realmProfile.interests = interestsList

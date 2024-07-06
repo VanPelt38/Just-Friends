@@ -1,14 +1,14 @@
 //
-//  RProfile.swift
+//  RCompatible.swift
 //  BestLife
 //
-//  Created by Jake Gordon on 24/09/2023.
+//  Created by Jake Gordon on 24/06/2024.
 //
 
 import Foundation
 import RealmSwift
 
-class RProfile: Object {
+class RCompatible: Object {
     
     @Persisted var age = 0
     @Persisted var gender = ""
@@ -26,4 +26,3 @@ class RProfile: Object {
         return "userID"
     }
 }
-

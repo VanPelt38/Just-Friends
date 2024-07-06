@@ -11,6 +11,7 @@ import FirebaseFunctions
 import FirebaseAuth
 import CoreLocation
 import Kingfisher
+import RealmSwift
 
 class MostCompatibleViewController: UIViewController {
     
@@ -21,75 +22,22 @@ class MostCompatibleViewController: UIViewController {
     @IBOutlet weak var calculateButton: UIButton!
     
     let db = Firestore.firestore()
-    var statusArray: [DatePlanModel] = []
-    var userProfileArray: [ProfileModel] = []
-    var profilesArray: [ProfileModel] = []
-    var dataLoadedArray: [Bool] = []
+    var profilesArray: [RCompatible] = []
+//    var dataLoadedArray: [Bool] = []
     var expiringMatchesArray: [RExpiringMatch] = []
     var ownName = "none"
-    var dateActivity = "none"
-    var dateTime = "none"
     var firebaseID = ""
     var notificationCount = 0
     var ownMatchStatus = MatchModel()
-    var location = CLLocation()
+    var myLocation = CLLocation()
     var passedMatchProfile = ProfileModel()
+    var myProfile = RProfile()
+    let locationManager = CLLocationManager()
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        for subview in matchesButton.subviews {
-            
-            subview.removeFromSuperview()
-        }
-        
-        Task.init {
-           
-            do {
-               notificationCount = await loadNotifications()
-
-                
-                let badgeSize: CGFloat = 17
-                let badgeTag = 9830384
-                
-                let badgeLabel = UILabel(frame: CGRect(x: 0, y: 0, width: badgeSize, height: badgeSize))
-                badgeLabel.translatesAutoresizingMaskIntoConstraints = false
-                badgeLabel.tag = badgeTag
-                badgeLabel.layer.cornerRadius = badgeLabel.bounds.size.height / 2
-                badgeLabel.textAlignment = .center
-                badgeLabel.layer.masksToBounds = true
-                badgeLabel.backgroundColor = .red
-                badgeLabel.textColor = .white
-                badgeLabel.font = UIFont.boldSystemFont(ofSize: 10)
-                
-                
-                if notificationCount <= 10 {
-                    badgeLabel.text = String(notificationCount)
-                } else {
-                    badgeLabel.text = "10+"
-                }
-                
-                badgeLabel.layer.zPosition = 1
-                
-                if notificationCount != 0 {
-                    
-                    matchesButton.addSubview(badgeLabel)
-                    matchesButton.bringSubviewToFront(badgeLabel)
-                    
-                    badgeLabel.topAnchor.constraint(equalTo: matchesButton.topAnchor, constant: 4).isActive = true
-                    badgeLabel.leftAnchor.constraint(equalTo: matchesButton.leftAnchor, constant: 10).isActive = true
-                    badgeLabel.widthAnchor.constraint(equalToConstant: badgeSize).isActive = true
-                    badgeLabel.heightAnchor.constraint(equalToConstant: badgeSize).isActive = true
-                }
-            } catch {
-                print(error)
-            }
-        }
-    }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         mostCompatibleLabel.isHidden = true
         mostCompatibleLabel.translatesAutoresizingMaskIntoConstraints = false
         calculateButton.layer.cornerRadius = calculateButton.frame.height / 2
@@ -115,7 +63,7 @@ class MostCompatibleViewController: UIViewController {
                                                  attribute: .notAnAttribute,
                                                  multiplier: 1.0,
                                                  constant: 330.0)  // Adjust as needed
-
+        
         let heightConstraint = NSLayoutConstraint(item: mostCompatibleLabel,
                                                   attribute: .height,
                                                   relatedBy: .equal,
@@ -128,14 +76,13 @@ class MostCompatibleViewController: UIViewController {
         
         calculateButton.frame.origin.x = (self.view.frame.width / 2) - (calculateButton.frame.size.width / 2)
         calculateButton.frame.origin.y = mostCompatibleLabel.frame.origin.y + mostCompatibleLabel.frame.height + 40
-
+        
+        startLocationServices()
         loadUserProfile()
         
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
         
-        dataLoading()
-
         mostCompatibleTable.delegate = self
         mostCompatibleTable.dataSource = self
         mostCompatibleTable.rowHeight = 160.0
@@ -160,10 +107,10 @@ class MostCompatibleViewController: UIViewController {
                 if change.type == .added {
                     
                     Task.init {
-                       
+                        
                         do {
                             notificationCount = try await self.loadNotifications()
-
+                            
                             
                             let badgeSize: CGFloat = 17
                             let badgeTag = 9830384
@@ -177,7 +124,7 @@ class MostCompatibleViewController: UIViewController {
                             badgeLabel.backgroundColor = .red
                             badgeLabel.textColor = .white
                             badgeLabel.font = UIFont.boldSystemFont(ofSize: 10)
-
+                            
                             
                             if notificationCount <= 10 {
                                 badgeLabel.text = String(notificationCount)
@@ -207,22 +154,85 @@ class MostCompatibleViewController: UIViewController {
             }
             
         }
-         
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        for subview in matchesButton.subviews {
+            subview.removeFromSuperview()
+        }
+        
+        Task.init {
+            
+            do {
+                notificationCount = await loadNotifications()
+                
+                let badgeSize: CGFloat = 17
+                let badgeTag = 9830384
+                
+                let badgeLabel = UILabel(frame: CGRect(x: 0, y: 0, width: badgeSize, height: badgeSize))
+                badgeLabel.translatesAutoresizingMaskIntoConstraints = false
+                badgeLabel.tag = badgeTag
+                badgeLabel.layer.cornerRadius = badgeLabel.bounds.size.height / 2
+                badgeLabel.textAlignment = .center
+                badgeLabel.layer.masksToBounds = true
+                badgeLabel.backgroundColor = .red
+                badgeLabel.textColor = .white
+                badgeLabel.font = UIFont.boldSystemFont(ofSize: 10)
+                
+                if notificationCount <= 10 {
+                    badgeLabel.text = String(notificationCount)
+                } else {
+                    badgeLabel.text = "10+"
+                }
+                
+                badgeLabel.layer.zPosition = 1
+                
+                if notificationCount != 0 {
+                    
+                    matchesButton.addSubview(badgeLabel)
+                    matchesButton.bringSubviewToFront(badgeLabel)
+                    
+                    badgeLabel.topAnchor.constraint(equalTo: matchesButton.topAnchor, constant: 4).isActive = true
+                    badgeLabel.leftAnchor.constraint(equalTo: matchesButton.leftAnchor, constant: 10).isActive = true
+                    badgeLabel.widthAnchor.constraint(equalToConstant: badgeSize).isActive = true
+                    badgeLabel.heightAnchor.constraint(equalToConstant: badgeSize).isActive = true
+                }
+            } catch {
+                print(error)
+            }
+        }
     }
     
     @objc func popVC() {
         navigationController?.popViewController(animated: true)
     }
-
+    
     @IBAction func matchesPressed(_ sender: UIButton) {
         
         performSegue(withIdentifier: "availableMatchesSeg", sender: self)
     }
     
     @IBAction func calculatePressed(_ sender: UIButton) {
+        
+        if checkLocationAuthorisation() == "OK" {
+            if myProfile.interests.count >= 5 {
+                getMyLocation()
+                dataLoading()
+                
+            } else {
+                
+                let notEnoughInterestsAlert = UIAlertController(title: "Uh-oh", message: "Your profile needs to include at least five interests in order to use Most Compatible. Come back once you've added some more!", preferredStyle: .alert)
+                let okayAction = UIAlertAction(title: "Okay", style: .default)
+                notEnoughInterestsAlert.addAction(okayAction)
+                present(notEnoughInterestsAlert, animated: true)
+            }
+        } else {
+            showAlert(title: "Uh-oh", message: "It seems you haven't given Just Friends permission to access your location. Please go to 'Settings', 'Just Friends', and then 'Location', in order to do so.")
+        }
     }
-    
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
@@ -230,26 +240,27 @@ class MostCompatibleViewController: UIViewController {
             
             let destinationVC = segue.destination as! MatchesViewController
             
-            ownMatchStatus.name = self.userProfileArray[0].name
-            ownMatchStatus.imageURL = self.userProfileArray[0].picture
-            ownMatchStatus.dateActivity = dateActivity
-            ownMatchStatus.dateTime = dateTime
+            ownMatchStatus.name = self.myProfile.name
+            ownMatchStatus.imageURL = self.myProfile.profilePicURL
             ownMatchStatus.ID = firebaseID
-            ownMatchStatus.age = self.userProfileArray[0].age
-            ownMatchStatus.gender = self.userProfileArray[0].gender
+            ownMatchStatus.age = self.myProfile.age
+            ownMatchStatus.gender = self.myProfile.gender
             ownMatchStatus.accepted = false
             ownMatchStatus.fcmToken = UserDefaults.standard.object(forKey: "fcmToken") as! String
-
+            
             destinationVC.ownMatch = ownMatchStatus
         }
         
-        if segue.identifier == "availableMatchProfileSeg" {
+        if segue.identifier == "compatibleMatchProfileSeg" {
             
             let destinationVC = segue.destination as! MatchProfileViewController
             destinationVC.matchID = passedMatchProfile.userID
         }
     }
     
+    func getMyLocation() {
+        myLocation = CLLocation(latitude: locationManager.location?.coordinate.latitude ?? 0.0, longitude: locationManager.location?.coordinate.longitude ?? 0.0)
+    }
     
     func loadNotifications() async -> Int {
         
@@ -260,32 +271,53 @@ class MostCompatibleViewController: UIViewController {
         } else {
             print("no user is currently signed in")
         }
+        
+        let currentCollection = db.collection("users").document(firebaseID).collection("matchNotifications")
+        
+        do {
+            let querySnapshot = try await currentCollection.getDocuments()
             
-            let currentCollection = db.collection("users").document(firebaseID).collection("matchNotifications")
-
-            do {
-                let querySnapshot = try await currentCollection.getDocuments()
+            for doc in querySnapshot.documents {
                 
-                for doc in querySnapshot.documents {
-                     
-                    numberOfMatchRequests += 1
-                    }
-            } catch {
-                print(error)
+                numberOfMatchRequests += 1
             }
+        } catch {
+            print(error)
+        }
         
         return numberOfMatchRequests
+    }
+    
+    func showAlert(title: String, message: String) {
+        
+        let enterValidDetailsAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okayAction = UIAlertAction(title: "Okay", style: .default)
+        enterValidDetailsAlert.addAction(okayAction)
+        self.present(enterValidDetailsAlert, animated: true)
     }
     
     func dataLoading() {
         
         Task.init {
             do {
-                try await loadExpiringMatches()
-                expiringMatchesArray = try await filterExpiringMatches(matches: expiringMatchesArray)
-                let statuses = try await loadStatuses()
-                try await loadProfiles(statuses: statuses)
-                self.dataLoadedArray.append(true)
+                await loadExpiringMatches()
+                expiringMatchesArray = await filterExpiringMatches(matches: expiringMatchesArray)
+                await loadProfiles()
+                print("profiles count1: \(profilesArray.count)")
+                for prof in profilesArray {
+                    print("1 id: \(prof.userID), \(prof.name)")
+                }
+                profilesArray = removeExpiringAndBlocked(profiles: profilesArray)
+                print("profiles count2: \(profilesArray.count)")
+                for prof in profilesArray {
+                    print("2 id: \(prof.userID), \(prof.name)")
+                }
+                profilesArray = await calculateMostCompatible(profiles: profilesArray)
+                print("profiles count3: \(profilesArray.count)")
+                for prof in profilesArray {
+                    print("3 id: \(prof.userID), \(prof.name)")
+                }
+                //                self.dataLoadedArray.append(true)
                 self.mostCompatibleTable.reloadData()
                 self.showShareAlert()
             } catch {
@@ -294,81 +326,6 @@ class MostCompatibleViewController: UIViewController {
             
         }
         
-    }
-    
-    
-    func loadStatuses() async -> [DatePlanModel] {
-        
-        var returnArray: [DatePlanModel] = []
-        
-        
-        if let currentUser = Auth.auth().currentUser {
-            firebaseID = currentUser.uid
-        } else {
-            print("no user is currently signed in")
-        }
-        
-        let currentCollection = db.collection("statuses")
-        let query = currentCollection.whereField("userID", isNotEqualTo: firebaseID)
-        
-        do {
-            
-            let querySnapshot = try await query.getDocuments()
-            self.statusArray = []
-                    
-            for doc in querySnapshot.documents {
-                        
-                        let data = doc.data()
-                        if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let timeStamp = data["timeStamp"] as? Timestamp {
-                            print("got one new status: \(dateActivity)")
-                            let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken, latitude: latitude, longitude: longitude, timeStamp: timeStamp.dateValue())
-                            self.statusArray.append(newStatus)
-                            returnArray.append(newStatus)
-
-                            self.statusArray = filterMatchLocations()
-                            self.statusArray = filterExpiredStatuses()
-                            returnArray = self.statusArray
-                            
-                            
-                            var expiredIDs: [String] = []
-                 
-                            for id in expiringMatchesArray {
-                                
-                                expiredIDs.append(id.userID)
-                            }
-                            
-                            
-                            for (index, status) in statusArray.enumerated() {
-                             
-                                if expiredIDs.contains(status.daterID) {
-                                    statusArray.remove(at: index)
-                                    returnArray.remove(at: index)
-                                }
-                                    
-                            }
-                            guard let realm = RealmManager.getRealm() else {return returnArray}
-                            
-                           let blockUsers = realm.objects(BlockedUser.self).filter("userID == %@", firebaseID)
-                            
-                            let blockedIDs = blockUsers.map { $0.blockID }
-                            
-                            for (index, status) in statusArray.enumerated() {
-                                if blockedIDs.contains(status.daterID) {
-                                    statusArray.remove(at: index)
-                                    returnArray.remove(at: index)
-                                }
-                            }
-                            DispatchQueue.main.async {
-                                self.mostCompatibleTable.reloadData()
-                            }
-                        }
-                        }
-                    
-        } catch {
-            print(error)
-        }
-            
-        return returnArray
     }
     
     func loadUserProfile() {
@@ -380,23 +337,15 @@ class MostCompatibleViewController: UIViewController {
         }
         
         guard let realm = RealmManager.getRealm() else {return}
-        self.userProfileArray = []
         
         if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
-
-            let profile = ProfileModel(age: realmProfile.age, gender: realmProfile.gender, name: realmProfile.name, picture: realmProfile.profilePicURL, userID: realmProfile.userID)
-                                        self.userProfileArray.append(profile)
-                                        self.dataLoadedArray.append(true)
             
-                                        DispatchQueue.main.async {
-            
-                                            self.mostCompatibleTable.reloadData()
-                                        }
+            self.myProfile = realmProfile
         }
     }
     
-    func loadProfiles(statuses: [DatePlanModel]) async {
-
+    func loadProfiles() async {
+        
         profilesArray = []
         
         if let currentUser = Auth.auth().currentUser {
@@ -405,55 +354,256 @@ class MostCompatibleViewController: UIViewController {
             print("no user is currently signed in")
         }
         
-        for status in statuses {
+        let currentCollection = db.collection("users")
+        
+        do {
             
-            let currentCollection = db.collection("users").document(status.daterID).collection("profile")
-            let query = currentCollection.whereField("userID", isEqualTo: status.daterID)
-           
-            do {
+            let querySnapshot = try await currentCollection.getDocuments()
+            
+            for doc in querySnapshot.documents {
+                print("how many docs?")
+                await loadIndividualProfile(userDocument: doc)
+            }
+        } catch {
+            print(error)
+        }
+        
+    }
+    
+    func loadIndividualProfile(userDocument: QueryDocumentSnapshot) async {
+        
+        let userID = userDocument.documentID
+        print("individual profile load ran for \(userID)")
+        
+        let userCollection = db.collection("users").document(userID).collection("profile")
+        
+        do {
+            let querySnapshot = try await userCollection.getDocuments()
+            
+            for doc in querySnapshot.documents {
                 
-                let querySnapshot = try await query.getDocuments()
-               
-                    
-                for doc in querySnapshot.documents {
-
-                        let data = doc.data()
-                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String {
-                            let profile = ProfileModel(age: age, gender: gender, name: name, picture: picture, userID: userID)
-                            self.profilesArray.append(profile)
-                         
-                            var expiredIDs: [String] = []
-                 
-                            for id in expiringMatchesArray {
-                                expiredIDs.append(id.userID)
-                            }
+                let data = doc.data()
+                
+                if let interests = data["interests"] as? [String] {
+                    print("and got interests")
+                    let interestsList = List<String>()
+                    interests.forEach { interestsList.append($0) }
+                    if interestsList.count >= 5 {
+                        print("and saved them cos over 5")
+                        guard let realm = RealmManager.getRealm() else {return}
+                        
+                        let userProfile = RCompatible()
+                        
+                        if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String, let profilePicRef = data["profilePicRef"] as? String {
                             
-                            for (index, profile) in profilesArray.enumerated() {
-                             
-                                if expiredIDs.contains(profile.userID) {
-                                    
-                                    profilesArray.remove(at: index)
+                            try! realm.write {
+                                userProfile.age = age
+                                userProfile.gender = gender
+                                userProfile.name = name
+                                userProfile.userID = userID
+                                userProfile.profilePicRef = profilePicRef
+                                userProfile.profilePicURL = picture
+                                userProfile.interests = interestsList
+                                if let town = data["town"] as? String {
+                                    userProfile.town = town
                                 }
-                                    
+                                if let profession = data["occupation"] as? String {
+                                    userProfile.occupation = profession
+                                }
+                                if let summary = data["summary"] as? String {
+                                    userProfile.summary = summary
+                                }
+                                profilesArray.append(userProfile)
                             }
-                            
-                            
-                            DispatchQueue.main.async {
-                                
-                                self.mostCompatibleTable.reloadData()
-                            }
-                            
                         }
                     }
-            } catch {
-                print(error)
+                }
+            }
+        } catch {
+            print("got a bloody error: \(error)")
+        }
+    }
+    
+    func removeExpiringAndBlocked(profiles: [RCompatible]) -> [RCompatible] {
+        
+        var expiredIDs: [String] = []
+        var returnArray = profiles
+        
+        for id in expiringMatchesArray {
+            expiredIDs.append(id.userID)
+        }
+        
+        for (index, profile) in profiles.enumerated() {
+            if expiredIDs.contains(profile.userID) {
+                returnArray.remove(at: index)
             }
         }
- 
+        guard let realm = RealmManager.getRealm() else {return returnArray}
+        
+        let blockUsers = realm.objects(BlockedUser.self).filter("userID == %@", firebaseID)
+        
+        let blockedIDs = blockUsers.map { $0.blockID }
+        
+        for (index, profile) in returnArray.enumerated() {
+            if blockedIDs.contains(profile.userID) {
+                returnArray.remove(at: index)
+            }
+        }
+        return returnArray
+    }
+    
+    func calculateMostCompatible(profiles: [RCompatible]) async -> [RCompatible] {
+        
+        var returnArray: [RCompatible] = []
+        
+        var fiveInterests: [RCompatible] = []
+        var fourInterests: [RCompatible] = []
+        var threeInterests: [RCompatible] = []
+        var twoInterests: [RCompatible] = []
+        var oneInterests: [RCompatible] = []
+        var zeroInterests: [RCompatible] = []
+        
+        for user in profiles {
+            if user.userID == myProfile.userID { continue } // Skip current user
+            
+            let commonInterests = Set(myProfile.interests).intersection(user.interests)
+            let commonInterestsCount = commonInterests.count
+            
+            switch commonInterestsCount {
+            case 5:
+                fiveInterests.append(user)
+            case 4:
+                fourInterests.append(user)
+            case 3:
+                threeInterests.append(user)
+            case 2:
+                twoInterests.append(user)
+            case 1:
+                oneInterests.append(user)
+            case 0:
+                zeroInterests.append(user)
+            default:
+                zeroInterests.append(user)
+            }
+        }
+        
+        if fiveInterests.count > 0 {
+            fiveInterests = await sortByLocation(fiveInterests)
+            for user in fiveInterests {
+                if returnArray.count == 5 { break }
+                returnArray.append(user)
+            }
+        }
+        if returnArray.count < 5 {
+            
+            if fourInterests.count > 0 {
+                fourInterests = await sortByLocation(fourInterests)
+                for user in fourInterests {
+                    if returnArray.count == 5 { break }
+                    returnArray.append(user)
+                }
+            }
+            
+        }
+        if returnArray.count < 5 {
+            
+            if threeInterests.count > 0 {
+                threeInterests = await sortByLocation(threeInterests)
+                for user in threeInterests {
+                    if returnArray.count == 5 { break }
+                    returnArray.append(user)
+                }
+            }
+            
+        }
+        if returnArray.count < 5 {
+            
+            if twoInterests.count > 0 {
+                twoInterests = await sortByLocation(twoInterests)
+                for user in twoInterests {
+                    if returnArray.count == 5 { break }
+                    returnArray.append(user)
+                }
+            }
+            
+        }
+        if returnArray.count < 5 {
+            
+            if oneInterests.count > 0 {
+                oneInterests = await sortByLocation(oneInterests)
+                for user in oneInterests {
+                    if returnArray.count == 5 { break }
+                    returnArray.append(user)
+                }
+            }
+            
+        }
+        if returnArray.count < 5 {
+            
+            if zeroInterests.count > 0 {
+                zeroInterests = await sortByLocation(zeroInterests)
+                for user in zeroInterests {
+                    if returnArray.count == 5 { break }
+                    returnArray.append(user)
+                }
+            }
+            
+        }
+        return returnArray
+    }
+    
+    func sortByLocation(_ profiles: [RCompatible]) async -> [RCompatible] {
+        
+        var returnArray: [RCompatible] = []
+        var locations: [CLLocation] = []
+        var ids: [String] = []
+        for profile in profiles {
+            ids.append(profile.userID)
+        }
+        
+        let currentCollection = db.collection("statuses")
+        let query = currentCollection.whereField("userID", in: ids)
+        
+        do {
+            
+            let querySnapshot = try await query.getDocuments()
+            
+            var userIdToDocument: [String: DocumentSnapshot] = [:]
+            
+            for doc in querySnapshot.documents {
+                let data = doc.data()
+                if let userID = data["userID"] as? String {
+                    userIdToDocument[userID] = doc
+                }
+            }
+            
+            for id in ids {
+                if let doc = userIdToDocument[id] {
+                    let data = doc.data()
+                    if let latitude = data?["latitude"] as? Double, let longitude = data?["longitude"] as? Double {
+                        
+                        let newLocation = CLLocation(latitude: latitude, longitude: longitude)
+                        locations.append(newLocation)
+                    }
+                }
+            }
+            
+            let locationPairs = zip(locations, profiles).map { (location: $0.0, profile: $0.1) }
+            let sortedPairs = locationPairs.sorted { (pair1, pair2) -> Bool in
+                let distance1 = pair1.location.distance(from: myLocation)
+                let distance2 = pair2.location.distance(from: myLocation)
+                return distance1 < distance2
+            }
+            returnArray = sortedPairs.map { $0.profile }
+            
+        } catch {
+            print("error getting statuses: \(error)")
+        }
+        return returnArray
     }
     
     func loadExpiringMatches() async {
-
+        
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
         } else {
@@ -469,16 +619,16 @@ class MostCompatibleViewController: UIViewController {
     }
     
     func filterExpiringMatches(matches: [RExpiringMatch]) async -> [RExpiringMatch] {
-
+        
         let newArray = matches
         var returnArray: [RExpiringMatch] = []
         let realm = RealmManager.getRealm()
         
         for expiringMatch in newArray {
-
+            
             let currentTime = Date()
             let matchTimeStamp = expiringMatch.timeStamp!.addingTimeInterval(10800)
-
+            
             
             if matchTimeStamp > currentTime {
                 returnArray.append(expiringMatch)
@@ -487,14 +637,14 @@ class MostCompatibleViewController: UIViewController {
                 let deleteMatchRef = db.collection("users").document(firebaseID).collection("expiringRequests").document(expiringMatch.userID)
                 do {
                     try await deleteMatchRef.delete()
-                        
-                                        if let safeRealm = realm {
-                                            if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
-                                                try! safeRealm.write {
-                                                    safeRealm.delete(expiringRequestToDelete)
-                                                }
-                                            }
-                                        }
+                    
+                    if let safeRealm = realm {
+                        if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
+                            try! safeRealm.write {
+                                safeRealm.delete(expiringRequestToDelete)
+                            }
+                        }
+                    }
                 } catch {
                     print("error deleting expired match: \(error)")
                 }
@@ -502,80 +652,47 @@ class MostCompatibleViewController: UIViewController {
         }
         return returnArray
     }
-   
+    
     
     func addNotification(daterID: String, firebaseID: String) async {
         
         var suitorIDs: [String] = []
-
-            let currentCollection = db.collection("users").document(daterID).collection("matchNotifications")
-
-            do {
-                let querySnapshot = try await currentCollection.getDocuments()
-                
-                for doc in querySnapshot.documents {
-                        let data = doc.data()
-                        if let suitorID = data["suitorID"] as? String {
-  
-                            suitorIDs.append(suitorID)
-   
-                        }
-                    }
-                
-                
-                if !suitorIDs.contains(firebaseID) {
+        
+        let currentCollection = db.collection("users").document(daterID).collection("matchNotifications")
+        
+        do {
+            let querySnapshot = try await currentCollection.getDocuments()
+            
+            for doc in querySnapshot.documents {
+                let data = doc.data()
+                if let suitorID = data["suitorID"] as? String {
                     
-                  
-                    currentCollection.addDocument(data:
-                    ["suitorID" : firebaseID]
-                    ) { err in
-                        if let err = err {
-                            print("error writing doc: \(err)")
-                        } else {
-                            print("doc written successfully.")
-                        }
+                    suitorIDs.append(suitorID)
+                    
+                }
+            }
+            
+            
+            if !suitorIDs.contains(firebaseID) {
+                
+                
+                currentCollection.addDocument(data:
+                                                ["suitorID" : firebaseID]
+                ) { err in
+                    if let err = err {
+                        print("error writing doc: \(err)")
+                    } else {
+                        print("doc written successfully.")
                     }
-
                 }
                 
-                
-            } catch {
-                print(error)
             }
-        
-            }
-    
-    func filterMatchLocations() -> [DatePlanModel] {
-        
-    var filteredArray: [DatePlanModel] = []
-        let userLocation = CLLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-        
-        for matchStatus in self.statusArray {
             
-            let matchLocation = CLLocation(latitude: matchStatus.latitude, longitude: matchStatus.longitude)
-           
-            if matchLocation.distance(from: userLocation) <= UserDefaults.standard.value(forKey: "distancePreference") as! CLLocationDistance {
-                filteredArray.append(matchStatus)
-            }
+            
+        } catch {
+            print(error)
         }
-        return filteredArray
-    }
-    
-    func filterExpiredStatuses() -> [DatePlanModel] {
         
-    var filteredArray: [DatePlanModel] = []
-        
-        let currentTime = Date()
-        
-        for matchStatus in self.statusArray {
-            
-            let expiryTime = matchStatus.timeStamp?.addingTimeInterval(12 * 60 * 60)
-            
-            if currentTime <= expiryTime! {
-                filteredArray.append(matchStatus)
-            }
-        }
-        return filteredArray
     }
     
     func showShareAlert() {
@@ -627,42 +744,41 @@ class MostCompatibleViewController: UIViewController {
 extension MostCompatibleViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+        mostCompatibleLabel.isHidden = !profilesArray.isEmpty
+        calculateButton.isHidden = !profilesArray.isEmpty
         
-        if statusArray.isEmpty {
-            mostCompatibleLabel.isHidden = false
-        }
-        
-            return (statusArray.count)
+        return (profilesArray.count)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var returnCell: UITableViewCell?
-
-                let cell = mostCompatibleTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
-                                
-                cell.delegate = self
-                cell.indexPath = indexPath
-                cell.acceptedButton.isHidden = true
-                cell.rejectedButton.isHidden = true
-                cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
-                cell.profilePicture.clipsToBounds = true
-           
-                cell.datePlanLabel.text = "\(self.profilesArray[indexPath.row].name) wants to \(self.statusArray[indexPath.row].dateActivity) \(self.statusArray[indexPath.row].dateTime)"
-                cell.ageLabel.text = String(self.profilesArray[indexPath.row].age)
-                cell.genderLabel.image = UIImage(named: "big male")
-                if self.profilesArray[indexPath.row].gender == "female" {
-                    cell.genderLabel.image = UIImage(named: "big female")
-                }
-                
-                DispatchQueue.main.async {
-                    if let url = URL(string: self.profilesArray[indexPath.row].picture) {
-                        cell.profilePicture.kf.setImage(with: url)
-                    }
-                }
-                
-                returnCell = cell
-            
+        
+        let cell = mostCompatibleTable.dequeueReusableCell(withIdentifier: "datePlanCell", for: indexPath) as! DatePlanCell
+        
+        cell.delegate = self
+        cell.indexPath = indexPath
+        cell.acceptedButton.isHidden = true
+        cell.rejectedButton.isHidden = true
+        cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
+        cell.profilePicture.clipsToBounds = true
+        
+        cell.datePlanLabel.text = "\(self.profilesArray[indexPath.row].name)"
+        cell.ageLabel.text = String(self.profilesArray[indexPath.row].age)
+        cell.genderLabel.image = UIImage(named: "big male")
+        if self.profilesArray[indexPath.row].gender == "female" {
+            cell.genderLabel.image = UIImage(named: "big female")
+        }
+        
+        DispatchQueue.main.async {
+            if let url = URL(string: self.profilesArray[indexPath.row].profilePicURL) {
+                cell.profilePicture.kf.setImage(with: url)
+            }
+        }
+        
+        returnCell = cell
+        
         return returnCell!
     }
 }
@@ -672,7 +788,7 @@ extension MostCompatibleViewController: UITableViewDataSource {
 extension MostCompatibleViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 150.0
+        return 150.0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -692,7 +808,7 @@ extension MostCompatibleViewController: UITableViewDelegate {
                     present(alreadyMatchedAlert, animated: true)
                     
                 } else {
-                    matchWithUser(indexPath: indexPath)
+                    await matchWithUser(indexPath: indexPath)
                 }
             }
         }
@@ -704,136 +820,132 @@ extension MostCompatibleViewController: UITableViewDelegate {
     }
     
     func checkIfAlreadyMatched(indexPath: IndexPath) async -> Bool {
-
+        
         guard let realm = RealmManager.getRealm() else {return false}
         
         let existingMatches = realm.objects(RMatchModel.self).filter("ownUserID == %@", firebaseID)
         for match in existingMatches {
-            if match.userID == statusArray[indexPath.row].daterID {
+            if match.userID == profilesArray[indexPath.row].userID {
                 return true
             }
         }
         return false
     }
     
-    func matchWithUser(indexPath: IndexPath) {
-        
+    func matchWithUser(indexPath: IndexPath) async {
         
         guard let realm = RealmManager.getRealm() else {return}
         
-        let daterID = statusArray[indexPath.row].daterID
-        let dateName = userProfileArray[0].name
-        let dateFirebaseDocID = statusArray[indexPath.row].firebaseDocID
+        let daterID = profilesArray[indexPath.row].userID
+        let dateName = myProfile.name
         
-        let docRef1 = db.collection("statuses").document(dateFirebaseDocID)
-        docRef1.getDocument { [self] querySnap, error in
-            
-            if let gotDoc = querySnap, gotDoc.exists {
+        let docRef1 = db.collection("statuses").whereField("userID", isEqualTo: daterID)
+        do {
+            let docs = try await docRef1.getDocuments()
+            if docs.count > 0 {
                 
-                db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
-                    "timeStamp": Date(),
-                    "userID": daterID,
-                    "ownUserID": firebaseID
-                ]) { [self] err in
+                for doc in docs.documents {
                     
-                    if let err = err {
-                        print("error writing doc: \(err)")
-                    } else {
-
-                        let id = db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).documentID
+                    db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
+                        "timeStamp": Date(),
+                        "userID": daterID,
+                        "ownUserID": firebaseID
+                    ]) { [self] err in
                         
-                        try! realm.write {
-                            let realmExpiringMatch = RExpiringMatch()
-                            realmExpiringMatch.id = id
-                            realmExpiringMatch.userID = daterID
-                            realmExpiringMatch.timeStamp = Date()
-                            realmExpiringMatch.ownUserID = firebaseID
-                            realm.add(realmExpiringMatch, update: .all)
+                        if let err = err {
+                            print("error writing doc: \(err)")
+                        } else {
+                            
+                            let id = db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).documentID
+                            
+                            try! realm.write {
+                                let realmExpiringMatch = RExpiringMatch()
+                                realmExpiringMatch.id = id
+                                realmExpiringMatch.userID = daterID
+                                realmExpiringMatch.timeStamp = Date()
+                                realmExpiringMatch.ownUserID = firebaseID
+                                realm.add(realmExpiringMatch, update: .all)
+                            }
                         }
                     }
-                }
-                
-                db.collection("users").document(daterID).collection("matchStatuses").document(firebaseID).setData([
-                    "name" : self.userProfileArray[0].name,
-                    "imageURL" : self.userProfileArray[0].picture,
-                        "activity" : dateActivity,
-                        "time" : dateTime,
+                    
+                    db.collection("users").document(daterID).collection("matchStatuses").document(firebaseID).setData([
+                        "name" : self.myProfile.name,
+                        "imageURL" : self.myProfile.profilePicURL,
+                        "activity" : "none",
+                        "time" : "none",
                         "ID" : firebaseID,
-                        "age" : self.userProfileArray[0].age,
-                        "gender" : self.userProfileArray[0].gender,
-                    "accepted" : false,
-                    "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
-                    "realmID" : UUID().uuidString,
-                    "ownUserID" : daterID,
-                    "chatID" : "none"
-                ]) { err in
-                    if let err = err {
-                        print("error writing doc: \(err)")
-                    } else {
-                        print("doc written successfully.")
-                    }
-                }
-                
-                Task.init {
-                    await addNotification(daterID: daterID, firebaseID: firebaseID)
-                }
-                
-                let tappedPersonID = daterID
-                let docRef = db.collection("statuses").document(dateFirebaseDocID)
-                docRef.updateData(["suitorID" : firebaseID]) { err in
-                    if let err = err {
-                        print("error updating field: \(err)")
-                    } else {
-                        print("success")
+                        "age" : self.myProfile.age,
+                        "gender" : self.myProfile.gender,
+                        "accepted" : false,
+                        "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
+                        "realmID" : UUID().uuidString,
+                        "ownUserID" : daterID,
+                        "chatID" : "none"
+                    ]) { err in
+                        if let err = err {
+                            print("error writing doc: \(err)")
+                        } else {
+                            print("doc written successfully.")
+                        }
                     }
                     
-                }
-
-                docRef1.addSnapshotListener { documentSnapshot, error in
-                    guard let document = documentSnapshot else {
-                        print("Error fetching document: \(error!)")
-                        return
-                    }
-                    guard let field = document.data()?["suitorID"] as? String else {
-                        print("Field does not exist")
-                        return
+                    Task.init {
+                        await addNotification(daterID: daterID, firebaseID: firebaseID)
                     }
                     
-                    let myFunctions = Functions.functions()
-                    let passedID = document.data()?["fcmToken"] as? String
-                    
-                    let data: [String: Any] = [
-                        "tapperID": field,
-                        "tappedID": passedID!,
-                        "tapperName": dateName
-                    ]
-
-                   
-                    myFunctions.httpsCallable("notifyUser").call(data) { result, error in
+                    let tappedPersonID = daterID
+                    let docRef = db.collection("statuses").document(doc.documentID)
+                    docRef.updateData(["suitorID" : firebaseID]) { err in
+                        if let err = err {
+                            print("error updating field: \(err)")
+                        } else {
+                            print("success")
+                        }
                         
+                    }
+                    
+                    docRef.addSnapshotListener { documentSnapshot, error in
+                        guard let doccy = documentSnapshot else {
+                            print("Error fetching document: \(error!)")
+                            return
+                        }
+                        guard let field = doccy.data()?["suitorID"] as? String else {
+                            print("Field does not exist")
+                            return
+                        }
+                        
+                        let myFunctions = Functions.functions()
+                        let passedID = doccy.data()?["fcmToken"] as? String
+                        
+                        let data: [String: Any] = [
+                            "tapperID": field,
+                            "tappedID": passedID!,
+                            "tapperName": dateName
+                        ]
+                        
+                        
+                        myFunctions.httpsCallable("notifyUser").call(data) { result, error in
+                            
                             if let error = error {
                                 print("Error calling function: \(error.localizedDescription)")
                             } else if let result = result {
                                 print("Function result: \(result.data)")
                             }
                         }
+                    }
+                    self.profilesArray.remove(at: indexPath.row)
+                    self.mostCompatibleTable.reloadData()
                 }
-                
-                self.statusArray.remove(at: indexPath.row)
-                self.profilesArray.remove(at: indexPath.row)
-                self.mostCompatibleTable.reloadData()
-                
-                
-            } else if let e = error {
-                print("error matching`: \(e)")
             } else {
-                
                 let userDoesNotExistAlert = UIAlertController(title: "Uh-oh", message: "Unfortunately this user is no longer available.", preferredStyle: .alert)
                 let okayAction = UIAlertAction(title: "Okay", style: .default)
                 userDoesNotExistAlert.addAction(okayAction)
                 present(userDoesNotExistAlert, animated: true)
-                
             }
+            
+        } catch {
+            print("errrrror: \(error)")
         }
     }
 }
@@ -843,16 +955,49 @@ extension MostCompatibleViewController: CustomTableViewCellDelegate {
     
     
     func customTableViewCellDidTapButton(_ cell: DatePlanCell, indexPath: IndexPath, buttonName: String) async {
-
+        
         if buttonName == "viewProfileButton" {
             
             passedMatchProfile.age = profilesArray[indexPath.row].age
             passedMatchProfile.name = profilesArray[indexPath.row].name
             passedMatchProfile.gender = profilesArray[indexPath.row].gender
-            passedMatchProfile.picture = profilesArray[indexPath.row].picture
+            passedMatchProfile.picture = profilesArray[indexPath.row].profilePicURL
             passedMatchProfile.userID = profilesArray[indexPath.row].userID
             
-            performSegue(withIdentifier: "availableMatchProfileSeg", sender: self)
+            performSegue(withIdentifier: "compatibleMatchProfileSeg", sender: self)
+        }
+    }
+    
+}
+
+extension MostCompatibleViewController: CLLocationManagerDelegate {
+    
+    func checkLocationAuthorisation() -> String {
+        let locationManager = CLLocationManager()
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .authorizedAlways, .authorizedWhenInUse, .authorized:
+            return "OK"
+        case .notDetermined, .denied, .restricted:
+            return "not OK"
+        default:
+            return "OK"
+        }
+    }
+    
+    
+    func startLocationServices() {
+        
+        locationManager.delegate = self
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+            
+        } else {
+            
+            locationManager.startUpdatingLocation()
+            
+            guard let currentLocation = locationManager.location else { return }
+            
         }
     }
     

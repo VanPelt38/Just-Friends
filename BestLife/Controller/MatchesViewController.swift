@@ -160,6 +160,9 @@ class MatchesViewController: UIViewController {
                             realmMatch.chatID = chatID
                             realmMatch.id = realmID
                             realmMatch.ownUserID = ownUserID
+                            if let distanceAway = data["distanceAway"] as? Int {
+                                realmMatch.distanceAway = distanceAway
+                            }
                             realm.add(realmMatch, update: .all)
                             
                             DispatchQueue.main.async {
@@ -393,8 +396,9 @@ extension MatchesViewController: UITableViewDataSource {
             cell.rejectedButton.isHidden = false
         }
         
-       
-        cell.datePlanLabel.text = "\(matchesArray![indexPath.row].name) wants to \(matchesArray![indexPath.row].dateActivity) \(matchesArray![indexPath.row].dateTime)"
+        cell.distanceAwayLabel.text = matchesArray![indexPath.row].distanceAway >= 1 ? "\(matchesArray![indexPath.row].distanceAway) km away" : "1 km away"
+        
+        cell.datePlanLabel.text = matchesArray![indexPath.row].dateTime == "none" ? matchesArray![indexPath.row].name : "\(matchesArray![indexPath.row].name) wants to \(matchesArray![indexPath.row].dateActivity) \(matchesArray![indexPath.row].dateTime)"
         cell.ageLabel.text = String(matchesArray![indexPath.row].age)
         cell.genderLabel.image = UIImage(named: "big male")
         if matchesArray![indexPath.row].gender == "female" {
@@ -598,7 +602,8 @@ extension MatchesViewController: CustomTableViewCellDelegate {
                             "fcmToken" : ownMatch.fcmToken,
                             "chatID" : chatID,
                             "realmID" : UUID().uuidString,
-                            "ownUserID" : matchesArray![indexPath.row].userID
+                            "ownUserID" : matchesArray![indexPath.row].userID,
+                            "distanceAway" : matchesArray![indexPath.row].distanceAway
                         ]) { err in
                             if let err = err {
                                 print("error writing doc: \(err)")

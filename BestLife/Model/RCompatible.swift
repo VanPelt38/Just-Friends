@@ -21,8 +21,6 @@ class RCompatible: Object {
     @Persisted var occupation: String?
     @Persisted var summary: String?
     @Persisted var interests: List<String>
-    
-    override static func primaryKey() -> String? {
-        return "userID"
-    }
+    @Persisted var ownUserID = ""
+    @Persisted var distanceAway = 0
 }

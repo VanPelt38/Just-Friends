@@ -236,7 +236,6 @@ class AvailableDatesViewController: UIViewController {
         if segue.identifier == "availableMatchProfileSeg" {
             
             let destinationVC = segue.destination as! MatchProfileViewController
-            print("this is the userID: \(passedMatchProfile.userID)")
             destinationVC.matchID = passedMatchProfile.userID
         }
     }
@@ -292,7 +291,6 @@ class AvailableDatesViewController: UIViewController {
         
         var returnArray: [DatePlanModel] = []
         
-        
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
         } else {
@@ -311,16 +309,13 @@ class AvailableDatesViewController: UIViewController {
                         
                         let data = doc.data()
                         if let dateActivity = data["activity"] as? String, let dateTime = data["time"] as? String, let dateID = data["userID"] as? String, let docID = doc.documentID as? String, let fcmToken = data["fcmToken"] as? String, let latitude = data["latitude"] as? Double, let longitude = data["longitude"] as? Double, let timeStamp = data["timeStamp"] as? Timestamp {
-                            print("got one new status: \(dateActivity)")
+
                             let newStatus = DatePlanModel(dateActivity: dateActivity, dateTime: dateTime, daterID: dateID, firebaseDocID: docID, fcmToken: fcmToken, latitude: latitude, longitude: longitude, timeStamp: timeStamp.dateValue())
                             self.statusArray.append(newStatus)
                             returnArray.append(newStatus)
-                            
-                            print("statuses before filtering match locations: \(self.statusArray)")
+                          
                             self.statusArray = filterMatchLocations()
-                            print("statuses after filtering match locations: \(self.statusArray)")
                             self.statusArray = filterExpiredStatuses()
-                            print("statuses after filtering expired statusess: \(self.statusArray)")
                             returnArray = self.statusArray
                             
                             
@@ -352,7 +347,6 @@ class AvailableDatesViewController: UIViewController {
                                     returnArray.remove(at: index)
                                 }
                             }
-                            print("final statuses: \(self.statusArray)")
                             DispatchQueue.main.async {
                                 self.availableDatesTable.reloadData()
                             }
@@ -476,19 +470,16 @@ class AvailableDatesViewController: UIViewController {
 
             
             if matchTimeStamp > currentTime {
-                print("or actually we got it")
                 returnArray.append(expiringMatch)
             } else {
                 
                 let deleteMatchRef = db.collection("users").document(firebaseID).collection("expiringRequests").document(expiringMatch.userID)
                 do {
                     try await deleteMatchRef.delete()
-print("should have deleted the match now")
                         
                                         if let safeRealm = realm {
                                             if let expiringRequestToDelete = safeRealm.object(ofType: RExpiringMatch.self, forPrimaryKey: expiringMatch.id) {
                                                 try! safeRealm.write {
-                        print("and deleted realm match")
                                                     safeRealm.delete(expiringRequestToDelete)
                                                 }
                                             }
@@ -554,6 +545,8 @@ print("should have deleted the match now")
            
             if matchLocation.distance(from: userLocation) <= UserDefaults.standard.value(forKey: "distancePreference") as! CLLocationDistance {
                 filteredArray.append(matchStatus)
+                var distance = (Int(matchLocation.distance(from: userLocation))) / 1000
+                filteredArray[filteredArray.count - 1].distanceAway = distance >= 1 ? distance : 1
             }
         }
         return filteredArray
@@ -596,7 +589,7 @@ print("should have deleted the match now")
         if let lastShareDate = UserDefaults.standard.object(forKey: "lastShareDate") as? Date {
             
             let timeInterval = Date().timeIntervalSince(lastShareDate)
-            if timeInterval > TimeInterval(2 * 60) {
+            if timeInterval > TimeInterval(2 * 60 * 60) {
                 UserDefaults.standard.set(Date(), forKey: "lastShareDate")
                 return true
             } else {
@@ -675,6 +668,7 @@ extension AvailableDatesViewController: UITableViewDataSource {
                 cell.indexPath = indexPath
                 cell.acceptedButton.isHidden = true
                 cell.rejectedButton.isHidden = true
+                cell.distanceAwayLabel.text = "\(self.statusArray[indexPath.row - 1].distanceAway) km away"
                 cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
                 cell.profilePicture.clipsToBounds = true
            
@@ -805,7 +799,8 @@ extension AvailableDatesViewController: UITableViewDelegate {
                     "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
                     "realmID" : UUID().uuidString,
                     "ownUserID" : daterID,
-                    "chatID" : "none"
+                    "chatID" : "none",
+                    "distanceAway" : statusArray[indexPath.row - 1].distanceAway
                 ]) { err in
                     if let err = err {
                         print("error writing doc: \(err)")

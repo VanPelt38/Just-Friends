@@ -15,7 +15,6 @@ import RealmSwift
 
 class MostCompatibleViewController: UIViewController {
     
-    
     @IBOutlet weak var mostCompatibleTable: UITableView!
     @IBOutlet weak var mostCompatibleLabel: UILabel!
     @IBOutlet weak var matchesButton: UIButton!
@@ -23,7 +22,6 @@ class MostCompatibleViewController: UIViewController {
     
     let db = Firestore.firestore()
     var profilesArray: [RCompatible] = []
-//    var dataLoadedArray: [Bool] = []
     var expiringMatchesArray: [RExpiringMatch] = []
     var ownName = "none"
     var firebaseID = ""
@@ -33,15 +31,20 @@ class MostCompatibleViewController: UIViewController {
     var passedMatchProfile = ProfileModel()
     var myProfile = RProfile()
     let locationManager = CLLocationManager()
+    let loadingIndicator = UIActivityIndicatorView(style: .large)
+    let nooneThereText = "Unfortunately we can't find any compatible users for you at the moment. Please try again tomorrow."
+    let someoneThereText = "Tap below to find nearby people with common interests! You can refresh your most compatible list every 24  hours."
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         mostCompatibleLabel.isHidden = true
         mostCompatibleLabel.translatesAutoresizingMaskIntoConstraints = false
         calculateButton.layer.cornerRadius = calculateButton.frame.height / 2
         calculateButton.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+        calculateButton.setTitleColor(.lightGray, for: .disabled)
         let centerXConstraint = NSLayoutConstraint(item: mostCompatibleLabel,
                                                    attribute: .centerX,
                                                    relatedBy: .equal,
@@ -77,8 +80,17 @@ class MostCompatibleViewController: UIViewController {
         calculateButton.frame.origin.x = (self.view.frame.width / 2) - (calculateButton.frame.size.width / 2)
         calculateButton.frame.origin.y = mostCompatibleLabel.frame.origin.y + mostCompatibleLabel.frame.height + 40
         
+        loadingIndicator.center = self.view.center
+        loadingIndicator.hidesWhenStopped = true
+        self.view.addSubview(loadingIndicator)
+        loadingIndicator.color = .black
+        
         startLocationServices()
         loadUserProfile()
+        
+        if !mostCompatibleRefreshes() {
+            loadLocalProfiles()
+        }
         
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))
@@ -86,7 +98,6 @@ class MostCompatibleViewController: UIViewController {
         mostCompatibleTable.delegate = self
         mostCompatibleTable.dataSource = self
         mostCompatibleTable.rowHeight = 160.0
-        
         mostCompatibleTable.register(UINib(nibName: "DatePlanCell", bundle: nil), forCellReuseIdentifier: "datePlanCell")
         
         if let currentUser = Auth.auth().currentUser {
@@ -211,32 +222,40 @@ class MostCompatibleViewController: UIViewController {
     }
     
     @IBAction func matchesPressed(_ sender: UIButton) {
-        
-        performSegue(withIdentifier: "availableMatchesSeg", sender: self)
+        performSegue(withIdentifier: "compatibleFriendsSeg", sender: self)
     }
     
     @IBAction func calculatePressed(_ sender: UIButton) {
         
+        loadingIndicator.startAnimating()
+        mostCompatibleLabel.alpha = 0.3
+        calculateButton.isEnabled = false
         if checkLocationAuthorisation() == "OK" {
             if myProfile.interests.count >= 5 {
+                UserDefaults.standard.set(Date(), forKey: "mostCompatibleDate")
                 getMyLocation()
                 dataLoading()
                 
             } else {
-                
+                loadingIndicator.stopAnimating()
+                mostCompatibleLabel.alpha = 1
+                calculateButton.isEnabled = true
                 let notEnoughInterestsAlert = UIAlertController(title: "Uh-oh", message: "Your profile needs to include at least five interests in order to use Most Compatible. Come back once you've added some more!", preferredStyle: .alert)
                 let okayAction = UIAlertAction(title: "Okay", style: .default)
                 notEnoughInterestsAlert.addAction(okayAction)
                 present(notEnoughInterestsAlert, animated: true)
             }
         } else {
+            loadingIndicator.stopAnimating()
+            mostCompatibleLabel.alpha = 1
+            calculateButton.isEnabled = true
             showAlert(title: "Uh-oh", message: "It seems you haven't given Just Friends permission to access your location. Please go to 'Settings', 'Just Friends', and then 'Location', in order to do so.")
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        if segue.identifier == "availableMatchesSeg" {
+        if segue.identifier == "compatibleFriendsSeg" {
             
             let destinationVC = segue.destination as! MatchesViewController
             
@@ -260,6 +279,16 @@ class MostCompatibleViewController: UIViewController {
     
     func getMyLocation() {
         myLocation = CLLocation(latitude: locationManager.location?.coordinate.latitude ?? 0.0, longitude: locationManager.location?.coordinate.longitude ?? 0.0)
+    }
+    
+    func loadLocalProfiles() {
+        
+        guard let realm = RealmManager.getRealm() else { return }
+        let profiles = realm.objects(RCompatible.self).filter("ownUserID == %@", firebaseID)
+        for i in profiles {
+            profilesArray.append(i)
+        }
+        mostCompatibleTable.reloadData()
     }
     
     func loadNotifications() async -> Int {
@@ -303,29 +332,17 @@ class MostCompatibleViewController: UIViewController {
                 await loadExpiringMatches()
                 expiringMatchesArray = await filterExpiringMatches(matches: expiringMatchesArray)
                 await loadProfiles()
-                print("profiles count1: \(profilesArray.count)")
-                for prof in profilesArray {
-                    print("1 id: \(prof.userID), \(prof.name)")
-                }
                 profilesArray = removeExpiringAndBlocked(profiles: profilesArray)
-                print("profiles count2: \(profilesArray.count)")
-                for prof in profilesArray {
-                    print("2 id: \(prof.userID), \(prof.name)")
-                }
                 profilesArray = await calculateMostCompatible(profiles: profilesArray)
-                print("profiles count3: \(profilesArray.count)")
-                for prof in profilesArray {
-                    print("3 id: \(prof.userID), \(prof.name)")
-                }
-                //                self.dataLoadedArray.append(true)
+                loadingIndicator.stopAnimating()
+                mostCompatibleLabel.alpha = 1
+                calculateButton.isEnabled = true
                 self.mostCompatibleTable.reloadData()
                 self.showShareAlert()
             } catch {
                 print(error)
             }
-            
         }
-        
     }
     
     func loadUserProfile() {
@@ -339,7 +356,6 @@ class MostCompatibleViewController: UIViewController {
         guard let realm = RealmManager.getRealm() else {return}
         
         if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
-            
             self.myProfile = realmProfile
         }
     }
@@ -347,6 +363,14 @@ class MostCompatibleViewController: UIViewController {
     func loadProfiles() async {
         
         profilesArray = []
+        guard let realm = RealmManager.getRealm() else {return}
+        
+        try! realm.write {
+            let profiles = realm.objects(RCompatible.self).filter("ownUserID == %@", firebaseID)
+            for i in profiles {
+                realm.delete(i)
+            }
+        }
         
         if let currentUser = Auth.auth().currentUser {
             firebaseID = currentUser.uid
@@ -361,19 +385,16 @@ class MostCompatibleViewController: UIViewController {
             let querySnapshot = try await currentCollection.getDocuments()
             
             for doc in querySnapshot.documents {
-                print("how many docs?")
                 await loadIndividualProfile(userDocument: doc)
             }
         } catch {
             print(error)
         }
-        
     }
     
     func loadIndividualProfile(userDocument: QueryDocumentSnapshot) async {
         
         let userID = userDocument.documentID
-        print("individual profile load ran for \(userID)")
         
         let userCollection = db.collection("users").document(userID).collection("profile")
         
@@ -385,38 +406,38 @@ class MostCompatibleViewController: UIViewController {
                 let data = doc.data()
                 
                 if let interests = data["interests"] as? [String] {
-                    print("and got interests")
                     let interestsList = List<String>()
                     interests.forEach { interestsList.append($0) }
-                    if interestsList.count >= 5 {
-                        print("and saved them cos over 5")
                         guard let realm = RealmManager.getRealm() else {return}
                         
                         let userProfile = RCompatible()
                         
                         if let age = data["age"] as? Int, let gender = data["gender"] as? String, let name = data["name"] as? String, let picture = data["picture"] as? String, let userID = data["userID"] as? String, let profilePicRef = data["profilePicRef"] as? String {
                             
-                            try! realm.write {
-                                userProfile.age = age
-                                userProfile.gender = gender
-                                userProfile.name = name
-                                userProfile.userID = userID
-                                userProfile.profilePicRef = profilePicRef
-                                userProfile.profilePicURL = picture
-                                userProfile.interests = interestsList
-                                if let town = data["town"] as? String {
-                                    userProfile.town = town
+                            if userID != self.firebaseID {
+                                
+                                try! realm.write {
+                                    userProfile.age = age
+                                    userProfile.gender = gender
+                                    userProfile.name = name
+                                    userProfile.userID = userID
+                                    userProfile.profilePicRef = profilePicRef
+                                    userProfile.profilePicURL = picture
+                                    userProfile.ownUserID = self.firebaseID
+                                    userProfile.interests = interestsList
+                                    if let town = data["town"] as? String {
+                                        userProfile.town = town
+                                    }
+                                    if let profession = data["occupation"] as? String {
+                                        userProfile.occupation = profession
+                                    }
+                                    if let summary = data["summary"] as? String {
+                                        userProfile.summary = summary
+                                    }
+                                    profilesArray.append(userProfile)
                                 }
-                                if let profession = data["occupation"] as? String {
-                                    userProfile.occupation = profession
-                                }
-                                if let summary = data["summary"] as? String {
-                                    userProfile.summary = summary
-                                }
-                                profilesArray.append(userProfile)
                             }
                         }
-                    }
                 }
             }
         } catch {
@@ -433,7 +454,8 @@ class MostCompatibleViewController: UIViewController {
             expiredIDs.append(id.userID)
         }
         
-        for (index, profile) in profiles.enumerated() {
+        
+        for (index, profile) in returnArray.enumerated().reversed() {
             if expiredIDs.contains(profile.userID) {
                 returnArray.remove(at: index)
             }
@@ -549,6 +571,12 @@ class MostCompatibleViewController: UIViewController {
             }
             
         }
+        guard let realm = RealmManager.getRealm() else {return returnArray}
+        try! realm.write {
+            for p in returnArray {
+                realm.add(p)
+            }
+        }
         return returnArray
     }
     
@@ -585,6 +613,8 @@ class MostCompatibleViewController: UIViewController {
                         let newLocation = CLLocation(latitude: latitude, longitude: longitude)
                         locations.append(newLocation)
                     }
+                } else {
+                    locations.append(CLLocation(latitude: 52.6500, longitude: -0.4833))
                 }
             }
             
@@ -595,6 +625,9 @@ class MostCompatibleViewController: UIViewController {
                 return distance1 < distance2
             }
             returnArray = sortedPairs.map { $0.profile }
+            for (i, profile) in returnArray.enumerated() {
+                profile.distanceAway = Int(sortedPairs[i].location.distance(from: myLocation)) / 1000
+            }
             
         } catch {
             print("error getting statuses: \(error)")
@@ -715,7 +748,7 @@ class MostCompatibleViewController: UIViewController {
         if let lastShareDate = UserDefaults.standard.object(forKey: "lastShareDate") as? Date {
             
             let timeInterval = Date().timeIntervalSince(lastShareDate)
-            if timeInterval > TimeInterval(2 * 60) {
+            if timeInterval > TimeInterval(2 * 60 * 60) {
                 UserDefaults.standard.set(Date(), forKey: "lastShareDate")
                 return true
             } else {
@@ -726,6 +759,22 @@ class MostCompatibleViewController: UIViewController {
             return true
         }
     }
+    
+    func mostCompatibleRefreshes() -> Bool {
+        
+        if let lastMostCompatibleDate = UserDefaults.standard.object(forKey: "mostCompatibleDate") as? Date {
+            
+            let timeInterval = Date().timeIntervalSince(lastMostCompatibleDate)
+            if timeInterval > TimeInterval(2 * 60) {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return true
+        }
+    }
+    
     
     func shareApp() {
         
@@ -744,11 +793,15 @@ class MostCompatibleViewController: UIViewController {
 extension MostCompatibleViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
-        mostCompatibleLabel.isHidden = !profilesArray.isEmpty
-        calculateButton.isHidden = !profilesArray.isEmpty
         
-        return (profilesArray.count)
+        mostCompatibleLabel.isHidden = !profilesArray.isEmpty
+        mostCompatibleLabel.text = someoneThereText
+        calculateButton.isHidden = !profilesArray.isEmpty
+        if profilesArray.isEmpty && !mostCompatibleRefreshes() {
+            calculateButton.isHidden = true
+            mostCompatibleLabel.text = nooneThereText
+        }
+        return profilesArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -763,6 +816,8 @@ extension MostCompatibleViewController: UITableViewDataSource {
         cell.rejectedButton.isHidden = true
         cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
         cell.profilePicture.clipsToBounds = true
+        
+        cell.distanceAwayLabel.text = self.profilesArray[indexPath.row].distanceAway >= 1 ? "\(self.profilesArray[indexPath.row].distanceAway) km away" : "1 km away"
         
         cell.datePlanLabel.text = "\(self.profilesArray[indexPath.row].name)"
         cell.ageLabel.text = String(self.profilesArray[indexPath.row].age)
@@ -881,7 +936,8 @@ extension MostCompatibleViewController: UITableViewDelegate {
                         "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken"),
                         "realmID" : UUID().uuidString,
                         "ownUserID" : daterID,
-                        "chatID" : "none"
+                        "chatID" : "none",
+                        "distanceAway" : profilesArray[indexPath.row].distanceAway
                     ]) { err in
                         if let err = err {
                             print("error writing doc: \(err)")
@@ -932,6 +988,11 @@ extension MostCompatibleViewController: UITableViewDelegate {
                             } else if let result = result {
                                 print("Function result: \(result.data)")
                             }
+                        }
+                    }
+                    if let realmProf = realm.objects(RCompatible.self).filter("ownUserID == %@ AND userID == %@", firebaseID, daterID).first {
+                        try! realm.write {
+                            realm.delete(realmProf)
                         }
                     }
                     self.profilesArray.remove(at: indexPath.row)

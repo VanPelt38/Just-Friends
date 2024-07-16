@@ -19,18 +19,14 @@ class DatePlanCell: UITableViewCell {
     var indexPath: IndexPath?
     
     @IBOutlet weak var profilePicture: UIImageView!
-    
     @IBOutlet weak var datePlanLabel: UILabel!
-    
     @IBOutlet weak var ageLabel: UILabel!
-    
     @IBOutlet weak var genderLabel: UIImageView!
-    
     @IBOutlet weak var acceptedButton: UIButton!
-    
     @IBOutlet weak var rejectedButton: UIButton!
-    
+    @IBOutlet weak var distanceAwayLabel: UILabel!
     @IBOutlet weak var recentlyOnlineLabel: UILabel!
+    
     @IBAction func acceptedPressed(_ sender: UIButton) {
         
         if let indexPath = indexPath {

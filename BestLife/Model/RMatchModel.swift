@@ -26,4 +26,5 @@ class RMatchModel: Object {
     @Persisted var occupation: String?
     @Persisted var summary: String?
     @Persisted var interests: List<String>
+    @Persisted var distanceAway = 0
 }

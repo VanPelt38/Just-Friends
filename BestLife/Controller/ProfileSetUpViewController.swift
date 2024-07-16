@@ -189,6 +189,9 @@ class ProfileSetUpViewController: UIViewController {
                 "userID": id,
                 "profilePicRef": profilePicRef
             ])
+            try await db.collection("users").document(id).setData([
+                "existence": "yes"
+            ])
         } catch {
             print("There was an issue saving data to firestore, \(error)")
         }

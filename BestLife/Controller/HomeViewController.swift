@@ -504,6 +504,9 @@ class HomeViewController: UIViewController {
                                 interests.forEach { interestsList.append($0) }
                                 realmMatch.interests = interestsList
                             }
+                            if let distanceAway = data["distanceAway"] as? Int {
+                                realmMatch.distanceAway = distanceAway
+                            }
                             realm.add(realmMatch, update: .all)
                         }
                         

@@ -15,6 +15,7 @@ class HomeViewController: UIViewController {
 
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var makeFriendButton: UIButton!
+    @IBOutlet weak var mostCompatibleButton: UIButton!
     
     @IBOutlet weak var buttonToProfileConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewProfileButton: UIButton!
@@ -84,9 +85,16 @@ class HomeViewController: UIViewController {
         performSegue(withIdentifier: "homeProfileSeg", sender: self)
     }
     
+    @IBAction func mostCompatiblePressed(_ sender: UIButton) {
+        performSegue(withIdentifier: "homeCompatibleSeg", sender: self)
+    }
+    
+    
     func setUpUI() {
         
         makeFriendButton.layer.cornerRadius = makeFriendButton.frame.height / 2
+        mostCompatibleButton.layer.cornerRadius = mostCompatibleButton.frame.height / 2
+        mostCompatibleButton.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
         profilePicSize()
         viewProfileButton.clipsToBounds = true
         viewProfileButton.layer.cornerRadius = viewProfileButton.frame.size.width / 2
@@ -433,7 +441,6 @@ class HomeViewController: UIViewController {
                                             realmProfile.summary = summary
                                         }
                                         if let interests = data["interests"] as? [String] {
-                                            print("got interests")
                                             let interestsList = List<String>()
                                             interests.forEach { interestsList.append($0) }
                                             realmProfile.interests = interestsList
@@ -496,6 +503,9 @@ class HomeViewController: UIViewController {
                                 let interestsList = List<String>()
                                 interests.forEach { interestsList.append($0) }
                                 realmMatch.interests = interestsList
+                            }
+                            if let distanceAway = data["distanceAway"] as? Int {
+                                realmMatch.distanceAway = distanceAway
                             }
                             realm.add(realmMatch, update: .all)
                         }

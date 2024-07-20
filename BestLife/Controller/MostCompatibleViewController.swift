@@ -39,11 +39,12 @@ class MostCompatibleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        calculateButton.translatesAutoresizingMaskIntoConstraints = false
         mostCompatibleLabel.isHidden = true
         mostCompatibleLabel.translatesAutoresizingMaskIntoConstraints = false
         calculateButton.layer.cornerRadius = calculateButton.frame.height / 2
         calculateButton.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
+        
         calculateButton.setTitleColor(.lightGray, for: .disabled)
         let centerXConstraint = NSLayoutConstraint(item: mostCompatibleLabel,
                                                    attribute: .centerX,
@@ -77,8 +78,22 @@ class MostCompatibleViewController: UIViewController {
         
         view.addConstraints([centerXConstraint, centerYConstraint, widthConstraint, heightConstraint])
         
-        calculateButton.frame.origin.x = (self.view.frame.width / 2) - (calculateButton.frame.size.width / 2)
-        calculateButton.frame.origin.y = mostCompatibleLabel.frame.origin.y + mostCompatibleLabel.frame.height + 40
+        let buttonCentreXContrainst = NSLayoutConstraint(item: calculateButton,
+                                                         attribute: .centerX,
+                                                         relatedBy: .equal,
+                                                         toItem: view,
+                                                         attribute: .centerX,
+                                                         multiplier: 1.0,
+                                                         constant: 0.0)
+        let buttonYConstraint = NSLayoutConstraint(item: calculateButton,
+                                                         attribute: .centerY,
+                                                         relatedBy: .equal,
+                                                         toItem: mostCompatibleLabel,
+                                                         attribute: .centerY,
+                                                         multiplier: 1.0,
+                                                         constant: 150.0)
+        
+        view.addConstraints([buttonCentreXContrainst, buttonYConstraint])
         
         loadingIndicator.center = self.view.center
         loadingIndicator.hidesWhenStopped = true
@@ -748,7 +763,7 @@ class MostCompatibleViewController: UIViewController {
         if let lastShareDate = UserDefaults.standard.object(forKey: "lastShareDate") as? Date {
             
             let timeInterval = Date().timeIntervalSince(lastShareDate)
-            if timeInterval > TimeInterval(2 * 60 * 60) {
+            if timeInterval > TimeInterval(48 * 60 * 60) {
                 UserDefaults.standard.set(Date(), forKey: "lastShareDate")
                 return true
             } else {
@@ -765,7 +780,7 @@ class MostCompatibleViewController: UIViewController {
         if let lastMostCompatibleDate = UserDefaults.standard.object(forKey: "mostCompatibleDate") as? Date {
             
             let timeInterval = Date().timeIntervalSince(lastMostCompatibleDate)
-            if timeInterval > TimeInterval(2 * 60) {
+            if timeInterval > TimeInterval(24 * 60 * 60) {
                 return true
             } else {
                 return false

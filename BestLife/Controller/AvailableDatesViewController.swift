@@ -589,7 +589,7 @@ class AvailableDatesViewController: UIViewController {
         if let lastShareDate = UserDefaults.standard.object(forKey: "lastShareDate") as? Date {
             
             let timeInterval = Date().timeIntervalSince(lastShareDate)
-            if timeInterval > TimeInterval(2 * 60 * 60) {
+            if timeInterval > TimeInterval(48 * 60 * 60) {
                 UserDefaults.standard.set(Date(), forKey: "lastShareDate")
                 return true
             } else {

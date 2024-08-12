@@ -181,17 +181,25 @@ class ProfileSetUpViewController: UIViewController {
     func saveProfile(userName: String, imageURL: String, age: Int, userGender: String, id: String) async {
         
         do {
-            try await db.collection("users").document(id).collection("profile").document("profile").setData([
+            
+            let batch = db.batch()
+            let collection1 = db.collection("users").document(id).collection("profile").document("profile")
+            let collection2 = db.collection("users").document(id)
+            
+            batch.setData([
                 "age": age,
                 "gender": userGender,
                 "name": userName,
                 "picture": imageURL,
                 "userID": id,
                 "profilePicRef": profilePicRef
-            ])
-            try await db.collection("users").document(id).setData([
+            ], forDocument: collection1)
+            
+            batch.setData([
                 "existence": "yes"
-            ])
+            ], forDocument: collection2, merge: true)
+            
+            try await batch.commit()
         } catch {
             print("There was an issue saving data to firestore, \(error)")
         }

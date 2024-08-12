@@ -11,6 +11,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import CoreLocation
 
+
 class DatePlanViewController: UIViewController {
     
     @IBOutlet weak var activityTextField: UITextField!
@@ -28,7 +29,6 @@ class DatePlanViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
        startLocationServices()
         navigationItem.hidesBackButton = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "arrow25"), style: .plain, target: self, action: #selector(popVC))

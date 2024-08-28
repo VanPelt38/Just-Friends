@@ -13,7 +13,7 @@ class RealmManager {
     class func getRealm() -> Realm? {
         
         let config = Realm.Configuration(
-            schemaVersion: 8) { migration, oldSchemaVersion in
+            schemaVersion: 9) { migration, oldSchemaVersion in
                 if oldSchemaVersion < 2 {
                     migration.enumerateObjects(ofType: RMatchModel.className()) { oldObject, newObject in
                         newObject?["ownUserID"] = ""
@@ -59,6 +59,12 @@ class RealmManager {
                         newObject?["distanceAway"] = 0
                     }
                 }
+                if oldSchemaVersion < 9 {
+                    migration.enumerateObjects(ofType: RProfile.className()) { oldObject, newObject in
+                        newObject?["fcmToken"] = ""
+                    }
+                }
+
             }
         
         do {

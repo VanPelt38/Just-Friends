@@ -43,6 +43,7 @@
 		23B4F730294B845E00C9DFB5 /* DatePlanModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B4F72F294B845E00C9DFB5 /* DatePlanModel.swift */; };
 		23B4F732294B8F5100C9DFB5 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B4F731294B8F5100C9DFB5 /* LoginViewController.swift */; };
 		23BE85F02B2110F200228638 /* RBlockedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BE85EF2B2110F200228638 /* RBlockedUser.swift */; };
+		23CB59E42C6AA65200189CF1 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23CB59E32C6AA65200189CF1 /* NetworkManager.swift */; };
 		23D2AAE8293EA5100083BA22 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D2AAE7293EA5100083BA22 /* AppDelegate.swift */; };
 		23D2AAEA293EA5100083BA22 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D2AAE9293EA5100083BA22 /* SceneDelegate.swift */; };
 		23D2AAEC293EA5100083BA22 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D2AAEB293EA5100083BA22 /* HomeViewController.swift */; };
@@ -95,6 +96,7 @@
 		23B4F72F294B845E00C9DFB5 /* DatePlanModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePlanModel.swift; sourceTree = "<group>"; };
 		23B4F731294B8F5100C9DFB5 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		23BE85EF2B2110F200228638 /* RBlockedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RBlockedUser.swift; sourceTree = "<group>"; };
+		23CB59E32C6AA65200189CF1 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		23D2AAE4293EA5100083BA22 /* BestLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BestLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		23D2AAE7293EA5100083BA22 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		23D2AAE9293EA5100083BA22 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -144,6 +146,14 @@
 			name = Packages;
 			sourceTree = "<group>";
 		};
+		23CB59E22C6AA63D00189CF1 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				23CB59E32C6AA65200189CF1 /* NetworkManager.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		23D2AADB293EA5100083BA22 = {
 			isa = PBXGroup;
 			children = (
@@ -168,6 +178,7 @@
 			children = (
 				239D21E32B86AF90002D0AE2 /* BestLife.entitlements */,
 				2388E18D29E618D6000C83E9 /* BestLifeDebug.entitlements */,
+				23CB59E22C6AA63D00189CF1 /* Utils */,
 				23D2AB00294B7DBB0083BA22 /* Model */,
 				23D2AB01294B7DC80083BA22 /* View */,
 				23D2AB02294B7DD30083BA22 /* Controller */,
@@ -369,6 +380,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23CB59E42C6AA65200189CF1 /* NetworkManager.swift in Sources */,
 				237E7E842BC5B1830077499C /* ForgotPasswordViewController.swift in Sources */,
 				2381078E2B3D908500F4746D /* CustomCommentCell.swift in Sources */,
 				23EE38862A06B2720013E63E /* ProfileModel.swift in Sources */,

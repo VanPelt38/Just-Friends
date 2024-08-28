@@ -186,9 +186,24 @@ class MatchesViewController: UIViewController {
         }
                 
                 guard let realm = RealmManager.getRealm() else {return}
-        if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first, let realmStatus = realm.object(ofType: RStatus.self, forPrimaryKey: firebaseID) {
-                        
-                let myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: realmProfile.profilePicURL, dateActivity: realmStatus.dateActivity, dateTime: realmStatus.dateTime, ID: realmProfile.userID, accepted: false, fcmToken: realmStatus.fcmToken, chatID: "")
+        if let realmProfile = realm.objects(RProfile.self).filter("userID == %@", firebaseID).first {
+            
+            var myProfile = MatchModel()
+            myProfile.name = realmProfile.name
+            myProfile.age = realmProfile.age
+            myProfile.gender = realmProfile.gender
+            myProfile.imageURL = realmProfile.profilePicURL
+            myProfile.ID = realmProfile.userID
+            myProfile.chatID = ""
+            myProfile.fcmToken = realmProfile.fcmToken
+            
+            if let realmStatus = realm.object(ofType: RStatus.self, forPrimaryKey: firebaseID) {
+                myProfile.dateActivity = realmStatus.dateActivity
+                myProfile.dateTime = realmStatus.dateTime
+                myProfile.fcmToken = realmStatus.fcmToken
+            }
+            
+//                let myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: realmProfile.profilePicURL, dateActivity: realmStatus.dateActivity, dateTime: realmStatus.dateTime, ID: realmProfile.userID, accepted: false, fcmToken: realmStatus.fcmToken, chatID: "")
                         ownMatch = myProfile
                 }
     }

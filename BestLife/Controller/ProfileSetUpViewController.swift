@@ -30,6 +30,8 @@ class ProfileSetUpViewController: UIViewController {
     var imageExtension = ""
     private let db = Firestore.firestore()
     var profilePicRef = ""
+    let networkManager = NetworkManager.shared
+    let loadingIndicator = UIActivityIndicatorView(style: .large)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +51,22 @@ class ProfileSetUpViewController: UIViewController {
         self.view.addGestureRecognizer(tapGesture)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        networkManager.startMonitoring()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        networkManager.stopMonitoring()
+    }
+    
     func setUpUI() {
+        
+        loadingIndicator.center = self.view.center
+        loadingIndicator.hidesWhenStopped = true
+        self.view.addSubview(loadingIndicator)
+        loadingIndicator.color = .black
         
         profileImage.clipsToBounds = true
         profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
@@ -95,47 +112,80 @@ class ProfileSetUpViewController: UIViewController {
     
     @IBAction func profileCompletePressed(_ sender: UIButton) {
         
-        if isImageChosen == true && nameTextField.text != "" && isAgeChosen == true && gender != nil {
-            if imageExtension != "unsupported" {
-                if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
-                
-                Task.init {
-                    
-                    let dataPic = convertImageToData(image: image)
-                    if dataPic.count < 16000000 {
+        loadingIndicator.startAnimating()
+        cameraButton.isEnabled = false
+        readyButton.isEnabled = false
+        
+        if networkManager.isConnected {
+            if isImageChosen == true && nameTextField.text != "" && isAgeChosen == true && gender != nil {
+                if imageExtension != "unsupported" {
+                    if let userName = nameTextField.text, let image = profileImage.image, let userGender = gender, let id = userID {
                         
-                        imageString = await uploadImageToFireStorage(picture: image)
-                        
-                        let realmProfile = RProfile()
-                        realmProfile.age = calculatedAge(date: ageDatePicker.date)
-                        realmProfile.gender = userGender
-                        realmProfile.name = userName
-                        realmProfile.picture = dataPic
-                        realmProfile.profilePicURL = imageString ?? "none"
-                        realmProfile.userID = id
-                        persistProfileLocally(realmProfile: realmProfile)
-                        
-                        await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
-                        await flagProfileSetUp(id: id)
-                        UserDefaults.standard.set(true, forKey: "loggedInHome")
-                        self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
-                    } else {
-                        let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)
-                        let okayAction = UIAlertAction(title: "Okay", style: .default)
-                        imageTooBigAlert.addAction(okayAction)
-                        present(imageTooBigAlert, animated: true, completion: nil)
+                        Task.init {
+                            
+                            let dataPic = convertImageToData(image: image)
+                            if dataPic.count < 16000000 {
+                                
+                                imageString = await uploadImageToFireStorage(picture: image)
+                                
+                                let realmProfile = RProfile()
+                                realmProfile.age = calculatedAge(date: ageDatePicker.date)
+                                realmProfile.gender = userGender
+                                realmProfile.name = userName
+                                realmProfile.picture = dataPic
+                                realmProfile.profilePicURL = imageString ?? "none"
+                                realmProfile.userID = id
+                                persistProfileLocally(realmProfile: realmProfile)
+                                
+                                await saveProfile(userName: userName, imageURL: imageString ?? "none", age: calculatedAge(date: ageDatePicker.date), userGender: userGender, id: id)
+                                await flagProfileSetUp(id: id)
+                                UserDefaults.standard.set(true, forKey: "loggedInHome")
+                                
+                                loadingIndicator.stopAnimating()
+                                
+                                self.performSegue(withIdentifier: "profileSetUpHomeSeg", sender: self)
+                            } else {
+                                
+                                loadingIndicator.stopAnimating()
+                                cameraButton.isEnabled = true
+                                readyButton.isEnabled = true
+                                
+                                let imageTooBigAlert = UIAlertController(title: "Uh-oh", message: "The image you've chosen is too big - please pick one with a file size under 16Mb.", preferredStyle: .alert)
+                                let okayAction = UIAlertAction(title: "Okay", style: .default)
+                                imageTooBigAlert.addAction(okayAction)
+                                present(imageTooBigAlert, animated: true, completion: nil)
+                            }
+                        }
                     }
+                } else {
+                    
+                    loadingIndicator.stopAnimating()
+                    cameraButton.isEnabled = true
+                    readyButton.isEnabled = true
+                    
+                    let badImageAlert = UIAlertController(title: "Uh-oh", message: "We're sorry but the image file you've chosen is unsupported - please use images with the following extensions: heic, jpeg, jpg, png.", preferredStyle: .alert)
+                    let okayAction = UIAlertAction(title: "Okay", style: .default)
+                    badImageAlert.addAction(okayAction)
+                    present(badImageAlert, animated: true, completion: nil)
                 }
-            }
             } else {
-                let badImageAlert = UIAlertController(title: "Uh-oh", message: "We're sorry but the image file you've chosen is unsupported - please use images with the following extensions: heic, jpeg, jpg, png.", preferredStyle: .alert)
+                
+                loadingIndicator.stopAnimating()
+                cameraButton.isEnabled = true
+                readyButton.isEnabled = true
+                
+                let alert = UIAlertController(title: "Profile Incomplete", message: "Please enter all your details before proceeding.", preferredStyle: .alert)
                 let okayAction = UIAlertAction(title: "Okay", style: .default)
-                badImageAlert.addAction(okayAction)
-                present(badImageAlert, animated: true, completion: nil)
+                alert.addAction(okayAction)
+                present(alert, animated: true, completion: nil)
             }
         } else {
             
-            let alert = UIAlertController(title: "Profile Incomplete", message: "Please enter all your details before proceeding.", preferredStyle: .alert)
+            loadingIndicator.stopAnimating()
+            cameraButton.isEnabled = true
+            readyButton.isEnabled = true
+            
+            let alert = UIAlertController(title: "No Internet", message: "Please check your network connection and try again.", preferredStyle: .alert)
             let okayAction = UIAlertAction(title: "Okay", style: .default)
             alert.addAction(okayAction)
             present(alert, animated: true, completion: nil)
@@ -233,10 +283,14 @@ class ProfileSetUpViewController: UIViewController {
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"
             _ = try await imageRef.putDataAsync(imageData, metadata: metadata)
+        } catch {
+            return "failed to putData via storage: \(error.localizedDescription)"
+        }
+        do {
             let downloadURL = try await imageRef.downloadURL()
             return downloadURL.absoluteString
         } catch {
-             return "failed to retrieve download url: \(error)"
+            return "failed to retrieve download url: \(error.localizedDescription)"
         }
         
     }

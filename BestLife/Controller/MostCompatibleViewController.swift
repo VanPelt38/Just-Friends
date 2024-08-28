@@ -909,12 +909,10 @@ extension MostCompatibleViewController: UITableViewDelegate {
         let daterID = profilesArray[indexPath.row].userID
         let dateName = myProfile.name
         
-        let docRef1 = db.collection("statuses").whereField("userID", isEqualTo: daterID)
+        let dcRef1 = db.collection("users").document(daterID)
         do {
-            let docs = try await docRef1.getDocuments()
-            if docs.count > 0 {
-                
-                for doc in docs.documents {
+            let dc = try await dcRef1.getDocument()
+            if dc.exists {
                     
                     db.collection("users").document(firebaseID).collection("expiringRequests").document(daterID).setData([
                         "timeStamp": Date(),
@@ -966,8 +964,7 @@ extension MostCompatibleViewController: UITableViewDelegate {
                     }
                     
                     let tappedPersonID = daterID
-                    let docRef = db.collection("statuses").document(doc.documentID)
-                    docRef.updateData(["suitorID" : firebaseID]) { err in
+                    dcRef1.updateData(["suitorID" : firebaseID]) { err in
                         if let err = err {
                             print("error updating field: \(err)")
                         } else {
@@ -976,7 +973,7 @@ extension MostCompatibleViewController: UITableViewDelegate {
                         
                     }
                     
-                    docRef.addSnapshotListener { documentSnapshot, error in
+                    dcRef1.addSnapshotListener { documentSnapshot, error in
                         guard let doccy = documentSnapshot else {
                             print("Error fetching document: \(error!)")
                             return
@@ -991,7 +988,7 @@ extension MostCompatibleViewController: UITableViewDelegate {
                         
                         let data: [String: Any] = [
                             "tapperID": field,
-                            "tappedID": passedID!,
+                            "tappedID": passedID ?? "",
                             "tapperName": dateName
                         ]
                         
@@ -1012,7 +1009,7 @@ extension MostCompatibleViewController: UITableViewDelegate {
                     }
                     self.profilesArray.remove(at: indexPath.row)
                     self.mostCompatibleTable.reloadData()
-                }
+                
             } else {
                 let userDoesNotExistAlert = UIAlertController(title: "Uh-oh", message: "Unfortunately this user is no longer available.", preferredStyle: .alert)
                 let okayAction = UIAlertAction(title: "Okay", style: .default)
@@ -1021,6 +1018,10 @@ extension MostCompatibleViewController: UITableViewDelegate {
             }
             
         } catch {
+            let userDoesNotExistAlert = UIAlertController(title: "Uh-oh", message: "Unfortunately this user is no longer available.", preferredStyle: .alert)
+            let okayAction = UIAlertAction(title: "Okay", style: .default)
+            userDoesNotExistAlert.addAction(okayAction)
+            present(userDoesNotExistAlert, animated: true)
             print("errrrror: \(error)")
         }
     }

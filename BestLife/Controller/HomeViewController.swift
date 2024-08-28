@@ -210,6 +210,7 @@ class HomeViewController: UIViewController {
         }
         
         Task.init {
+            await setFCMToken()
             await loadProfile()
             await loadMatches()
             await loadExpiringRequests()
@@ -339,7 +340,6 @@ class HomeViewController: UIViewController {
                 let querySnapshot = try await pathway.getDocuments()
                 
                 for doc in querySnapshot.documents {
-                    print("got one")
                     let data = doc.data()
                     if let timeStamp = data["timeStamp"] as? Timestamp, let userID = data["userID"] as? String, let ownUserID = data["ownUserID"] as? String {
                        
@@ -398,6 +398,15 @@ class HomeViewController: UIViewController {
         }
     }
     
+    func setFCMToken() async {
+        let profileDoc = db.collection("users").document(firebaseID!)
+        do {
+            try await profileDoc.updateData(["fcmToken" : UserDefaults.standard.object(forKey: "fcmToken")])
+        } catch {
+            print("error setting fcm token: \(error)")
+        }
+    }
+    
     func loadProfile() async {
         
         guard let realm = RealmManager.getRealm() else {return}
@@ -424,6 +433,9 @@ class HomeViewController: UIViewController {
                                     let image = UIImage(data: imageData)
                                     try! realm.write {
                                         let realmProfile = RProfile()
+                                        if let fcm = UserDefaults.standard.object(forKey: "fcmToken") as? String {
+                                            realmProfile.fcmToken = fcm
+                                        }
                                     realmProfile.age = age
                                     realmProfile.gender = gender
                                     realmProfile.name = name

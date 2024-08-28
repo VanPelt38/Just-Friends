@@ -21,6 +21,7 @@ class RProfile: Object {
     @Persisted var occupation: String?
     @Persisted var summary: String?
     @Persisted var interests: List<String>
+    @Persisted var fcmToken = ""
     
     override static func primaryKey() -> String? {
         return "userID"

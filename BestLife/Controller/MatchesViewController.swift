@@ -202,8 +202,6 @@ class MatchesViewController: UIViewController {
                 myProfile.dateTime = realmStatus.dateTime
                 myProfile.fcmToken = realmStatus.fcmToken
             }
-            
-//                let myProfile = MatchModel(name: realmProfile.name, age: realmProfile.age, gender: realmProfile.gender, imageURL: realmProfile.profilePicURL, dateActivity: realmStatus.dateActivity, dateTime: realmStatus.dateTime, ID: realmProfile.userID, accepted: false, fcmToken: realmStatus.fcmToken, chatID: "")
                         ownMatch = myProfile
                 }
     }

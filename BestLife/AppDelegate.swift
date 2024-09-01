@@ -102,7 +102,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler(.banner)
+    
+        let content = notification.request.content
+        if let onChat = UserDefaults.standard.value(forKey: "onChatView") as? Bool {
+            if onChat && (notificationWordCount(content.title) <= 3) {
+                completionHandler([])
+            } else {
+                completionHandler(.banner)
+            }
+        } else {
+            completionHandler(.banner)
+        }
+    }
+    
+    func notificationWordCount(_ text: String) -> Int {
+        
+        let words = text.components(separatedBy: .whitespacesAndNewlines)
+        let nonEmptyWords = words.filter { !$0.isEmpty }
+        return nonEmptyWords.count
     }
     
    

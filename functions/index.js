@@ -104,4 +104,33 @@ exports.notifyUser = functions.https.onCall((data, context) => {
     });
 
 
-    
+    // Send new Message notification
+
+    exports.sendChatMessageNotification = functions.https.onCall((data, context) => {
+      const deviceToken = data.receiverID;
+      const senderName = data.senderName;
+      const chatText = data.chatText;
+      const message = `${chatText}`;
+      
+      const payload = {
+      notification: {
+      title: senderName,
+      body: message,
+      },
+      token: deviceToken,
+      };
+      
+      return admin.messaging().send(payload)
+      .then(() => {
+      console.log("notification sent successfully");
+      return null;
+      })
+      .catch((error) => {
+      console.error("error sending notification: ", error);
+      return null;
+      })
+      .catch((error) => {
+      console.error("error fetching user document: ", error);
+      return null;
+      });
+      });

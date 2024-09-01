@@ -47,6 +47,7 @@ class HomeViewController: UIViewController {
 
         self.navigationController!.navigationBar.setBackgroundImage(image, for: UIBarMetrics.default)
 
+        UserDefaults.standard.set(false, forKey: "onChatView")
         setUpUI()
         loadLocalProfile()
         loadAllUserData()

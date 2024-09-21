@@ -84,7 +84,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
        
         if let safeToken = fcmToken {
-            
             UserDefaults.standard.set(String(describing: safeToken), forKey: "fcmToken")
         }
          

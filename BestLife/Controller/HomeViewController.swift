@@ -211,7 +211,7 @@ class HomeViewController: UIViewController {
         }
         
         Task.init {
-            await setFCMToken()
+            await setFCMTokenAndExistence()
             await loadProfile()
             await loadMatches()
             await loadExpiringRequests()
@@ -399,10 +399,13 @@ class HomeViewController: UIViewController {
         }
     }
     
-    func setFCMToken() async {
+    func setFCMTokenAndExistence() async {
         let profileDoc = db.collection("users").document(firebaseID!)
         do {
-            try await profileDoc.updateData(["fcmToken" : UserDefaults.standard.object(forKey: "fcmToken")])
+            try await profileDoc.updateData([
+                "fcmToken" : UserDefaults.standard.object(forKey: "fcmToken") as? String ?? "error",
+                "existence" : "yes"
+            ])
         } catch {
             print("error setting fcm token: \(error)")
         }

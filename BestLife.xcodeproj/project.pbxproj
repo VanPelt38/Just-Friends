@@ -14,6 +14,7 @@
 		2318081A2A530ACF0051012B /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231808192A530ACF0051012B /* SettingsViewController.swift */; };
 		2318081C2A5311D30051012B /* DistanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081B2A5311D30051012B /* DistanceViewController.swift */; };
 		2318081E2A53152C0051012B /* MyProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2318081D2A53152C0051012B /* MyProfileViewController.swift */; };
+		23226FC62C9B7F040095E315 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 23226FC52C9B7F040095E315 /* FirebaseCrashlytics */; };
 		23361C3229DCC4F7006D2410 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 23361C3129DCC4F7006D2410 /* FirebaseFunctions */; };
 		2350108729B474E0007A3BBA /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 2350108629B474E0007A3BBA /* FirebaseMessaging */; };
 		2350108929BAF7EF007A3BBA /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2350108829BAF7EF007A3BBA /* PushNotificationManager.swift */; };
@@ -130,6 +131,7 @@
 				236ED1A72A9E7AA20085F616 /* IQKeyboardManagerSwift in Frameworks */,
 				23DE21682AC0D60A005A31CF /* Realm in Frameworks */,
 				23E30A0829810EC90091202E /* FirebaseFirestore in Frameworks */,
+				23226FC62C9B7F040095E315 /* FirebaseCrashlytics in Frameworks */,
 				23DE216A2AC0D60A005A31CF /* RealmSwift in Frameworks */,
 				237A4B9B2A02FE7C0065EF6B /* FirebaseStorage in Frameworks */,
 				2397DDB62BE5B2AF00DDCFB0 /* Eureka in Frameworks */,
@@ -287,6 +289,7 @@
 				23DE21692AC0D60A005A31CF /* RealmSwift */,
 				238107852B3D86CF00F4746D /* MessageKit */,
 				2397DDB52BE5B2AF00DDCFB0 /* Eureka */,
+				23226FC52C9B7F040095E315 /* FirebaseCrashlytics */,
 			);
 			productName = BestLife;
 			productReference = 23D2AAE4293EA5100083BA22 /* BestLife.app */;
@@ -714,6 +717,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		23226FC52C9B7F040095E315 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
 		23361C3129DCC4F7006D2410 /* FirebaseFunctions */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 239A19AE296BB5F1005B6294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

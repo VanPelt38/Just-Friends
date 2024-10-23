@@ -13,6 +13,7 @@ import RealmSwift
 
 class HomeViewController: UIViewController {
 
+    @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var makeFriendButton: UIButton!
     @IBOutlet weak var mostCompatibleButton: UIButton!
@@ -92,7 +93,7 @@ class HomeViewController: UIViewController {
     
     
     func setUpUI() {
-        
+      
         makeFriendButton.layer.cornerRadius = makeFriendButton.frame.height / 2
         mostCompatibleButton.layer.cornerRadius = mostCompatibleButton.frame.height / 2
         mostCompatibleButton.backgroundColor = UIColor(red: 255/255, green: 204/255, blue: 204/255, alpha: 1.0)
@@ -105,6 +106,7 @@ class HomeViewController: UIViewController {
         
         navigationItem.hidesBackButton = true
     }
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -128,7 +130,7 @@ class HomeViewController: UIViewController {
             
         } else {
             
-            let size = CGSize(width: self.view.frame.width, height: self.view.frame.width)
+            let size = CGSize(width: self.contentView.frame.width, height: self.contentView.frame.width)
             profilePicture.frame.size = size
             profilePicture.frame.origin.y = 0
             profilePicture.frame.origin.x = 0

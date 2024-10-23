@@ -32,6 +32,8 @@ class ProfileSetUpViewController: UIViewController {
     var profilePicRef = ""
     let networkManager = NetworkManager.shared
     let loadingIndicator = UIActivityIndicatorView(style: .large)
+    let scrollView = UIScrollView()
+    let containerView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +43,7 @@ class ProfileSetUpViewController: UIViewController {
         } else {
             print("no user is currently signed in")
         }
+        
         
        setUpDatePicker()
         setUpUI()
@@ -62,6 +65,10 @@ class ProfileSetUpViewController: UIViewController {
     }
     
     func setUpUI() {
+        
+        if UIScreen.main.bounds.size.height < 850 {
+            scrollViewForSmallScreens()
+        }
         
         loadingIndicator.center = self.view.center
         loadingIndicator.hidesWhenStopped = true
@@ -86,6 +93,36 @@ class ProfileSetUpViewController: UIViewController {
         maleButton.setImage(unselectedImage, for: .normal)
         femaleButton.setImage(unselectedImage, for: .normal)
         maleButton.setImage(image, for: .selected)
+    }
+    
+    func scrollViewForSmallScreens() {
+        
+        let originalView = self.view
+        
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(scrollView)
+        scrollView.addSubview(originalView!)
+        scrollView.frame.size = CGSize(width: self.view.frame.width, height: self.view.frame.height)
+    
+        self.view = containerView
+    
+        containerView.frame.size = UIScreen.main.bounds.size
+        originalView!.frame.size = CGSize(width:  UIScreen.main.bounds.size.width, height:  UIScreen.main.bounds.size.height + (UIScreen.main.bounds.size.height / 4))
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: self.containerView.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.containerView.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: self.containerView.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.containerView.trailingAnchor)
+        ])
+        NSLayoutConstraint.activate([
+           originalView!.topAnchor.constraint(equalTo: scrollView.topAnchor),
+           originalView!.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+           originalView!.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+           originalView!.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+           
+        ])
     }
     
     @IBAction func addProfilePhotoPressed(_ sender: UIButton) {

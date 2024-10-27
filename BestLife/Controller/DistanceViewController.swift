@@ -13,7 +13,7 @@ class DistanceViewController: UIViewController {
     @IBOutlet weak var distanceSlider: UISlider!
     @IBOutlet weak var updateButton: UIButton!
     
-    var distanceChosen = 10000
+    var distanceChosen: Int? = nil
     var firstViewLoad = true
     
     override func viewDidLoad() {
@@ -112,7 +112,9 @@ class DistanceViewController: UIViewController {
     }
     
     @IBAction func updateDistancePressed(_ sender: UIButton) {
-        UserDefaults.standard.set(distanceChosen, forKey: "distancePreference")
+        if let distanceChosen {
+            UserDefaults.standard.set(distanceChosen, forKey: "distancePreference")
+        }
         dismissViewAfterUpdate()
     }
 }

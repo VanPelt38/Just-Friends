@@ -201,7 +201,7 @@ class AvailableDatesViewController: UIViewController {
             }
             
         }
-         
+        self.showToast(message: "Your plan will be available for 12 hours")
     }
     
     @objc func popVC() {
@@ -857,6 +857,7 @@ extension AvailableDatesViewController: UITableViewDelegate {
                 self.statusArray.remove(at: indexPath.row - 1)
                 self.profilesArray.remove(at: indexPath.row - 1)
                 self.availableDatesTable.reloadData()
+                self.showToast(message: "Your request has been sent!")
                 
                 
             } else if let e = error {

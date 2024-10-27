@@ -1009,6 +1009,7 @@ extension MostCompatibleViewController: UITableViewDelegate {
                     }
                     self.profilesArray.remove(at: indexPath.row)
                     self.mostCompatibleTable.reloadData()
+                    self.showToast(message: "Your request has been sent!")
                 
             } else {
                 let userDoesNotExistAlert = UIAlertController(title: "Uh-oh", message: "Unfortunately this user is no longer available.", preferredStyle: .alert)

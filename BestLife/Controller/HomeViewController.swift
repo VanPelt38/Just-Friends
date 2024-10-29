@@ -11,7 +11,7 @@ import FirebaseAuth
 import Kingfisher
 import RealmSwift
 
-class HomeViewController: UIViewController {
+class HomeViewController: BaseViewController {
 
     @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var profilePicture: UIImageView!
@@ -27,6 +27,7 @@ class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
+        view.layoutIfNeeded()
         loadLocalProfile()
     }
 
@@ -76,10 +77,6 @@ class HomeViewController: UIViewController {
 
             }
         }
-       
-        let userID = IDgenerator()
-  
-        saveID(userID: userID)
     }
     
     @IBAction func profilePressed(_ sender: UIButton) {
@@ -142,26 +139,6 @@ class HomeViewController: UIViewController {
         if UserDefaults.standard.value(forKey: "distancePreference") == nil {
             UserDefaults.standard.set(10000, forKey: "distancePreference")
         }
-    }
-    
-    func IDgenerator() -> String {
-        
-        let len = 12
-        let pswdChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@£$%^&*()"
-        let randomPass = String((0..<len).compactMap{ _ in
-            pswdChars.randomElement()
-        })
-        
-        return randomPass
-    }
-    
-    func saveID(userID: String) {
-        
-        if UserDefaults.standard.object(forKey: "uniqueID") == nil {
-            
-            UserDefaults.standard.set(userID, forKey: "uniqueID")
-        }
-        
     }
     
     func flagProfileSetUpInRealm() {

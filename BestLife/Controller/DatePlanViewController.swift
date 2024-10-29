@@ -12,7 +12,7 @@ import FirebaseAuth
 import CoreLocation
 
 
-class DatePlanViewController: UIViewController {
+class DatePlanViewController: BaseViewController {
     
     @IBOutlet weak var activityTextField: UITextField!
     @IBOutlet weak var timePicker: UIPickerView!
@@ -63,7 +63,6 @@ class DatePlanViewController: UIViewController {
             if checkLocationAuthorisation() == "OK" {
               
                 var docsArray: [QueryDocumentSnapshot] = []
-                let userID = UserDefaults.standard.object(forKey: "uniqueID")
                 
                 let activity = activityTextField.text
                 
@@ -172,14 +171,6 @@ class DatePlanViewController: UIViewController {
             }
             
         }
-    }
-    
-    func showAlert(title: String, message: String) {
-        
-        let enterValidDetailsAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okayAction = UIAlertAction(title: "Okay", style: .default)
-        enterValidDetailsAlert.addAction(okayAction)
-        self.present(enterValidDetailsAlert, animated: true)
     }
     
     func checkLocationAuthorisation() -> String {

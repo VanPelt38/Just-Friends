@@ -10,7 +10,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseStorage
 
-class SettingsViewController: UIViewController {
+class SettingsViewController: BaseViewController {
     
     @IBOutlet weak var settingsTableView: UITableView!
     

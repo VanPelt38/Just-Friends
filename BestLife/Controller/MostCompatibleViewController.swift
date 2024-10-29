@@ -13,7 +13,7 @@ import CoreLocation
 import Kingfisher
 import RealmSwift
 
-class MostCompatibleViewController: UIViewController {
+class MostCompatibleViewController: BaseViewController {
     
     @IBOutlet weak var mostCompatibleTable: UITableView!
     @IBOutlet weak var mostCompatibleLabel: UILabel!
@@ -330,14 +330,6 @@ class MostCompatibleViewController: UIViewController {
         }
         
         return numberOfMatchRequests
-    }
-    
-    func showAlert(title: String, message: String) {
-        
-        let enterValidDetailsAlert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okayAction = UIAlertAction(title: "Okay", style: .default)
-        enterValidDetailsAlert.addAction(okayAction)
-        self.present(enterValidDetailsAlert, animated: true)
     }
     
     func dataLoading() {

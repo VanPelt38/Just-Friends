@@ -12,7 +12,7 @@ import FirebaseFunctions
 import Kingfisher
 import RealmSwift
 
-class MatchesViewController: UIViewController {
+class MatchesViewController: BaseViewController {
 
     @IBOutlet weak var matchesTableView: UITableView!
     

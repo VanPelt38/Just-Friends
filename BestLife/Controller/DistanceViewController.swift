@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DistanceViewController: UIViewController {
+class DistanceViewController: BaseViewController {
 
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var distanceSlider: UISlider!

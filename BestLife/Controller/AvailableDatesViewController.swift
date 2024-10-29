@@ -13,7 +13,7 @@ import CoreLocation
 import Kingfisher
 
 
-class AvailableDatesViewController: UIViewController {
+class AvailableDatesViewController: BaseViewController {
     
     @IBOutlet weak var matchesButton: UIButton!
     @IBOutlet weak var availableDatesTable: UITableView!

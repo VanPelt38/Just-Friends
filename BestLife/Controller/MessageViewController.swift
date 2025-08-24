@@ -288,7 +288,7 @@ class MessageViewController: MessagesViewController {
         let reportUserAction = UIAlertAction(title: "Report User", style: .default) { action in
             
             let reportOptions = ["Inappropriate Content", "Harassment", "Criminal Behaviour", "User is Underage", "User is Fake/Spam/Scammer", "Cancel"]
-            let reportAlertController = UIAlertController(title: "Dont worry - your report is anonymous.", message: nil, preferredStyle: .actionSheet)
+            let reportAlertController = UIAlertController(title: "Don't worry - your report is anonymous.", message: nil, preferredStyle: .actionSheet)
             for option in reportOptions {
                 if option == "Cancel" {
                     
